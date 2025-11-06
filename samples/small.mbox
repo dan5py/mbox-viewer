@@ -1,0 +1,109 @@
+From alice@example.com Mon Jan 15 10:30:00 2024
+From: Alice Johnson <alice@example.com>
+To: bob@example.com
+Cc: charlie@example.com
+Subject: Project Update - Q1 Planning
+Date: Mon, 15 Jan 2024 10:30:00 +0000
+Message-ID: <001@example.com>
+Content-Type: text/plain; charset=UTF-8
+
+Hi Bob,
+
+I wanted to follow up on our conversation about the Q1 planning session. I've compiled the following key points:
+
+1. Timeline - We need to finalize by February
+2. Budget - Waiting on finance approval
+3. Resources - Team capacity looks good
+
+Let me know your thoughts and if you have any concerns.
+
+Best regards,
+Alice
+
+From bob@example.com Mon Jan 15 14:45:00 2024
+From: Bob Smith <bob@example.com>
+To: alice@example.com, charlie@example.com
+Cc: diana@example.com
+Subject: RE: Project Update - Q1 Planning
+Date: Mon, 15 Jan 2024 14:45:00 +0000
+Message-ID: <002@example.com>
+Content-Type: text/plain; charset=UTF-8
+
+Alice,
+
+Great summary! I've reviewed your points and I have the following feedback:
+
+Timeline looks feasible. However, I'd like to push the first milestone to Feb 5th instead of Feb 1st to allow for proper QA testing. This shouldn't impact the overall Q1 goals.
+
+Budget-wise, I'll reach out to finance today and see if we can expedite their review.
+
+I'll send the meeting invitation shortly.
+
+Thanks,
+Bob
+
+From charlie@example.com Tue Jan 16 09:15:00 2024
+From: Charlie Davis <charlie@example.com>
+To: alice@example.com, bob@example.com
+Subject: RE: Project Update - Q1 Planning
+Date: Tue, 16 Jan 2024 09:15:00 +0000
+Message-ID: <003@example.com>
+Content-Type: text/plain; charset=UTF-8
+
+Both,
+
+Count me in for the planning session. I'll have the technical requirements document ready by end of week.
+
+One question - have we considered the integration with the legacy system? I want to make sure we account for the compatibility layer that was discussed in December.
+
+Looking forward to the meeting.
+
+- Charlie
+
+From diana@example.com Tue Jan 16 16:20:00 2024
+From: Diana Martinez <diana@example.com>
+To: alice@example.com, bob@example.com, charlie@example.com
+Subject: Budget Approval - Q1 Project
+Date: Tue, 16 Jan 2024 16:20:00 +0000
+Message-ID: <004@example.com>
+Content-Type: text/plain; charset=UTF-8
+
+Team,
+
+Great news! Finance has approved the Q1 project budget. Please see the attached breakdown:
+
+- Development: $125,000
+- QA Testing: $45,000
+- Infrastructure: $30,000
+- Contingency: $20,000
+
+Total: $220,000
+
+The budget is effective immediately. Please ensure all project costs are tracked against this allocation.
+
+Diana
+Finance Director
+
+From alice@example.com Wed Jan 17 11:00:00 2024
+From: Alice Johnson <alice@example.com>
+To: bob@example.com, charlie@example.com, diana@example.com
+Subject: RE: Budget Approval - Q1 Project
+Date: Wed, 17 Jan 2024 11:00:00 +0000
+Message-ID: <005@example.com>
+Content-Type: text/plain; charset=UTF-8
+
+Diana, Bob, Charlie,
+
+Excellent! The budget approval is great news. Let's move forward with confidence.
+
+Revised timeline:
+- Week 1-2 (Jan 22 - Feb 5): Development Sprint 1
+- Week 3 (Feb 5 - Feb 12): QA Testing Phase 1
+- Week 4 (Feb 12 - Feb 19): Development Sprint 2
+- Week 5 (Feb 19 - Feb 26): Final Integration & Testing
+- Feb 28: Launch
+
+Please confirm you can meet these deadlines. I'll send the final meeting agenda tomorrow.
+
+Best,
+Alice

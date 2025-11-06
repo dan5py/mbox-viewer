@@ -1,0 +1,132 @@
+{
+  "Metadata": {
+    "description": "Visualizzatore MBOX veloce e moderno per file email. Carica e visualizza archivi email in un attimo."
+  },
+  "Home": {
+    "hero": {
+      "title": "Visualizza i tuoi file MBOX con facilità",
+      "description": "Un visualizzatore MBOX veloce e moderno per file email. Carica e visualizza archivi email in un attimo."
+    },
+    "viewer": {
+      "open": "Apri visualizzatore"
+    },
+    "features": [
+      {
+        "title": "Veloce come la luce",
+        "description": "Ottimizzato per prestazioni e caricamento di file MBOX di grandi dimensioni"
+      },
+      {
+        "title": "Facile da usare",
+        "description": "Interfaccia intuitiva progettata per la navigazione senza sforzo"
+      },
+      {
+        "title": "Archivio email",
+        "description": "Perfetto per visualizzare e gestire archivi email esportati"
+      }
+    ],
+    "cta": {
+      "title": "Inizia ora",
+      "description": "Nessuna installazione richiesta. Funziona interamente nel tuo browser."
+    },
+    "footer": {
+      "description": "MBOX Viewer. Open source e gratuito.",
+      "docs": "Documentazione"
+    }
+  },
+  "Viewer": {
+    "noFiles": {
+      "title": "Nessun file caricato",
+      "description": "Trascina un file MBOX o clicca per iniziare.",
+      "uploading": "Caricamento in corso...",
+      "uploadingDescription": "Attendi il completamento della lettura del file."
+    },
+    "input": {
+      "drop": "Trascina un file MBOX qui",
+      "click": "o clicca per selezionare",
+      "noMessages": "Nessun messaggio trovato in questo file.",
+      "cancel": "Annulla importazione"
+    },
+    "messages": "{count, plural, =1 {# messaggio} other {# messaggi}}",
+    "parsing": "Estrazione...",
+    "search": {
+      "placeholder": "Cerca messaggi",
+      "searching": "Ricerca in corso...",
+      "results": "{count, plural, =1 {# risultato} other {# risultati}}",
+      "allEmails": "Tutte le email"
+    },
+    "pagination": {
+      "previous": "Prec",
+      "next": "Succ",
+      "page": "Pagina",
+      "of": "di"
+    },
+    "preview": {
+      "from": "Da",
+      "to": "A",
+      "cc": "Cc",
+      "bcc": "Bcc",
+      "subject": "Oggetto",
+      "date": "Data",
+      "plainText": "Testo",
+      "body": "Corpo",
+      "headers": "Headers",
+      "noSubject": "Nessun oggetto",
+      "unknown": "Sconosciuto",
+      "loading": "Caricamento...",
+      "selectMessage": "Seleziona un messaggio da visualizzare",
+      "useArrows": {
+        "use": "Usa",
+        "or": "o",
+        "toNavigate": "per navigare tra i messaggi."
+      },
+      "attachments": "Allegati",
+      "download": "Scarica",
+      "preview": "Anteprima",
+      "details": "Dettagli",
+      "less": "Mostra meno",
+      "more": "+ altri {count}",
+      "fullscreen": "Schermo intero",
+      "attachmentPreviewError": "Impossibile visualizzare l'allegato",
+      "attachmentPreviewNotAvailable": "Anteprima non disponibile",
+      "attachmentPreviewNotAvailableDescription": "Questo tipo di file non può essere visualizzato in anteprima. Scarica il file per visualizzarlo."
+    },
+    "delete": {
+      "title": "Elimina file",
+      "description": "Sei sicuro di voler eliminare questo file? Questa azione non può essere annullata.",
+      "confirm": "Elimina",
+      "cancel": "Annulla",
+      "ariaLabel": "Elimina file"
+    }
+  },
+  "Settings": {
+    "title": "Impostazioni",
+    "appearance": {
+      "title": "Aspetto",
+      "description": "Personalizza l'aspetto dell'applicazione",
+      "theme": "Tema",
+      "themeDescription": "Scegli il tuo tema preferito",
+      "light": "Chiaro",
+      "dark": "Scuro",
+      "system": "Sistema"
+    },
+    "language": {
+      "title": "Lingua",
+      "description": "Scegli la tua lingua preferita",
+      "english": "Inglese",
+      "italian": "Italiano"
+    },
+    "analytics": {
+      "title": "Analisi",
+      "description": "Aiutaci a migliorare condividendo dati di utilizzo anonimi",
+      "enableTracking": "Abilita tracciamento analisi",
+      "enableTrackingDescription": "Consenti analisi di utilizzo anonime per aiutare a migliorare l'applicazione",
+      "dataCollected": "Tracciamo solo il numero di file caricati e la quantità di messaggi che contengono. Nessuna informazione personale, contenuto del file o nomi dei file vengono raccolti."
+    },
+    "about": {
+      "title": "Informazioni",
+      "version": "Versione",
+      "description": "Informazioni sull'applicazione"
+    },
+    "goBack": "Torna indietro"
+  }
+}

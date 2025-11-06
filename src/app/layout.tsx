@@ -1,0 +1,67 @@
+import type { Metadata } from "next";
+import { Geist } from "next/font/google";
+
+import "./globals.css";
+
+import Script from "next/script";
+import { getPreferredLocale } from "~/i18n/locale";
+import { ThemeProvider } from "~/providers/theme-provider";
+import { NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { Toaster } from "sonner";
+
+const geist = Geist({
+  subsets: ["latin"],
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getPreferredLocale();
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+
+  return {
+    title: "MBOX Viewer",
+    description: t("description"),
+  };
+}
+
+const isProduction = process.env.NODE_ENV === "production";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Umami analytics - PRODUCTION ONLY */}
+        {isProduction &&
+          process.env.UMAMI_SCRIPT_URL &&
+          process.env.UMAMI_WEBSITE_ID && (
+            <Script
+              defer
+              src={process.env.UMAMI_SCRIPT_URL}
+              data-website-id={process.env.UMAMI_WEBSITE_ID}
+            />
+          )}
+        {/* React Grab - DEV ONLY */}
+        {!isProduction && (
+          <Script
+            src="//unpkg.com/react-grab/dist/index.global.js"
+            crossOrigin="anonymous"
+            strategy="beforeInteractive"
+            data-enabled="true"
+          />
+        )}
+      </head>
+      <body className={geist.className}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <NextIntlClientProvider>
+            {children}
+            <Toaster />
+          </NextIntlClientProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

@@ -1,0 +1,169 @@
+From alice@example.com Mon Jan 15 10:30:00 2024
+From: Alice Johnson <alice@example.com>
+To: bob@example.com
+Cc: charlie@example.com
+Subject: Project Update - HTML Email Test
+Date: Mon, 15 Jan 2024 10:30:00 +0000
+Message-ID: <001@example.com>
+Content-Type: text/html; charset=UTF-8
+X-MBOX-Category: Work
+X-Gmail-Labels: Inbox, Important
+
+<html>
+  <body style="font-family: Arial, sans-serif; color: #333;">
+    <h1>Project Update</h1>
+    <p>Hi Bob,</p>
+    <p>I wanted to follow up on our Q1 planning with some important updates:</p>
+    <ul>
+      <li><strong>Timeline:</strong> We need to finalize by February</li>
+      <li><strong>Budget:</strong> Finance approval pending</li>
+      <li><strong>Resources:</strong> Team capacity looks good</li>
+    </ul>
+    <p>Please let me know your thoughts on these points.</p>
+    <blockquote style="border-left: 4px solid #ccc; padding-left: 10px; color: #666;">
+      "Success is not final, failure is not fatal."
+    </blockquote>
+    <p>Best regards,<br/>Alice</p>
+  </body>
+</html>
+
+From bob@example.com Mon Jan 15 14:45:00 2024
+From: Bob Smith <bob@example.com>
+To: alice@example.com, charlie@example.com
+Cc: diana@example.com
+Subject: RE: Project Update - HTML Email Test
+Date: Mon, 15 Jan 2024 14:45:00 +0000
+Message-ID: <002@example.com>
+Content-Type: text/html; charset=UTF-8
+X-MBOX-Category: Work
+X-Gmail-Labels: Inbox
+
+<html>
+  <body>
+    <h2>Great Update!</h2>
+    <p>Alice,</p>
+    <p>Thank you for the detailed breakdown. I have the following feedback:</p>
+    <table border="1" cellpadding="10">
+      <tr>
+        <th>Item</th>
+        <th>Status</th>
+        <th>Priority</th>
+      </tr>
+      <tr>
+        <td>Timeline</td>
+        <td><span style="color: green;">✓ Feasible</span></td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Budget</td>
+        <td><span style="color: orange;">Pending</span></td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Resources</td>
+        <td><span style="color: green;">✓ Available</span></td>
+        <td>Medium</td>
+      </tr>
+    </table>
+    <p>I'll reach out to finance to expedite the approval process.</p>
+    <p>Best,<br/>Bob</p>
+  </body>
+</html>
+
+From charlie@example.com Tue Jan 16 09:15:00 2024
+From: Charlie Davis <charlie@davis.example.com>
+To: alice@example.com, bob@example.com
+Subject: Technical Requirements Document
+Date: Tue, 16 Jan 2024 09:15:00 +0000
+Message-ID: <003@example.com>
+Content-Type: text/plain; charset=UTF-8
+X-MBOX-Category: Development
+X-Gmail-Labels: Drafts, Work
+
+I've completed the technical requirements document with the following sections:
+
+1. System Architecture
+   - Microservices design
+   - API specifications
+   - Database schema
+
+2. Security Requirements
+   - Authentication and authorization
+   - Data encryption
+   - Access control
+
+3. Performance Goals
+   - Response time: < 200ms
+   - Throughput: 10k req/sec
+   - Uptime: 99.9%
+
+The document is attached and ready for review.
+
+Best,
+Charlie
+
+From diana@example.com Tue Jan 16 16:20:00 2024
+From: Diana Martinez <diana@example.com>
+To: alice@example.com, bob@example.com, charlie@example.com
+Subject: Budget Approval - Q1 Project
+Date: Tue, 16 Jan 2024 16:20:00 +0000
+Message-ID: <004@example.com>
+Content-Type: text/html; charset=UTF-8
+X-MBOX-Category: Finance
+X-Gmail-Labels: Important, Q1-2024
+
+<html>
+  <body style="background-color: #f9f9f9; padding: 20px;">
+    <div style="background-color: white; border-radius: 5px; padding: 20px;">
+      <h1 style="color: #2c3e50;">Budget Approval Notification</h1>
+      <p style="color: #555;">Dear Team,</p>
+      <p style="color: #555;">I'm pleased to inform you that Finance has approved the Q1 project budget.</p>
+      
+      <h3 style="color: #2c3e50;">Budget Breakdown:</h3>
+      <ul style="color: #555;">
+        <li>Development: <strong>$125,000</strong></li>
+        <li>QA Testing: <strong>$45,000</strong></li>
+        <li>Infrastructure: <strong>$30,000</strong></li>
+        <li>Contingency: <strong>$20,000</strong></li>
+      </ul>
+      <p style="color: #555;"><strong>Total: $220,000</strong></p>
+      
+      <p style="color: #555;">The budget is effective immediately. Please ensure all project costs are tracked against this allocation.</p>
+      
+      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+      <p style="color: #999; font-size: 12px;">Diana Martinez | Finance Director</p>
+    </div>
+  </body>
+</html>
+
+From alice@example.com Wed Jan 17 11:00:00 2024
+From: Alice Johnson <alice@example.com>
+To: bob@example.com, charlie@example.com, diana@example.com
+Subject: RE: Budget Approval - Launch Plan Confirmed
+Date: Wed, 17 Jan 2024 11:00:00 +0000
+Message-ID: <005@example.com>
+Content-Type: text/html; charset=UTF-8
+X-MBOX-Category: Work
+X-Gmail-Labels: Inbox, Important, Q1-2024
+
+<html>
+  <body>
+    <h2>Launch Plan Confirmed!</h2>
+    <p>Team,</p>
+    <p>Excellent news! With the budget approval, we can proceed with confidence.</p>
+    
+    <h3>Revised Timeline:</h3>
+    <ul>
+      <li><strong>Week 1-2 (Jan 22 - Feb 5):</strong> Development Sprint 1</li>
+      <li><strong>Week 3 (Feb 5 - Feb 12):</strong> QA Testing Phase 1</li>
+      <li><strong>Week 4 (Feb 12 - Feb 19):</strong> Development Sprint 2</li>
+      <li><strong>Week 5 (Feb 19 - Feb 26):</strong> Final Integration & Testing</li>
+      <li><strong>Feb 28:</strong> <span style="color: green; font-weight: bold;">🚀 LAUNCH</span></li>
+    </ul>
+    
+    <p>Please confirm you can meet these deadlines. More details in the attached project plan.</p>
+    
+    <p style="color: #666; font-style: italic;">Let's make this project a success!</p>
+    <p>Best,<br/>Alice</p>
+  </body>
+</html>

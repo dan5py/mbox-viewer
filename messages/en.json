@@ -1,0 +1,132 @@
+{
+  "Metadata": {
+    "description": "Fast, modern browser-based MBOX file viewer. Upload and view email archives instantly."
+  },
+  "Home": {
+    "hero": {
+      "title": "View Your MBOX Files with Ease",
+      "description": "A modern, fast, and intuitive browser-based MBOX file viewer. Open, search, and explore your email archives in seconds."
+    },
+    "viewer": {
+      "open": "Open viewer"
+    },
+    "features": [
+      {
+        "title": "Lightning Fast",
+        "description": "Optimized for performance and loading of large MBOX files"
+      },
+      {
+        "title": "Easy to Use",
+        "description": "Intuitive interface designed for effortless file navigation"
+      },
+      {
+        "title": "Email Archive",
+        "description": "Perfect for viewing and managing email export archives"
+      }
+    ],
+    "cta": {
+      "title": "Get Started",
+      "description": "No installation required. Works entirely in your browser."
+    },
+    "footer": {
+      "description": "MBOX Viewer. Open source and free to use.",
+      "docs": "Docs"
+    }
+  },
+  "Viewer": {
+    "noFiles": {
+      "title": "No files loaded",
+      "description": "Drop an MBOX file or click to get started.",
+      "uploading": "Uploading...",
+      "uploadingDescription": "Please wait for the file to be scanned."
+    },
+    "input": {
+      "drop": "Drop an MBOX file here",
+      "click": "or click to select",
+      "noMessages": "No messages found in this file.",
+      "cancel": "Cancel import"
+    },
+    "messages": "{count, plural, =1 {# message} other {# messages}}",
+    "parsing": "Parsing...",
+    "search": {
+      "placeholder": "Search messages",
+      "searching": "Searching...",
+      "results": "{count, plural, =1 {# result} other {# results}}",
+      "allEmails": "All emails"
+    },
+    "pagination": {
+      "previous": "Prev",
+      "next": "Next",
+      "page": "Page",
+      "of": "of"
+    },
+    "preview": {
+      "from": "From",
+      "to": "To",
+      "cc": "Cc",
+      "bcc": "Bcc",
+      "subject": "Subject",
+      "date": "Date",
+      "plainText": "Plain Text",
+      "body": "Body",
+      "headers": "Headers",
+      "noSubject": "No subject",
+      "unknown": "Unknown",
+      "loading": "Loading...",
+      "selectMessage": "Select a message to view",
+      "useArrows": {
+        "use": "Use",
+        "or": "or",
+        "toNavigate": "to navigate between messages."
+      },
+      "attachments": "Attachments",
+      "download": "Download",
+      "preview": "Preview",
+      "details": "Details",
+      "less": "Show less",
+      "more": "+{count} more",
+      "fullscreen": "Fullscreen",
+      "attachmentPreviewError": "Failed to preview attachment",
+      "attachmentPreviewNotAvailable": "Preview not available",
+      "attachmentPreviewNotAvailableDescription": "This file type cannot be previewed. Please download the file to view it."
+    },
+    "delete": {
+      "title": "Delete file",
+      "description": "Are you sure you want to delete this file? This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel",
+      "ariaLabel": "Delete file"
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "appearance": {
+      "title": "Appearance",
+      "description": "Customize the appearance of the application",
+      "theme": "Theme",
+      "themeDescription": "Choose your preferred theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your preferred language",
+      "english": "English",
+      "italian": "Italian"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "description": "Help us improve by sharing anonymous usage data",
+      "enableTracking": "Enable analytics tracking",
+      "enableTrackingDescription": "Allow anonymous usage analytics to help improve the application",
+      "dataCollected": "We only track the number of files uploaded and the amount of messages they contain. No personal information, file content, or file names are collected."
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "description": "Information about the application"
+    },
+    "goBack": "Go back"
+  }
+}
