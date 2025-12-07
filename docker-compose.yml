@@ -7,8 +7,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - NEXT_TELEMETRY_DISABLED=1
+      - UMAMI_WEBSITE_ID=${UMAMI_WEBSITE_ID}
+      - UMAMI_SCRIPT_URL=${UMAMI_SCRIPT_URL}
     restart: unless-stopped
     user: "1001:1001"
     read_only: true
