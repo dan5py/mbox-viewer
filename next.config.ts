@@ -3,7 +3,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  output: 'standalone',
+  output: "standalone",
 };
 
 const withNextIntl = createNextIntlPlugin();
