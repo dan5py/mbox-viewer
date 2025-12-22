@@ -73,8 +73,12 @@ export default function ViewerPage() {
   const locale = useLocale();
   const dateLocale = locale === "it" ? it : enUS;
   const [loadingMessage, setLoadingMessage] = useState(false);
+  const [selectedMessageIndex, setSelectedMessageIndex] = useState<
+    number | null
+  >(null);
   const [selectedMessageData, setSelectedMessageData] =
     useState<EmailMessage | null>(null);
+  const loadingAbortRef = useRef<AbortController | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
   const [tab, setTab] = useState("body");
@@ -88,7 +92,10 @@ export default function ViewerPage() {
   const [bodyTab, setBodyTab] = useState<"html" | "text">("html");
   const [previewedAttachment, setPreviewedAttachment] =
     useState<EmailAttachment | null>(null);
+  const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
   const searchWorker = useRef<Worker | null>(null);
+  const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+  const lastNavTimeRef = useRef<number>(0);
   const store = useMboxStore();
 
   const {
@@ -154,6 +161,12 @@ export default function ViewerPage() {
 
   const currentFile = files.find((f) => f.id === selectedFileId);
 
+  // Reset selection when switching files
+  useEffect(() => {
+    setSelectedMessageIndex(null);
+    setSelectedMessageData(null);
+  }, [selectedFileId]);
+
   // Effect to trigger search in worker
   useEffect(() => {
     if (debouncedSearchQuery && searchWorker && currentFile?.fileReader?.file) {
@@ -189,42 +202,101 @@ export default function ViewerPage() {
     }
   }, [debouncedSearchQuery, searchWorker, currentFile, setCurrentPage]);
 
+  // Immediate selection handler - updates index without waiting for load
   const handleSelectMessage = useCallback(
-    async (index: number) => {
+    (index: number) => {
       if (!currentFile?.id) return;
 
-      // Clear selected message if the same message is selected
-      if (selectedMessageData?.id === `msg-${index}`) {
+      // Toggle off if same message is selected
+      if (selectedMessageIndex === index) {
+        setSelectedMessageIndex(null);
         setSelectedMessage(null);
         setSelectedMessageData(null);
         return;
+      }
+
+      // Abort any pending load
+      if (loadingAbortRef.current) {
+        loadingAbortRef.current.abort();
       }
 
       // Reset expanded recipients and header when switching messages
       setExpandedRecipients({ to: false, cc: false });
       setHeaderExpanded(false);
 
+      // Update selection immediately for responsive navigation
+      setSelectedMessageIndex(index);
+      setSelectedMessage(`msg-${index}`);
+
+      // Scroll the selected message into view
+      // Use instant scroll when navigating rapidly (holding key), smooth for single presses
+      const now = performance.now();
+      const timeSinceLastNav = now - lastNavTimeRef.current;
+      lastNavTimeRef.current = now;
+      const isRapidNav = timeSinceLastNav < 150;
+
+      requestAnimationFrame(() => {
+        const messageEl = messageRefs.current.get(index);
+        if (messageEl) {
+          messageEl.scrollIntoView({
+            block: "nearest",
+            behavior: isRapidNav ? "auto" : "smooth",
+          });
+        }
+      });
+    },
+    [currentFile?.id, selectedMessageIndex, setSelectedMessage]
+  );
+
+  // Debounced message loading - only loads after navigation stops
+  const debouncedSelectedIndex = useDebounce(selectedMessageIndex, 150);
+
+  useEffect(() => {
+    if (debouncedSelectedIndex === null || !currentFile?.id) {
+      return;
+    }
+
+    // Skip if we already have this message loaded
+    if (selectedMessageData?.id === `msg-${debouncedSelectedIndex}`) {
+      return;
+    }
+
+    const abortController = new AbortController();
+    loadingAbortRef.current = abortController;
+
+    const loadSelectedMessage = async () => {
       setLoadingMessage(true);
       try {
-        const message = await loadMessage(currentFile.id, index);
-        setSelectedMessageData(message);
-        setSelectedMessage(message.id);
+        const message = await loadMessage(
+          currentFile.id,
+          debouncedSelectedIndex
+        );
+        // Only update if not aborted
+        if (!abortController.signal.aborted) {
+          setSelectedMessageData(message);
+        }
       } catch (err) {
-        console.error("Failed to load message:", err);
+        if (!abortController.signal.aborted) {
+          console.error("Failed to load message:", err);
+        }
       } finally {
-        setLoadingMessage(false);
+        if (!abortController.signal.aborted) {
+          setLoadingMessage(false);
+        }
       }
-    },
-    [
-      currentFile?.id,
-      selectedMessageData?.id,
-      setSelectedMessage,
-      setSelectedMessageData,
-      setExpandedRecipients,
-      setLoadingMessage,
-      loadMessage,
-    ]
-  );
+    };
+
+    loadSelectedMessage();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [
+    debouncedSelectedIndex,
+    currentFile?.id,
+    selectedMessageData?.id,
+    loadMessage,
+  ]);
 
   // Get message preview from boundaries
   const getMessagePreview = (index: number) => {
@@ -257,6 +329,44 @@ export default function ViewerPage() {
       mimeType === "application/javascript"
     );
   };
+
+  // Convert base64 to Blob - more efficient and no size limits unlike data URLs
+  const base64ToBlob = useCallback((base64: string, mimeType: string): Blob => {
+    const binaryData = atob(base64.replace(/\s/g, ""));
+    const bytes = new Uint8Array(binaryData.length);
+    for (let i = 0; i < binaryData.length; i++) {
+      bytes[i] = binaryData.charCodeAt(i);
+    }
+    return new Blob([bytes], { type: mimeType });
+  }, []);
+
+  // Create object URL for attachment preview - handles large files better than data URLs
+  useEffect(() => {
+    let url: string | null = null;
+
+    if (previewedAttachment) {
+      try {
+        const blob = base64ToBlob(
+          previewedAttachment.data,
+          previewedAttachment.mimeType
+        );
+        url = URL.createObjectURL(blob);
+        setPreviewObjectUrl(url);
+      } catch (err) {
+        console.error("Failed to create preview URL:", err);
+        setPreviewObjectUrl(null);
+      }
+    } else {
+      setPreviewObjectUrl(null);
+    }
+
+    // Cleanup: revoke object URL when attachment changes or component unmounts
+    return () => {
+      if (url) {
+        URL.revokeObjectURL(url);
+      }
+    };
+  }, [previewedAttachment, base64ToBlob]);
 
   const getAttachmentDataUrl = (att: EmailAttachment): string => {
     return `data:${att.mimeType};base64,${att.data}`;
@@ -543,6 +653,7 @@ export default function ViewerPage() {
 
     // Clear selected message data if deleting the selected file
     if (isSelectedFile) {
+      setSelectedMessageIndex(null);
       setSelectedMessageData(null);
     }
 
@@ -616,7 +727,6 @@ export default function ViewerPage() {
     searchResults,
   ]);
 
-  // Keyboard navigation (must be before early return)
   useEffect(() => {
     if (files.length === 0 || visibleMessageIndices.length === 0) {
       return;
@@ -633,23 +743,37 @@ export default function ViewerPage() {
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        const currentIndex = visibleMessageIndices.findIndex(
-          (idx) => selectedMessageData?.id === `msg-${idx}`
+        // Use selectedMessageIndex for instant navigation
+        const currentPosInList = visibleMessageIndices.findIndex(
+          (idx) => idx === selectedMessageIndex
         );
-        if (currentIndex < visibleMessageIndices.length - 1) {
-          handleSelectMessage(visibleMessageIndices[currentIndex + 1]);
+        if (currentPosInList < visibleMessageIndices.length - 1) {
+          handleSelectMessage(visibleMessageIndices[currentPosInList + 1]);
+        } else if (
+          currentPosInList === -1 &&
+          visibleMessageIndices.length > 0
+        ) {
+          // No selection, start from first
+          handleSelectMessage(visibleMessageIndices[0]);
         }
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        const currentIndex = visibleMessageIndices.findIndex(
-          (idx) => selectedMessageData?.id === `msg-${idx}`
+        const currentPosInList = visibleMessageIndices.findIndex(
+          (idx) => idx === selectedMessageIndex
         );
-        if (currentIndex > 0) {
-          handleSelectMessage(visibleMessageIndices[currentIndex - 1]);
-        } else if (currentIndex === -1 && visibleMessageIndices.length > 0) {
-          handleSelectMessage(visibleMessageIndices[0]);
+        if (currentPosInList > 0) {
+          handleSelectMessage(visibleMessageIndices[currentPosInList - 1]);
+        } else if (
+          currentPosInList === -1 &&
+          visibleMessageIndices.length > 0
+        ) {
+          // No selection, start from last
+          handleSelectMessage(
+            visibleMessageIndices[visibleMessageIndices.length - 1]
+          );
         }
       } else if (e.key === "Escape") {
+        setSelectedMessageIndex(null);
         setSelectedMessage(null);
         setSelectedMessageData(null);
       }
@@ -659,7 +783,7 @@ export default function ViewerPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
     visibleMessageIndices,
-    selectedMessageData,
+    selectedMessageIndex,
     handleSelectMessage,
     setSelectedMessage,
     files.length,
@@ -925,7 +1049,8 @@ export default function ViewerPage() {
             ) : (
               visibleMessageIndices.map((index) => {
                 const preview = getMessagePreview(index);
-                const isSelected = selectedMessageData?.id === `msg-${index}`;
+                // Use index for instant selection highlighting
+                const isSelected = selectedMessageIndex === index;
                 const from = preview?.from || t("preview.unknown");
                 const date = preview?.date
                   ? new Date(preview.date)
@@ -938,6 +1063,13 @@ export default function ViewerPage() {
                 return (
                   <button
                     key={index}
+                    ref={(el) => {
+                      if (el) {
+                        messageRefs.current.set(index, el);
+                      } else {
+                        messageRefs.current.delete(index);
+                      }
+                    }}
                     onClick={() => handleSelectMessage(index)}
                     className={cn(
                       "w-full text-left p-3 rounded-lg border transition-all cursor-pointer group",
@@ -1052,7 +1184,9 @@ export default function ViewerPage() {
 
         {/* Message Preview */}
         <div className="flex-1 flex flex-col bg-background overflow-hidden">
-          {selectedMessageData && !loadingMessage ? (
+          {selectedMessageData &&
+          selectedMessageIndex !== null &&
+          selectedMessageData.id === `msg-${selectedMessageIndex}` ? (
             <>
               {/* Message Header */}
               <div className="border-b border-border/40 bg-muted/20 shrink-0 overflow-y-auto max-h-[40vh]">
@@ -1481,7 +1615,7 @@ export default function ViewerPage() {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center p-8">
-              {loadingMessage ? (
+              {loadingMessage || selectedMessageIndex !== null ? (
                 <>
                   <Spinner className="size-16 mx-auto mb-4 text-primary" />
                   <p className="text-sm font-medium text-foreground mb-1">
@@ -1658,22 +1792,32 @@ export default function ViewerPage() {
               <>
                 {isImageType(previewedAttachment.mimeType) ? (
                   <div className="flex items-center justify-center w-full h-full min-h-[400px]">
-                    <Image
-                      src={getAttachmentDataUrl(previewedAttachment)}
-                      alt={previewedAttachment.filename}
-                      width={1920}
-                      height={1080}
-                      className="max-w-full max-h-full object-contain rounded-lg border border-border/40 bg-background"
-                      unoptimized
-                    />
+                    {previewObjectUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={previewObjectUrl}
+                        alt={previewedAttachment.filename}
+                        className="max-w-full max-h-[calc(100vh-16rem)] object-contain rounded-lg border border-border/40 bg-background"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        <Spinner className="size-8" />
+                      </div>
+                    )}
                   </div>
                 ) : isPdfType(previewedAttachment.mimeType) ? (
                   <div className="w-full h-full min-h-[600px]">
-                    <iframe
-                      src={getAttachmentDataUrl(previewedAttachment)}
-                      className="w-full h-full border border-border/40 rounded-lg"
-                      title={previewedAttachment.filename}
-                    />
+                    {previewObjectUrl ? (
+                      <iframe
+                        src={previewObjectUrl}
+                        className="w-full h-full border border-border/40 rounded-lg"
+                        title={previewedAttachment.filename}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <Spinner className="size-8" />
+                      </div>
+                    )}
                   </div>
                 ) : isTextType(previewedAttachment.mimeType) ? (
                   <div className="bg-muted/30 rounded-lg p-4 border border-border/40">
