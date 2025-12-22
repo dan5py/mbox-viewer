@@ -82,6 +82,26 @@ export default function ViewerPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
   const [tab, setTab] = useState("body");
+
+  // Compute effective tab: fallback to first available if current tab is not available
+  const { effectiveTab, hasBody, hasAttachments } = useMemo(() => {
+    const hasBody = !!(
+      selectedMessageData?.htmlBody || selectedMessageData?.body
+    );
+    const hasAttachments = !!(
+      selectedMessageData?.attachments &&
+      selectedMessageData.attachments.length > 0
+    );
+
+    const isCurrentTabValid =
+      (tab === "body" && hasBody) ||
+      (tab === "attachments" && hasAttachments) ||
+      tab === "headers";
+
+    const effectiveTab = isCurrentTabValid ? tab : hasBody ? "body" : "headers";
+
+    return { effectiveTab, hasBody, hasAttachments };
+  }, [selectedMessageData, tab]);
   const [expandedRecipients, setExpandedRecipients] = useState<{
     to: boolean;
     cc: boolean;
@@ -1432,21 +1452,20 @@ export default function ViewerPage() {
 
               {/* Message Tabs */}
               <Tabs
-                value={tab}
+                value={effectiveTab}
                 onValueChange={setTab}
                 className="flex-1 flex flex-col overflow-hidden"
               >
                 <TabsList className="w-full rounded-none border-b shrink-0">
-                  {selectedMessageData.htmlBody || selectedMessageData.body ? (
+                  {hasBody ? (
                     <TabsTrigger value="body">{t("preview.body")}</TabsTrigger>
                   ) : null}
-                  {selectedMessageData.attachments &&
-                    selectedMessageData.attachments.length > 0 && (
-                      <TabsTrigger value="attachments">
-                        {t("preview.attachments")} (
-                        {selectedMessageData.attachments.length})
-                      </TabsTrigger>
-                    )}
+                  {hasAttachments && (
+                    <TabsTrigger value="attachments">
+                      {t("preview.attachments")} (
+                      {selectedMessageData.attachments?.length})
+                    </TabsTrigger>
+                  )}
                   <TabsTrigger value="headers">
                     {t("preview.headers")}
                   </TabsTrigger>
