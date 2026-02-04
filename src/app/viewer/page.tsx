@@ -1641,7 +1641,7 @@ export default function ViewerPage() {
                     {t("preview.loading")}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Loading message content...
+                    {t("preview.loadingMessageContent")}
                   </p>
                 </>
               ) : (
