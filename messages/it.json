@@ -88,7 +88,8 @@
       "fullscreen": "Schermo intero",
       "attachmentPreviewError": "Impossibile visualizzare l'allegato",
       "attachmentPreviewNotAvailable": "Anteprima non disponibile",
-      "attachmentPreviewNotAvailableDescription": "Questo tipo di file non può essere visualizzato in anteprima. Scarica il file per visualizzarlo."
+      "attachmentPreviewNotAvailableDescription": "Questo tipo di file non può essere visualizzato in anteprima. Scarica il file per visualizzarlo.",
+      "loadingMessageContent": "Caricamento del messaggio..."
     },
     "delete": {
       "title": "Elimina file",

@@ -88,7 +88,8 @@
       "fullscreen": "Fullscreen",
       "attachmentPreviewError": "Failed to preview attachment",
       "attachmentPreviewNotAvailable": "Preview not available",
-      "attachmentPreviewNotAvailableDescription": "This file type cannot be previewed. Please download the file to view it."
+      "attachmentPreviewNotAvailableDescription": "This file type cannot be previewed. Please download the file to view it.",
+      "loadingMessageContent": "Loading message content..."
     },
     "delete": {
       "title": "Delete file",
