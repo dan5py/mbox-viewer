@@ -68,6 +68,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Kbd, KbdGroup } from "~/components/ui/kbd";
 import { Label } from "~/components/ui/label";
+import { Progress } from "~/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
@@ -1359,6 +1360,16 @@ export default function ViewerPage() {
                 </Badge>
               )}
             </div>
+
+            {isSearching && (
+              <Progress
+                value={searchProgress}
+                className="h-1.5"
+                aria-label={t("search.searchingProgress", {
+                  progress: searchProgress,
+                })}
+              />
+            )}
 
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-muted-foreground">
