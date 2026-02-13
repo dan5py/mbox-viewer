@@ -50,7 +50,8 @@
       "cancel": "Cancel import",
       "queueProgress": "File {current} of {total}",
       "partialFailure": "{count, plural, =1 {1 file could not be imported} other {# files could not be imported}}",
-      "importCancelled": "Import cancelled"
+      "importCancelled": "Import cancelled",
+      "scanFailed": "Failed to scan selected files"
     },
     "messages": "{count, plural, =1 {# message} other {# messages}}",
     "parsing": "Parsing...",

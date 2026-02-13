@@ -172,11 +172,15 @@ export function FileUploadInput({
         if (abortController.signal.aborted) {
           setError(t("Viewer.input.importCancelled"));
         } else if (failures.length > 0) {
-          setError(
-            t("Viewer.input.partialFailure", {
-              count: failures.length,
-            })
-          );
+          if (uploadedCount === 0) {
+            setError(t("Viewer.input.scanFailed"));
+          } else {
+            setError(
+              t("Viewer.input.partialFailure", {
+                count: failures.length,
+              })
+            );
+          }
         }
 
         if (uploadedCount > 0) {

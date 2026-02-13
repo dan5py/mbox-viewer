@@ -50,7 +50,8 @@
       "cancel": "Annulla importazione",
       "queueProgress": "File {current} di {total}",
       "partialFailure": "{count, plural, =1 {1 file non è stato importato} other {# file non sono stati importati}}",
-      "importCancelled": "Importazione annullata"
+      "importCancelled": "Importazione annullata",
+      "scanFailed": "Impossibile analizzare i file selezionati"
     },
     "messages": "{count, plural, =1 {# messaggio} other {# messaggi}}",
     "parsing": "Estrazione...",
