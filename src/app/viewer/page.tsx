@@ -773,7 +773,12 @@ export default function ViewerPage() {
     return filtered;
   }, [currentFile, selectedLabel]);
 
-  const visibleMessageIndices = useMemo(() => {
+  const searchResultSet = useMemo(
+    () => (searchResults ? new Set(searchResults) : null),
+    [searchResults]
+  );
+
+  const filteredMessageIndices = useMemo(() => {
     if (!(files.length > 0 && currentFile)) return [];
 
     // First apply label filter if selected
@@ -787,29 +792,34 @@ export default function ViewerPage() {
 
     // Then apply search filter if search results exist
     let filteredIndices = baseIndices;
-    if (searchResults) {
-      filteredIndices = baseIndices.filter((idx) =>
-        searchResults.includes(idx)
-      );
+    if (searchResultSet) {
+      filteredIndices = baseIndices.filter((idx) => searchResultSet.has(idx));
     }
 
-    // Finally paginate
-    const startIndex = (currentPage - 1) * messagesPerPage;
-    return filteredIndices.slice(startIndex, startIndex + messagesPerPage);
+    return filteredIndices;
   }, [
     files.length,
     currentFile,
-    messagesPerPage,
     totalMessages,
-    currentPage,
     labelFilteredIndices,
-    searchResults,
+    searchResultSet,
   ]);
+
+  const visibleMessageIndices = useMemo(() => {
+    const startIndex = (currentPage - 1) * messagesPerPage;
+    return filteredMessageIndices.slice(
+      startIndex,
+      startIndex + messagesPerPage
+    );
+  }, [currentPage, filteredMessageIndices, messagesPerPage]);
 
   const selectedCount = selectedMessageIndices.size;
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
     visibleMessageIndices.every((idx) => selectedMessageIndices.has(idx));
+  const allFilteredSelected =
+    filteredMessageIndices.length > 0 &&
+    filteredMessageIndices.every((idx) => selectedMessageIndices.has(idx));
 
   const handleToggleMessageSelection = useCallback((index: number) => {
     setSelectedMessageIndices((prev) => {
@@ -847,6 +857,31 @@ export default function ViewerPage() {
       return next;
     });
   }, [visibleMessageIndices]);
+
+  const handleToggleFilteredSelection = useCallback(() => {
+    if (filteredMessageIndices.length === 0) {
+      return;
+    }
+
+    setSelectedMessageIndices((prev) => {
+      const next = new Set(prev);
+      const everyFilteredSelected = filteredMessageIndices.every((idx) =>
+        next.has(idx)
+      );
+
+      if (everyFilteredSelected) {
+        for (const idx of filteredMessageIndices) {
+          next.delete(idx);
+        }
+      } else {
+        for (const idx of filteredMessageIndices) {
+          next.add(idx);
+        }
+      }
+
+      return next;
+    });
+  }, [filteredMessageIndices]);
 
   const handleClearSelection = useCallback(() => {
     setSelectedMessageIndices(new Set());
@@ -952,25 +987,7 @@ export default function ViewerPage() {
     files.length,
   ]);
 
-  // Calculate total pages based on filtered results
-  const totalFilteredMessages = useMemo(() => {
-    if (!currentFile) return 0;
-
-    // Start with all messages or label-filtered messages
-    let baseIndices: number[];
-    if (labelFilteredIndices !== null) {
-      baseIndices = labelFilteredIndices;
-    } else {
-      baseIndices = Array.from({ length: totalMessages }, (_, i) => i);
-    }
-
-    // Apply search filter if search results exist
-    if (searchResults) {
-      baseIndices = baseIndices.filter((idx) => searchResults.includes(idx));
-    }
-
-    return baseIndices.length;
-  }, [currentFile, totalMessages, labelFilteredIndices, searchResults]);
+  const totalFilteredMessages = filteredMessageIndices.length;
 
   const totalPages = Math.ceil(totalFilteredMessages / messagesPerPage);
 
@@ -1295,7 +1312,7 @@ export default function ViewerPage() {
               <p className="text-xs text-muted-foreground">
                 {t("selection.selectedCount", { count: selectedCount })}
               </p>
-              <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center justify-end gap-1">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1306,6 +1323,17 @@ export default function ViewerPage() {
                   {allVisibleSelected
                     ? t("selection.deselectPage")
                     : t("selection.selectPage")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={handleToggleFilteredSelection}
+                  disabled={filteredMessageIndices.length === 0}
+                >
+                  {allFilteredSelected
+                    ? t("selection.deselectFiltered")
+                    : t("selection.selectFiltered")}
                 </Button>
                 <Button
                   variant="ghost"
