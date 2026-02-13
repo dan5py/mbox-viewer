@@ -17,6 +17,7 @@ interface MboxState {
   // Actions
   addFile: (file: MailFile) => void;
   removeFile: (fileId: string) => void;
+  renameFile: (fileId: string, nextName: string) => void;
   setSelectedFile: (fileId: string | null) => void;
   setSelectedMessage: (messageId: string | null) => void;
   setSearchQuery: (query: string) => void;
@@ -75,6 +76,19 @@ const useMboxStore = create<MboxState>((set, get) => ({
         currentPage: isSelectedFile ? 1 : state.currentPage,
       };
     });
+  },
+
+  renameFile: (fileId: string, nextName: string) => {
+    const trimmedName = nextName.trim();
+    if (!trimmedName) {
+      return;
+    }
+
+    set((state) => ({
+      files: state.files.map((file) =>
+        file.id === fileId ? { ...file, name: trimmedName } : file
+      ),
+    }));
   },
 
   setSelectedFile: (fileId: string | null) => {

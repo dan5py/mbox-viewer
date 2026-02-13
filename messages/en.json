@@ -120,6 +120,11 @@
       "confirm": "Delete",
       "cancel": "Cancel",
       "ariaLabel": "Delete file"
+    },
+    "rename": {
+      "ariaLabel": "Rename file",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   },
   "Settings": {

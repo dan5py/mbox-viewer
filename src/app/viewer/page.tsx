@@ -10,6 +10,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   Calendar,
+  Check,
   ChevronDown,
   ChevronUp,
   CodeXml,
@@ -19,6 +20,7 @@ import {
   Mail,
   Maximize2,
   Paperclip,
+  Pencil,
   ScanText,
   Search,
   TextInitial,
@@ -123,6 +125,8 @@ export default function ViewerPage() {
   }>({ to: false, cc: false });
   const [headerExpanded, setHeaderExpanded] = useState(false);
   const [fileToDelete, setFileToDelete] = useState<string | null>(null);
+  const [editingFileId, setEditingFileId] = useState<string | null>(null);
+  const [editingFileName, setEditingFileName] = useState("");
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
   const [bodyTab, setBodyTab] = useState<"html" | "text">("html");
   const [previewedAttachment, setPreviewedAttachment] =
@@ -145,6 +149,7 @@ export default function ViewerPage() {
     setSearchQuery,
     setSelectedLabel,
     setCurrentPage,
+    renameFile,
     loadMessage,
   } = useMboxStore();
 
@@ -202,6 +207,8 @@ export default function ViewerPage() {
     setSelectedMessageData(null);
     setSelectedMessageIndices(new Set());
     setIsExportDialogOpen(false);
+    setEditingFileId(null);
+    setEditingFileName("");
   }, [selectedFileId]);
 
   // Effect to trigger search in worker
@@ -695,8 +702,39 @@ export default function ViewerPage() {
       setSelectedMessageIndices(new Set());
     }
 
+    if (editingFileId === fileId) {
+      setEditingFileId(null);
+      setEditingFileName("");
+    }
+
     removeFile(fileId);
   };
+
+  const handleStartRenameFile = useCallback((fileId: string, currentName: string) => {
+    setEditingFileId(fileId);
+    setEditingFileName(currentName);
+  }, []);
+
+  const handleCancelRenameFile = useCallback(() => {
+    setEditingFileId(null);
+    setEditingFileName("");
+  }, []);
+
+  const handleCommitRenameFile = useCallback(() => {
+    if (!editingFileId) {
+      return;
+    }
+
+    const normalizedName = editingFileName.trim();
+    if (!normalizedName) {
+      handleCancelRenameFile();
+      return;
+    }
+
+    renameFile(editingFileId, normalizedName);
+    setEditingFileId(null);
+    setEditingFileName("");
+  }, [editingFileId, editingFileName, handleCancelRenameFile, renameFile]);
 
   // Extract all unique labels from the current file
   const allLabels = useMemo(() => {
@@ -1007,8 +1045,23 @@ export default function ViewerPage() {
                         : "border-border/40 hover:border-border hover:bg-muted/50"
                     )}
                   >
-                    <button
-                      onClick={() => setSelectedFile(file.id)}
+                    <div
+                      onClick={() => {
+                        if (editingFileId !== file.id) {
+                          setSelectedFile(file.id);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (
+                          editingFileId !== file.id &&
+                          (e.key === "Enter" || e.key === " ")
+                        ) {
+                          e.preventDefault();
+                          setSelectedFile(file.id);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
                       className={cn(
                         "w-full text-left p-3 rounded-lg transition-colors cursor-pointer",
                         selectedFileId === file.id
@@ -1026,9 +1079,61 @@ export default function ViewerPage() {
                           )}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {file.name}
-                          </p>
+                          {editingFileId === file.id ? (
+                            <div
+                              className="space-y-2"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Input
+                                value={editingFileName}
+                                onChange={(e) =>
+                                  setEditingFileName(e.target.value)
+                                }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleCommitRenameFile();
+                                  } else if (e.key === "Escape") {
+                                    e.preventDefault();
+                                    handleCancelRenameFile();
+                                  }
+                                }}
+                                autoFocus
+                                className="h-8 text-sm"
+                              />
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 px-2 text-xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCommitRenameFile();
+                                  }}
+                                >
+                                  <Check className="size-3 mr-1" />
+                                  {t("rename.save")}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-7 px-2 text-xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCancelRenameFile();
+                                  }}
+                                >
+                                  {t("rename.cancel")}
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm font-medium truncate">
+                              {file.name}
+                            </p>
+                          )}
                           <p className="text-xs text-muted-foreground mt-1">
                             {t("messages", {
                               count: file.messageCount ?? 0,
@@ -1036,18 +1141,35 @@ export default function ViewerPage() {
                           </p>
                         </div>
                       </div>
-                    </button>
-                    <Button
-                      onClick={() => {
-                        setFileToDelete(file.id);
-                      }}
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 size-8 aspect-square rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
-                      aria-label={t("delete.ariaLabel")}
-                    >
-                      <Trash className="size-4" />
-                    </Button>
+                    </div>
+                    {editingFileId !== file.id && (
+                      <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartRenameFile(file.id, file.name);
+                          }}
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 aspect-square rounded-md hover:bg-muted"
+                          aria-label={t("rename.ariaLabel")}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFileToDelete(file.id);
+                          }}
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 aspect-square rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                          aria-label={t("delete.ariaLabel")}
+                        >
+                          <Trash className="size-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

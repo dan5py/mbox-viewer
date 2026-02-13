@@ -120,6 +120,11 @@
       "confirm": "Elimina",
       "cancel": "Annulla",
       "ariaLabel": "Elimina file"
+    },
+    "rename": {
+      "ariaLabel": "Rinomina file",
+      "save": "Salva",
+      "cancel": "Annulla"
     }
   },
   "Settings": {
