@@ -74,7 +74,11 @@
       "selectAll": "Seleziona tutto",
       "deselectAll": "Deseleziona tutto",
       "clear": "Pulisci",
-      "toggleMessage": "Attiva/disattiva selezione messaggio"
+      "toggleMessage": "Attiva/disattiva selezione messaggio",
+      "shortcuts": {
+        "select": "attiva/disattiva selezione filtrata",
+        "clear": "pulisce tutte le selezioni"
+      }
     },
     "export": {
       "action": "Esporta",

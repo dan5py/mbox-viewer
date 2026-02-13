@@ -1435,6 +1435,20 @@ export default function ViewerPage() {
                 </Button>
               </div>
             </div>
+
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
+                <Kbd>{locale === "it" ? "⌘/Ctrl" : "Ctrl/Cmd"}</Kbd>
+                <Kbd>A</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.select")}</span>
+              <KbdGroup>
+                <Kbd>Shift</Kbd>
+                <Kbd>{locale === "it" ? "⌘/Ctrl" : "Ctrl/Cmd"}</Kbd>
+                <Kbd>A</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.clear")}</span>
+            </div>
           </div>
 
           {/* Message List */}
