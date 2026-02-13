@@ -10,6 +10,7 @@ interface ExportMessagesOptions {
   format: ExportFormat;
   includeAttachments: boolean;
   localization: ExportLocalization;
+  onProgress?: (progress: number) => void;
   loadMessage: (fileId: string, messageIndex: number) => Promise<EmailMessage>;
 }
 
@@ -195,7 +196,8 @@ function buildHtmlExport(
 
 async function buildMboxExport(
   file: MailFile,
-  selectedIndices: number[]
+  selectedIndices: number[],
+  onMessageProcessed?: (processedCount: number, totalCount: number) => void
 ): Promise<string> {
   if (!file.fileReader || !file.messageBoundaries) {
     throw new Error(
@@ -205,7 +207,8 @@ async function buildMboxExport(
 
   const chunks: string[] = [];
 
-  for (const index of selectedIndices) {
+  for (let i = 0; i < selectedIndices.length; i++) {
+    const index = selectedIndices[i];
     const boundary = file.messageBoundaries[index];
     if (!boundary) {
       continue;
@@ -216,6 +219,7 @@ async function buildMboxExport(
       boundary.end
     );
     chunks.push(rawMessage.endsWith("\n") ? rawMessage : `${rawMessage}\n`);
+    onMessageProcessed?.(i + 1, selectedIndices.length);
   }
 
   return chunks.join("");
@@ -273,6 +277,7 @@ export async function exportMessages({
   format,
   includeAttachments,
   localization,
+  onProgress,
   loadMessage,
 }: ExportMessagesOptions): Promise<void> {
   const sortedUniqueIndices = Array.from(new Set(selectedIndices)).sort(
@@ -283,6 +288,8 @@ export async function exportMessages({
     throw new Error("EXPORT_NO_SELECTION");
   }
 
+  onProgress?.(0);
+
   const filenameBase = getFilenameBase(file.name, sortedUniqueIndices.length);
   const extension = getMainFileExtension(format);
   const mainFilename = `${filenameBase}.${extension}`;
@@ -291,14 +298,29 @@ export async function exportMessages({
   let parsedMessages: Array<{ index: number; message: EmailMessage }> = [];
 
   if (format === "mbox") {
-    mainContent = await buildMboxExport(file, sortedUniqueIndices);
+    mainContent = await buildMboxExport(
+      file,
+      sortedUniqueIndices,
+      (processedCount, totalCount) => {
+        const progress = Math.round((processedCount / totalCount) * 100);
+        onProgress?.(progress);
+      }
+    );
   }
 
   if (format === "txt" || format === "html" || includeAttachments) {
     parsedMessages = [];
-    for (const index of sortedUniqueIndices) {
+    for (let i = 0; i < sortedUniqueIndices.length; i++) {
+      const index = sortedUniqueIndices[i];
       const message = await loadMessage(file.id, index);
       parsedMessages.push({ index, message });
+
+      if (format !== "mbox") {
+        const progress = Math.round(
+          ((i + 1) / sortedUniqueIndices.length) * 80
+        );
+        onProgress?.(progress);
+      }
     }
   }
 
@@ -318,6 +340,7 @@ export async function exportMessages({
       }),
       mainFilename
     );
+    onProgress?.(100);
     return;
   }
 
@@ -348,8 +371,12 @@ export async function exportMessages({
       );
       folder?.file(filename, decodeAttachment(att));
     }
+
+    const progress = 80 + Math.round(((i + 1) / parsedMessages.length) * 20);
+    onProgress?.(progress);
   }
 
   const zipBlob = await zip.generateAsync({ type: "blob" });
   downloadBlob(zipBlob, `${filenameBase}.zip`);
+  onProgress?.(100);
 }

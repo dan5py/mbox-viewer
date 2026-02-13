@@ -90,6 +90,7 @@
       "cancel": "Cancel",
       "confirm": "Export",
       "exporting": "Exporting...",
+      "progress": "Preparing export... {progress}%",
       "success": "{count, plural, =1 {Export completed for # message} other {Export completed for # messages}}",
       "error": "Failed to export selected messages",
       "noSelection": "No messages selected for export",

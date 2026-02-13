@@ -90,6 +90,7 @@
       "cancel": "Annulla",
       "confirm": "Esporta",
       "exporting": "Esportazione...",
+      "progress": "Preparazione esportazione... {progress}%",
       "success": "{count, plural, =1 {Esportazione completata per # messaggio} other {Esportazione completata per # messaggi}}",
       "error": "Impossibile esportare i messaggi selezionati",
       "noSelection": "Nessun messaggio selezionato per l'esportazione",

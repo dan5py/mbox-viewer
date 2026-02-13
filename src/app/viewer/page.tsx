@@ -101,6 +101,7 @@ export default function ViewerPage() {
   const [includeAttachmentsInExport, setIncludeAttachmentsInExport] =
     useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
   const [tab, setTab] = useState("body");
 
   // Compute effective tab: fallback to first available if current tab is not available
@@ -221,6 +222,7 @@ export default function ViewerPage() {
     setSelectedMessageData(null);
     setSelectedMessageIndices(new Set());
     setIsExportDialogOpen(false);
+    setExportProgress(0);
     setEditingFileId(null);
     setEditingFileName("");
   }, [selectedFileId]);
@@ -933,6 +935,7 @@ export default function ViewerPage() {
     }
 
     setIsExporting(true);
+    setExportProgress(0);
 
     try {
       await exportMessages({
@@ -941,6 +944,7 @@ export default function ViewerPage() {
         format: exportFormat,
         includeAttachments: includeAttachmentsInExport,
         localization: exportLocalization,
+        onProgress: setExportProgress,
         loadMessage,
       });
       setIsExportDialogOpen(false);
@@ -959,6 +963,7 @@ export default function ViewerPage() {
       toast.error(fallbackMessage);
     } finally {
       setIsExporting(false);
+      setExportProgress(0);
     }
   }, [
     currentFile,
@@ -2154,6 +2159,15 @@ export default function ViewerPage() {
                 aria-label={t("export.includeAttachments")}
               />
             </div>
+
+            {isExporting && (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  {t("export.progress", { progress: exportProgress })}
+                </p>
+                <Progress value={exportProgress} className="h-2" />
+              </div>
+            )}
           </div>
 
           <DialogFooter>
