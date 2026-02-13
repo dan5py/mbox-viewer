@@ -59,7 +59,8 @@
       "searching": "Searching...",
       "results": "{count, plural, =1 {# result} other {# results}}",
       "allEmails": "All emails",
-      "noMessages": "No messages"
+      "noMessages": "No messages",
+      "clear": "Clear search"
     },
     "selection": {
       "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
@@ -131,7 +132,8 @@
       "attachmentPreviewError": "Failed to preview attachment",
       "attachmentPreviewNotAvailable": "Preview not available",
       "attachmentPreviewNotAvailableDescription": "This file type cannot be previewed. Please download the file to view it.",
-      "loadingMessageContent": "Loading message content..."
+      "loadingMessageContent": "Loading message content...",
+      "attachmentCount": "{count, plural, =1 {# attachment} other {# attachments}}"
     },
     "delete": {
       "title": "Delete file",

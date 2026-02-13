@@ -1246,7 +1246,7 @@ export default function ViewerPage() {
                 <button
                   onClick={() => setSearchQuery("")}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted transition-colors"
-                  aria-label="Clear search"
+                  aria-label={t("search.clear")}
                 >
                   <X className="size-4 text-muted-foreground" />
                 </button>
@@ -1780,10 +1780,10 @@ export default function ViewerPage() {
                                   {t("preview.attachments")}
                                 </label>
                                 <p className="text-sm text-foreground">
-                                  {selectedMessageData.attachments.length}{" "}
-                                  {selectedMessageData.attachments.length === 1
-                                    ? "attachment"
-                                    : "attachments"}
+                                  {t("preview.attachmentCount", {
+                                    count:
+                                      selectedMessageData.attachments.length,
+                                  })}
                                 </p>
                               </div>
                             )}
