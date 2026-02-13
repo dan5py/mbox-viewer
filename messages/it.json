@@ -41,10 +41,13 @@
       "uploadingDescription": "Attendi il completamento della lettura del file."
     },
     "input": {
-      "drop": "Trascina un file MBOX qui",
-      "click": "o clicca per selezionare",
+      "drop": "Trascina uno o più file MBOX qui",
+      "click": "o clicca per selezionare i file",
       "noMessages": "Nessun messaggio trovato in questo file.",
-      "cancel": "Annulla importazione"
+      "cancel": "Annulla importazione",
+      "queueProgress": "File {current} di {total}",
+      "partialFailure": "{count, plural, =1 {1 file non è stato importato} other {# file non sono stati importati}}",
+      "importCancelled": "Importazione annullata"
     },
     "messages": "{count, plural, =1 {# messaggio} other {# messaggi}}",
     "parsing": "Estrazione...",

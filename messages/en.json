@@ -41,10 +41,13 @@
       "uploadingDescription": "Please wait for the file to be scanned."
     },
     "input": {
-      "drop": "Drop an MBOX file here",
-      "click": "or click to select",
+      "drop": "Drop one or more MBOX files here",
+      "click": "or click to select files",
       "noMessages": "No messages found in this file.",
-      "cancel": "Cancel import"
+      "cancel": "Cancel import",
+      "queueProgress": "File {current} of {total}",
+      "partialFailure": "{count, plural, =1 {1 file could not be imported} other {# files could not be imported}}",
+      "importCancelled": "Import cancelled"
     },
     "messages": "{count, plural, =1 {# message} other {# messages}}",
     "parsing": "Parsing...",
