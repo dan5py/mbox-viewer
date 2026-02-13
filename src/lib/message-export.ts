@@ -61,11 +61,13 @@ function sanitizeFilenamePart(value: string): string {
 function getFilenameBase(fileName: string, selectedCount: number): string {
   const baseName =
     fileName.replace(/\.[^/.]+$/, "").trim() || "mbox-exported-messages";
+  const sanitizedBase =
+    sanitizeFilenamePart(baseName) || "mbox-exported-messages";
   const timestamp = EXPORT_FILENAME_DATE_FORMATTER.format(new Date())
     .replace(/\s+/g, "_")
     .replace(/:/g, "-");
 
-  return `${sanitizeFilenamePart(baseName)}-${selectedCount}messages-${timestamp}`;
+  return `${sanitizedBase}-${selectedCount}messages-${timestamp}`;
 }
 
 function downloadBlob(blob: Blob, filename: string): void {
@@ -74,7 +76,8 @@ function downloadBlob(blob: Blob, filename: string): void {
   a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  // Delay revocation to avoid edge-case race conditions on some browsers.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function decodeAttachment(att: EmailAttachment): Uint8Array {
