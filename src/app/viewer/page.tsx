@@ -183,6 +183,7 @@ export default function ViewerPage() {
         console.error("Search worker error:", payload);
         setIsSearching(false);
         setSearchProgress(0);
+        setSearchResults([]);
         setSearchFailed(true);
       }
     };
@@ -1047,6 +1048,17 @@ export default function ViewerPage() {
   const totalFilteredMessages = filteredMessageIndices.length;
 
   const totalPages = Math.ceil(totalFilteredMessages / messagesPerPage);
+
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+      return;
+    }
+
+    if (totalPages === 0 && currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, setCurrentPage, totalPages]);
 
   if (files.length === 0) {
     return (
