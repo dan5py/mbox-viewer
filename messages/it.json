@@ -40,6 +40,9 @@
       "uploading": "Caricamento in corso...",
       "uploadingDescription": "Attendi il completamento della lettura del file."
     },
+    "files": {
+      "title": "File"
+    },
     "input": {
       "drop": "Trascina uno o più file MBOX qui",
       "click": "o clicca per selezionare i file",

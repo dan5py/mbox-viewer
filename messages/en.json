@@ -40,6 +40,9 @@
       "uploading": "Uploading...",
       "uploadingDescription": "Please wait for the file to be scanned."
     },
+    "files": {
+      "title": "Files"
+    },
     "input": {
       "drop": "Drop one or more MBOX files here",
       "click": "or click to select files",
