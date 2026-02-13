@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { cookies } from "next/headers";
 
 import "./globals.css";
 
 import Script from "next/script";
+import { defaultLocale, localeCookieName } from "~/i18n/config";
 import { getPreferredLocale } from "~/i18n/locale";
 import { ThemeProvider } from "~/providers/theme-provider";
 import { NextIntlClientProvider } from "next-intl";
@@ -43,13 +45,20 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const isProduction = process.env.NODE_ENV === "production";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const preferredLocale = await getPreferredLocale();
+  const activeLocale =
+    cookieStore.get(localeCookieName)?.value ||
+    preferredLocale ||
+    defaultLocale;
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={activeLocale} suppressHydrationWarning>
       <head>
         {/* Umami analytics - PRODUCTION ONLY */}
         {isProduction &&
