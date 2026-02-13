@@ -90,6 +90,7 @@ export default function ViewerPage() {
   const loadingAbortRef = useRef<AbortController | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
+  const [searchFailed, setSearchFailed] = useState(false);
   const [selectedMessageIndices, setSelectedMessageIndices] = useState<
     Set<number>
   >(new Set());
@@ -168,9 +169,11 @@ export default function ViewerPage() {
       if (type === "RESULTS") {
         setSearchResults(payload);
         setIsSearching(false);
+        setSearchFailed(false);
       } else if (type === "ERROR") {
         console.error("Search worker error:", payload);
         setIsSearching(false);
+        setSearchFailed(true);
       }
     };
 
@@ -225,6 +228,7 @@ export default function ViewerPage() {
       });
 
       setIsSearching(true);
+      setSearchFailed(false);
       setSearchResults(null); // Reset previous results
       setCurrentPage(1); // Go back to the first page for new search
 
@@ -242,6 +246,7 @@ export default function ViewerPage() {
         type: "ABORT",
       });
       setIsSearching(false);
+      setSearchFailed(false);
       setSearchResults(null);
     }
   }, [debouncedSearchQuery, searchWorker, currentFile, setCurrentPage]);
@@ -692,6 +697,7 @@ export default function ViewerPage() {
     if (isSelectedFile && searchWorker.current) {
       searchWorker.current.postMessage({ type: "ABORT" });
       setIsSearching(false);
+      setSearchFailed(false);
       setSearchResults(null);
     }
 
@@ -1295,6 +1301,10 @@ export default function ViewerPage() {
                   <Spinner className="size-3" />
                   <span>{t("search.searching")}</span>
                 </div>
+              ) : searchFailed ? (
+                <p className="text-xs text-destructive font-medium">
+                  {t("search.error")}
+                </p>
               ) : (
                 totalMessages > 0 && (
                   <p className="text-xs text-muted-foreground font-medium">
@@ -1394,7 +1404,9 @@ export default function ViewerPage() {
                 <Mail className="size-10 text-muted-foreground mb-3 opacity-50" />
                 <p className="text-sm text-muted-foreground">
                   {searchQuery
-                    ? t("search.results", { count: 0 })
+                    ? searchFailed
+                      ? t("search.error")
+                      : t("search.results", { count: 0 })
                     : t("search.noMessages")}
                 </p>
               </div>

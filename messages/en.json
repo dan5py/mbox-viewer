@@ -61,7 +61,8 @@
       "results": "{count, plural, =1 {# result} other {# results}}",
       "allEmails": "All emails",
       "noMessages": "No messages",
-      "clear": "Clear search"
+      "clear": "Clear search",
+      "error": "Search failed. Please try again."
     },
     "selection": {
       "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
