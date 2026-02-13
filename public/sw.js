@@ -1,6 +1,12 @@
-const APP_SHELL_CACHE = "mbox-viewer-app-shell-v1";
+const APP_SHELL_CACHE = "mbox-viewer-app-shell-v2";
 const RUNTIME_CACHE = "mbox-viewer-runtime-v1";
-const APP_SHELL_ASSETS = ["/", "/viewer", "/icon-192.png", "/icon-512.png"];
+const APP_SHELL_ASSETS = [
+  "/",
+  "/viewer",
+  "/icon-180.png",
+  "/icon-192.png",
+  "/icon-512.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
