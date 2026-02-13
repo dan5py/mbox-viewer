@@ -889,6 +889,7 @@ export default function ViewerPage() {
 
   const exportLocalization = useMemo(
     () => ({
+      locale,
       messageLabel: t("export.localization.message"),
       fromLabel: t("export.localization.from"),
       toLabel: t("export.localization.to"),
@@ -901,7 +902,7 @@ export default function ViewerPage() {
       htmlExportedText: (count: number) =>
         t("export.localization.exportedCount", { count }),
     }),
-    [t]
+    [locale, t]
   );
 
   const handleExportSelectedMessages = useCallback(async () => {

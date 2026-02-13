@@ -14,6 +14,7 @@ interface ExportMessagesOptions {
 }
 
 interface ExportLocalization {
+  locale: string;
   messageLabel: string;
   fromLabel: string;
   toLabel: string;
@@ -145,7 +146,7 @@ function buildHtmlExport(
 
   return `
     <!doctype html>
-    <html lang="en">
+    <html lang="${localization.locale}">
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
