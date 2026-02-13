@@ -443,7 +443,8 @@ export default function ViewerPage() {
       a.href = url;
       a.download = att.filename;
       a.click();
-      URL.revokeObjectURL(url);
+      // Delay revocation to avoid race conditions in some browsers.
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err) {
       console.error("Failed to download attachment:", err);
     }
