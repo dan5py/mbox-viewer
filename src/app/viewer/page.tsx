@@ -27,8 +27,10 @@ import {
   X,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import { EmailAttachment, EmailMessage } from "~/types/files";
+import { ExportFormat, exportMessages } from "~/lib/message-export";
 import { PREVIEWABLE_MIME_TYPES } from "~/lib/mime-types";
 import { cn } from "~/lib/utils";
 import { useDebounce } from "~/hooks/use-debounce";
@@ -44,9 +46,12 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
@@ -60,6 +65,8 @@ import {
 } from "~/components/ui/empty";
 import { Input } from "~/components/ui/input";
 import { Kbd, KbdGroup } from "~/components/ui/kbd";
+import { Label } from "~/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import { Spinner } from "~/components/ui/spinner";
@@ -81,6 +88,14 @@ export default function ViewerPage() {
   const loadingAbortRef = useRef<AbortController | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
+  const [selectedMessageIndices, setSelectedMessageIndices] = useState<
+    Set<number>
+  >(new Set());
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("mbox");
+  const [includeAttachmentsInExport, setIncludeAttachmentsInExport] =
+    useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [tab, setTab] = useState("body");
 
   // Compute effective tab: fallback to first available if current tab is not available
@@ -185,6 +200,8 @@ export default function ViewerPage() {
   useEffect(() => {
     setSelectedMessageIndex(null);
     setSelectedMessageData(null);
+    setSelectedMessageIndices(new Set());
+    setIsExportDialogOpen(false);
   }, [selectedFileId]);
 
   // Effect to trigger search in worker
@@ -675,6 +692,7 @@ export default function ViewerPage() {
     if (isSelectedFile) {
       setSelectedMessageIndex(null);
       setSelectedMessageData(null);
+      setSelectedMessageIndices(new Set());
     }
 
     removeFile(fileId);
@@ -745,6 +763,90 @@ export default function ViewerPage() {
     currentPage,
     labelFilteredIndices,
     searchResults,
+  ]);
+
+  const selectedCount = selectedMessageIndices.size;
+  const allVisibleSelected =
+    visibleMessageIndices.length > 0 &&
+    visibleMessageIndices.every((idx) => selectedMessageIndices.has(idx));
+
+  const handleToggleMessageSelection = useCallback((index: number) => {
+    setSelectedMessageIndices((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleToggleCurrentPageSelection = useCallback(() => {
+    if (visibleMessageIndices.length === 0) {
+      return;
+    }
+
+    setSelectedMessageIndices((prev) => {
+      const next = new Set(prev);
+      const everyVisibleSelected = visibleMessageIndices.every((idx) =>
+        next.has(idx)
+      );
+
+      if (everyVisibleSelected) {
+        for (const idx of visibleMessageIndices) {
+          next.delete(idx);
+        }
+      } else {
+        for (const idx of visibleMessageIndices) {
+          next.add(idx);
+        }
+      }
+
+      return next;
+    });
+  }, [visibleMessageIndices]);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedMessageIndices(new Set());
+  }, []);
+
+  const handleExportSelectedMessages = useCallback(async () => {
+    if (!currentFile || selectedCount === 0) {
+      return;
+    }
+
+    setIsExporting(true);
+
+    try {
+      await exportMessages({
+        file: currentFile,
+        selectedIndices: Array.from(selectedMessageIndices),
+        format: exportFormat,
+        includeAttachments: includeAttachmentsInExport,
+        loadMessage,
+      });
+      setIsExportDialogOpen(false);
+      toast.success(
+        t("export.success", {
+          count: selectedCount,
+        })
+      );
+    } catch (error) {
+      const fallbackMessage =
+        error instanceof Error ? error.message : t("export.error");
+      toast.error(fallbackMessage);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [
+    currentFile,
+    selectedCount,
+    selectedMessageIndices,
+    exportFormat,
+    includeAttachmentsInExport,
+    loadMessage,
+    t,
   ]);
 
   useEffect(() => {
@@ -1053,6 +1155,44 @@ export default function ViewerPage() {
                 </Badge>
               )}
             </div>
+
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs text-muted-foreground">
+                {t("selection.selectedCount", { count: selectedCount })}
+              </p>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={handleToggleCurrentPageSelection}
+                  disabled={visibleMessageIndices.length === 0}
+                >
+                  {allVisibleSelected
+                    ? t("selection.deselectPage")
+                    : t("selection.selectPage")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={handleClearSelection}
+                  disabled={selectedCount === 0}
+                >
+                  {t("selection.clear")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => setIsExportDialogOpen(true)}
+                  disabled={selectedCount === 0}
+                >
+                  <Download className="size-3.5 mr-1" />
+                  {t("export.action")}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Message List */}
@@ -1071,6 +1211,7 @@ export default function ViewerPage() {
                 const preview = getMessagePreview(index);
                 // Use index for instant selection highlighting
                 const isSelected = selectedMessageIndex === index;
+                const isMessageChecked = selectedMessageIndices.has(index);
                 const from = preview?.from || t("preview.unknown");
                 const date = preview?.date
                   ? new Date(preview.date)
@@ -1081,83 +1222,96 @@ export default function ViewerPage() {
                 });
 
                 return (
-                  <button
+                  <div
                     key={index}
-                    ref={(el) => {
-                      if (el) {
-                        messageRefs.current.set(index, el);
-                      } else {
-                        messageRefs.current.delete(index);
-                      }
-                    }}
-                    onClick={() => handleSelectMessage(index)}
                     className={cn(
-                      "w-full text-left p-3 rounded-lg border transition-all cursor-pointer group",
+                      "w-full p-2 rounded-lg border transition-all group",
                       "hover:border-border hover:shadow-sm",
                       isSelected
                         ? "border-primary bg-primary/10 shadow-sm"
                         : "border-border/40 hover:bg-muted/50"
                     )}
                   >
-                    <div className="flex gap-3">
-                      {/* Avatar */}
-                      <div
-                        className={cn(
-                          "size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
-                          getAvatarColor(from)
-                        )}
-                      >
-                        {getInitials(from)}
-                      </div>
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        checked={isMessageChecked}
+                        onCheckedChange={() => handleToggleMessageSelection(index)}
+                        aria-label={t("selection.toggleMessage")}
+                        className="mt-2"
+                      />
 
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <p
+                      <button
+                        ref={(el) => {
+                          if (el) {
+                            messageRefs.current.set(index, el);
+                          } else {
+                            messageRefs.current.delete(index);
+                          }
+                        }}
+                        onClick={() => handleSelectMessage(index)}
+                        className="flex-1 min-w-0 text-left p-1 rounded-md cursor-pointer"
+                      >
+                        <div className="flex gap-3">
+                          {/* Avatar */}
+                          <div
                             className={cn(
-                              "text-sm font-semibold truncate",
-                              isSelected ? "text-primary" : "text-foreground"
+                              "size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
+                              getAvatarColor(from)
                             )}
                           >
-                            {preview?.subject || (
-                              <span className="italic text-muted-foreground">
-                                {t("preview.noSubject")}
+                            {getInitials(from)}
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <p
+                                className={cn(
+                                  "text-sm font-semibold truncate",
+                                  isSelected ? "text-primary" : "text-foreground"
+                                )}
+                              >
+                                {preview?.subject || (
+                                  <span className="italic text-muted-foreground">
+                                    {t("preview.noSubject")}
+                                  </span>
+                                )}
+                              </p>
+                              {preview?.size && (
+                                <span className="text-xs text-muted-foreground shrink-0">
+                                  {formatSize(preview.size)}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
+                              <div className="flex items-center gap-1 truncate">
+                                <User className="size-3 shrink-0" />
+                                <span className="truncate">{from}</span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="size-3" />
+                                <span>{relativeDate}</span>
+                              </div>
+                              <span className="text-muted-foreground/60">
+                                {date.toLocaleString(locale, {
+                                  year: "numeric",
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                })}
                               </span>
-                            )}
-                          </p>
-                          {preview?.size && (
-                            <span className="text-xs text-muted-foreground shrink-0">
-                              {formatSize(preview.size)}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
-                          <div className="flex items-center gap-1 truncate">
-                            <User className="size-3 shrink-0" />
-                            <span className="truncate">{from}</span>
+                            </div>
                           </div>
                         </div>
-
-                        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="size-3" />
-                            <span>{relativeDate}</span>
-                          </div>
-                          <span className="text-muted-foreground/60">
-                            {date.toLocaleString(locale, {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            })}
-                          </span>
-                        </div>
-                      </div>
+                      </button>
                     </div>
-                  </button>
+                  </div>
                 );
               })
             )}
@@ -1667,6 +1821,92 @@ export default function ViewerPage() {
           )}
         </div>
       </div>
+
+      {/* Export Dialog */}
+      <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("export.title")}</DialogTitle>
+            <DialogDescription>
+              {t("export.description", { count: selectedCount })}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <Label>{t("export.formatLabel")}</Label>
+              <RadioGroup
+                value={exportFormat}
+                onValueChange={(value) => setExportFormat(value as ExportFormat)}
+                className="grid grid-cols-3 gap-2"
+              >
+                <div className="flex items-center space-x-2 rounded-md border p-2">
+                  <RadioGroupItem value="mbox" id="export-mbox" />
+                  <Label htmlFor="export-mbox" className="cursor-pointer">
+                    MBOX
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 rounded-md border p-2">
+                  <RadioGroupItem value="txt" id="export-txt" />
+                  <Label htmlFor="export-txt" className="cursor-pointer">
+                    TXT
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 rounded-md border p-2">
+                  <RadioGroupItem value="html" id="export-html" />
+                  <Label htmlFor="export-html" className="cursor-pointer">
+                    HTML
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <div>
+                <p className="text-sm font-medium">
+                  {t("export.includeAttachments")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t("export.includeAttachmentsHint")}
+                </p>
+              </div>
+              <Checkbox
+                checked={includeAttachmentsInExport}
+                onCheckedChange={(checked) =>
+                  setIncludeAttachmentsInExport(checked === true)
+                }
+                aria-label={t("export.includeAttachments")}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsExportDialogOpen(false)}
+              disabled={isExporting}
+            >
+              {t("export.cancel")}
+            </Button>
+            <Button
+              onClick={handleExportSelectedMessages}
+              disabled={isExporting || selectedCount === 0}
+            >
+              {isExporting ? (
+                <>
+                  <Spinner className="size-4 mr-2" />
+                  {t("export.exporting")}
+                </>
+              ) : (
+                <>
+                  <Download className="size-4 mr-2" />
+                  {t("export.confirm")}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog

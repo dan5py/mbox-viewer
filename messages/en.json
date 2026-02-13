@@ -54,6 +54,26 @@
       "results": "{count, plural, =1 {# result} other {# results}}",
       "allEmails": "All emails"
     },
+    "selection": {
+      "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
+      "selectPage": "Select page",
+      "deselectPage": "Deselect page",
+      "clear": "Clear",
+      "toggleMessage": "Toggle message selection"
+    },
+    "export": {
+      "action": "Export",
+      "title": "Export selected messages",
+      "description": "Export {count, plural, =1 {# selected message} other {# selected messages}}.",
+      "formatLabel": "Format",
+      "includeAttachments": "Include attachments",
+      "includeAttachmentsHint": "Attachments are packaged in a ZIP archive together with the exported file.",
+      "cancel": "Cancel",
+      "confirm": "Export",
+      "exporting": "Exporting...",
+      "success": "{count, plural, =1 {Export completed for # message} other {Export completed for # messages}}",
+      "error": "Failed to export selected messages"
+    },
     "pagination": {
       "previous": "Prev",
       "next": "Next",

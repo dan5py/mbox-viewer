@@ -54,6 +54,26 @@
       "results": "{count, plural, =1 {# risultato} other {# risultati}}",
       "allEmails": "Tutte le email"
     },
+    "selection": {
+      "selectedCount": "{count, plural, =0 {Nessun messaggio selezionato} =1 {# messaggio selezionato} other {# messaggi selezionati}}",
+      "selectPage": "Seleziona pagina",
+      "deselectPage": "Deseleziona pagina",
+      "clear": "Pulisci",
+      "toggleMessage": "Attiva/disattiva selezione messaggio"
+    },
+    "export": {
+      "action": "Esporta",
+      "title": "Esporta messaggi selezionati",
+      "description": "Esporta {count, plural, =1 {# messaggio selezionato} other {# messaggi selezionati}}.",
+      "formatLabel": "Formato",
+      "includeAttachments": "Includi allegati",
+      "includeAttachmentsHint": "Gli allegati vengono inclusi in un archivio ZIP insieme al file esportato.",
+      "cancel": "Annulla",
+      "confirm": "Esporta",
+      "exporting": "Esportazione...",
+      "success": "{count, plural, =1 {Esportazione completata per # messaggio} other {Esportazione completata per # messaggi}}",
+      "error": "Impossibile esportare i messaggi selezionati"
+    },
     "pagination": {
       "previous": "Prec",
       "next": "Succ",
