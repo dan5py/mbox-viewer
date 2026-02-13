@@ -280,6 +280,13 @@ export async function exportMessages({
   onProgress,
   loadMessage,
 }: ExportMessagesOptions): Promise<void> {
+  let currentProgress = 0;
+  const reportProgress = (value: number) => {
+    const normalized = Math.max(0, Math.min(100, value));
+    currentProgress = Math.max(currentProgress, normalized);
+    onProgress?.(currentProgress);
+  };
+
   const sortedUniqueIndices = Array.from(new Set(selectedIndices)).sort(
     (a, b) => a - b
   );
@@ -288,7 +295,7 @@ export async function exportMessages({
     throw new Error("EXPORT_NO_SELECTION");
   }
 
-  onProgress?.(0);
+  reportProgress(0);
 
   const filenameBase = getFilenameBase(file.name, sortedUniqueIndices.length);
   const extension = getMainFileExtension(format);
@@ -302,8 +309,11 @@ export async function exportMessages({
       file,
       sortedUniqueIndices,
       (processedCount, totalCount) => {
-        const progress = Math.round((processedCount / totalCount) * 100);
-        onProgress?.(progress);
+        const maxProgressForStage = includeAttachments ? 60 : 100;
+        const progress = Math.round(
+          (processedCount / totalCount) * maxProgressForStage
+        );
+        reportProgress(progress);
       }
     );
   }
@@ -315,11 +325,14 @@ export async function exportMessages({
       const message = await loadMessage(file.id, index);
       parsedMessages.push({ index, message });
 
-      if (format !== "mbox") {
-        const progress = Math.round(
-          ((i + 1) / sortedUniqueIndices.length) * 80
-        );
-        onProgress?.(progress);
+      if (format !== "mbox" || includeAttachments) {
+        const stageStart = format === "mbox" ? 60 : 0;
+        const stageSpan =
+          format === "mbox" ? 30 : includeAttachments ? 80 : 100;
+        const progress =
+          stageStart +
+          Math.round(((i + 1) / sortedUniqueIndices.length) * stageSpan);
+        reportProgress(progress);
       }
     }
   }
@@ -340,7 +353,7 @@ export async function exportMessages({
       }),
       mainFilename
     );
-    onProgress?.(100);
+    reportProgress(100);
     return;
   }
 
@@ -372,11 +385,14 @@ export async function exportMessages({
       folder?.file(filename, decodeAttachment(att));
     }
 
-    const progress = 80 + Math.round(((i + 1) / parsedMessages.length) * 20);
-    onProgress?.(progress);
+    const stageStart = format === "mbox" ? 90 : 80;
+    const stageSpan = format === "mbox" ? 10 : 20;
+    const progress =
+      stageStart + Math.round(((i + 1) / parsedMessages.length) * stageSpan);
+    reportProgress(progress);
   }
 
   const zipBlob = await zip.generateAsync({ type: "blob" });
   downloadBlob(zipBlob, `${filenameBase}.zip`);
-  onProgress?.(100);
+  reportProgress(100);
 }
