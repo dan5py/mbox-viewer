@@ -887,6 +887,23 @@ export default function ViewerPage() {
     setSelectedMessageIndices(new Set());
   }, []);
 
+  const exportLocalization = useMemo(
+    () => ({
+      messageLabel: t("export.localization.message"),
+      fromLabel: t("export.localization.from"),
+      toLabel: t("export.localization.to"),
+      ccLabel: t("export.localization.cc"),
+      bccLabel: t("export.localization.bcc"),
+      dateLabel: t("export.localization.date"),
+      subjectLabel: t("export.localization.subject"),
+      htmlDocumentTitle: t("export.localization.htmlDocumentTitle"),
+      htmlHeading: t("export.localization.htmlHeading"),
+      htmlExportedText: (count: number) =>
+        t("export.localization.exportedCount", { count }),
+    }),
+    [t]
+  );
+
   const handleExportSelectedMessages = useCallback(async () => {
     if (!currentFile || selectedCount === 0) {
       return;
@@ -900,6 +917,7 @@ export default function ViewerPage() {
         selectedIndices: Array.from(selectedMessageIndices),
         format: exportFormat,
         includeAttachments: includeAttachmentsInExport,
+        localization: exportLocalization,
         loadMessage,
       });
       setIsExportDialogOpen(false);
@@ -909,6 +927,10 @@ export default function ViewerPage() {
         })
       );
     } catch (error) {
+      if (error instanceof Error && error.message === "EXPORT_NO_SELECTION") {
+        toast.error(t("export.noSelection"));
+        return;
+      }
       const fallbackMessage =
         error instanceof Error ? error.message : t("export.error");
       toast.error(fallbackMessage);
@@ -921,6 +943,7 @@ export default function ViewerPage() {
     selectedMessageIndices,
     exportFormat,
     includeAttachmentsInExport,
+    exportLocalization,
     loadMessage,
     t,
   ]);

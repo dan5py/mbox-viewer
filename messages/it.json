@@ -81,7 +81,20 @@
       "confirm": "Esporta",
       "exporting": "Esportazione...",
       "success": "{count, plural, =1 {Esportazione completata per # messaggio} other {Esportazione completata per # messaggi}}",
-      "error": "Impossibile esportare i messaggi selezionati"
+      "error": "Impossibile esportare i messaggi selezionati",
+      "noSelection": "Nessun messaggio selezionato per l'esportazione",
+      "localization": {
+        "message": "Messaggio",
+        "from": "Da",
+        "to": "A",
+        "cc": "Cc",
+        "bcc": "Bcc",
+        "date": "Data",
+        "subject": "Oggetto",
+        "htmlDocumentTitle": "Esportazione MBOX",
+        "htmlHeading": "Esportazione MBOX",
+        "exportedCount": "{count, plural, =1 {Esportato # messaggio} other {Esportati # messaggi}}"
+      }
     },
     "pagination": {
       "previous": "Prec",

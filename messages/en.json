@@ -81,7 +81,20 @@
       "confirm": "Export",
       "exporting": "Exporting...",
       "success": "{count, plural, =1 {Export completed for # message} other {Export completed for # messages}}",
-      "error": "Failed to export selected messages"
+      "error": "Failed to export selected messages",
+      "noSelection": "No messages selected for export",
+      "localization": {
+        "message": "Message",
+        "from": "From",
+        "to": "To",
+        "cc": "Cc",
+        "bcc": "Bcc",
+        "date": "Date",
+        "subject": "Subject",
+        "htmlDocumentTitle": "MBOX Export",
+        "htmlHeading": "MBOX Export",
+        "exportedCount": "{count, plural, =1 {Exported # message} other {Exported # messages}}"
+      }
     },
     "pagination": {
       "previous": "Prev",

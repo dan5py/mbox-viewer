@@ -9,7 +9,21 @@ interface ExportMessagesOptions {
   selectedIndices: number[];
   format: ExportFormat;
   includeAttachments: boolean;
+  localization: ExportLocalization;
   loadMessage: (fileId: string, messageIndex: number) => Promise<EmailMessage>;
+}
+
+interface ExportLocalization {
+  messageLabel: string;
+  fromLabel: string;
+  toLabel: string;
+  ccLabel: string;
+  bccLabel: string;
+  dateLabel: string;
+  subjectLabel: string;
+  htmlDocumentTitle: string;
+  htmlHeading: string;
+  htmlExportedText: (count: number) => string;
 }
 
 const EXPORT_FILENAME_DATE_FORMATTER = new Intl.DateTimeFormat("sv-SE", {
@@ -80,20 +94,21 @@ function getBodyAsHtml(message: EmailMessage): string {
 }
 
 function buildTextExport(
-  messages: Array<{ index: number; message: EmailMessage }>
+  messages: Array<{ index: number; message: EmailMessage }>,
+  localization: ExportLocalization
 ) {
   return messages
     .map(({ index, message }, i) => {
       return [
         "--------------------------------------------------------------------------------",
-        `Message ${i + 1} (index: ${index + 1})`,
+        `${localization.messageLabel} ${i + 1} (index: ${index + 1})`,
         "--------------------------------------------------------------------------------",
-        `From: ${message.from || ""}`,
-        `To: ${message.to || ""}`,
-        `Cc: ${message.cc || ""}`,
-        `Bcc: ${message.bcc || ""}`,
-        `Date: ${message.rawDate || message.date.toISOString()}`,
-        `Subject: ${message.subject || ""}`,
+        `${localization.fromLabel}: ${message.from || ""}`,
+        `${localization.toLabel}: ${message.to || ""}`,
+        `${localization.ccLabel}: ${message.cc || ""}`,
+        `${localization.bccLabel}: ${message.bcc || ""}`,
+        `${localization.dateLabel}: ${message.rawDate || message.date.toISOString()}`,
+        `${localization.subjectLabel}: ${message.subject || ""}`,
         "",
         message.body || "",
         "",
@@ -103,20 +118,21 @@ function buildTextExport(
 }
 
 function buildHtmlExport(
-  messages: Array<{ index: number; message: EmailMessage }>
+  messages: Array<{ index: number; message: EmailMessage }>,
+  localization: ExportLocalization
 ) {
   const sections = messages
     .map(({ index, message }, i) => {
       return `
         <section class="message">
-          <h2>Message ${i + 1} (index: ${index + 1})</h2>
+          <h2>${localization.messageLabel} ${i + 1} (index: ${index + 1})</h2>
           <div class="meta">
-            <div><strong>From:</strong> ${message.from || ""}</div>
-            <div><strong>To:</strong> ${message.to || ""}</div>
-            <div><strong>Cc:</strong> ${message.cc || ""}</div>
-            <div><strong>Bcc:</strong> ${message.bcc || ""}</div>
-            <div><strong>Date:</strong> ${message.rawDate || message.date.toISOString()}</div>
-            <div><strong>Subject:</strong> ${message.subject || ""}</div>
+            <div><strong>${localization.fromLabel}:</strong> ${message.from || ""}</div>
+            <div><strong>${localization.toLabel}:</strong> ${message.to || ""}</div>
+            <div><strong>${localization.ccLabel}:</strong> ${message.cc || ""}</div>
+            <div><strong>${localization.bccLabel}:</strong> ${message.bcc || ""}</div>
+            <div><strong>${localization.dateLabel}:</strong> ${message.rawDate || message.date.toISOString()}</div>
+            <div><strong>${localization.subjectLabel}:</strong> ${message.subject || ""}</div>
           </div>
           <hr />
           <div class="content">
@@ -133,7 +149,7 @@ function buildHtmlExport(
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>MBOX Export</title>
+        <title>${localization.htmlDocumentTitle}</title>
         <style>
           body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; padding: 24px; max-width: 1200px; margin: 0 auto; }
           .message { border: 1px solid #d1d5db; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
@@ -144,8 +160,8 @@ function buildHtmlExport(
         </style>
       </head>
       <body>
-        <h1>MBOX Export</h1>
-        <p>Exported ${messages.length} messages</p>
+        <h1>${localization.htmlHeading}</h1>
+        <p>${localization.htmlExportedText(messages.length)}</p>
         ${sections}
       </body>
     </html>
@@ -231,6 +247,7 @@ export async function exportMessages({
   selectedIndices,
   format,
   includeAttachments,
+  localization,
   loadMessage,
 }: ExportMessagesOptions): Promise<void> {
   const sortedUniqueIndices = Array.from(new Set(selectedIndices)).sort(
@@ -238,7 +255,7 @@ export async function exportMessages({
   );
 
   if (sortedUniqueIndices.length === 0) {
-    throw new Error("No messages selected for export.");
+    throw new Error("EXPORT_NO_SELECTION");
   }
 
   const filenameBase = getFilenameBase(file.name, sortedUniqueIndices.length);
@@ -262,9 +279,9 @@ export async function exportMessages({
   }
 
   if (format === "txt") {
-    mainContent = buildTextExport(parsedMessages);
+    mainContent = buildTextExport(parsedMessages, localization);
   } else if (format === "html") {
-    mainContent = buildHtmlExport(parsedMessages);
+    mainContent = buildHtmlExport(parsedMessages, localization);
   }
 
   if (!includeAttachments) {
