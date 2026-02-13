@@ -89,6 +89,7 @@ export default function ViewerPage() {
     useState<EmailMessage | null>(null);
   const loadingAbortRef = useRef<AbortController | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchProgress, setSearchProgress] = useState(0);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
   const [searchFailed, setSearchFailed] = useState(false);
   const [selectedMessageIndices, setSelectedMessageIndices] = useState<
@@ -163,16 +164,24 @@ export default function ViewerPage() {
     searchWorker.current = worker;
 
     searchWorker.current.onmessage = (
-      event: MessageEvent<{ type: string; payload: number[] }>
+      event: MessageEvent<
+        | { type: "RESULTS"; payload: number[] }
+        | { type: "ERROR"; payload: string }
+        | { type: "PROGRESS"; payload: number }
+      >
     ) => {
       const { type, payload } = event.data;
       if (type === "RESULTS") {
         setSearchResults(payload);
         setIsSearching(false);
+        setSearchProgress(100);
         setSearchFailed(false);
+      } else if (type === "PROGRESS") {
+        setSearchProgress(payload);
       } else if (type === "ERROR") {
         console.error("Search worker error:", payload);
         setIsSearching(false);
+        setSearchProgress(0);
         setSearchFailed(true);
       }
     };
@@ -228,6 +237,7 @@ export default function ViewerPage() {
       });
 
       setIsSearching(true);
+      setSearchProgress(0);
       setSearchFailed(false);
       setSearchResults(null); // Reset previous results
       setCurrentPage(1); // Go back to the first page for new search
@@ -246,6 +256,7 @@ export default function ViewerPage() {
         type: "ABORT",
       });
       setIsSearching(false);
+      setSearchProgress(0);
       setSearchFailed(false);
       setSearchResults(null);
     }
@@ -698,6 +709,7 @@ export default function ViewerPage() {
     if (isSelectedFile && searchWorker.current) {
       searchWorker.current.postMessage({ type: "ABORT" });
       setIsSearching(false);
+      setSearchProgress(0);
       setSearchFailed(false);
       setSearchResults(null);
     }
@@ -1300,7 +1312,11 @@ export default function ViewerPage() {
               {isSearching ? (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Spinner className="size-3" />
-                  <span>{t("search.searching")}</span>
+                  <span>
+                    {t("search.searchingProgress", {
+                      progress: searchProgress,
+                    })}
+                  </span>
                 </div>
               ) : searchFailed ? (
                 <p className="text-xs text-destructive font-medium">

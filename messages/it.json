@@ -58,6 +58,7 @@
     "search": {
       "placeholder": "Cerca messaggi",
       "searching": "Ricerca in corso...",
+      "searchingProgress": "Ricerca in corso... {progress}%",
       "results": "{count, plural, =1 {# risultato} other {# risultati}}",
       "allEmails": "Tutte le email",
       "noMessages": "Nessun messaggio",
