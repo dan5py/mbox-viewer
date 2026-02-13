@@ -1092,6 +1092,14 @@ export default function ViewerPage() {
                                 onChange={(e) =>
                                   setEditingFileName(e.target.value)
                                 }
+                                onBlur={(e) => {
+                                  const nextTarget =
+                                    e.relatedTarget as HTMLElement | null;
+                                  if (nextTarget?.dataset.renameAction) {
+                                    return;
+                                  }
+                                  handleCommitRenameFile();
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") {
                                     e.preventDefault();
@@ -1110,6 +1118,7 @@ export default function ViewerPage() {
                                   size="sm"
                                   variant="outline"
                                   className="h-7 px-2 text-xs"
+                                  data-rename-action="save"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleCommitRenameFile();
@@ -1123,6 +1132,7 @@ export default function ViewerPage() {
                                   size="sm"
                                   variant="ghost"
                                   className="h-7 px-2 text-xs"
+                                  data-rename-action="cancel"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleCancelRenameFile();
@@ -1328,7 +1338,7 @@ export default function ViewerPage() {
                 <p className="text-sm text-muted-foreground">
                   {searchQuery
                     ? t("search.results", { count: 0 })
-                    : "No messages"}
+                    : t("search.noMessages")}
                 </p>
               </div>
             ) : (

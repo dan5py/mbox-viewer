@@ -55,7 +55,8 @@
       "placeholder": "Search messages",
       "searching": "Searching...",
       "results": "{count, plural, =1 {# result} other {# results}}",
-      "allEmails": "All emails"
+      "allEmails": "All emails",
+      "noMessages": "No messages"
     },
     "selection": {
       "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
