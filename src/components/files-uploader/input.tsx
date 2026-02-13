@@ -170,7 +170,11 @@ export function FileUploadInput({
         }
 
         if (abortController.signal.aborted) {
-          setError(t("Viewer.input.importCancelled"));
+          // If at least one file was imported before cancellation, don't
+          // surface a destructive error state.
+          if (uploadedCount === 0) {
+            setError(t("Viewer.input.importCancelled"));
+          }
         } else if (failures.length > 0) {
           if (uploadedCount === 0) {
             setError(t("Viewer.input.scanFailed"));
