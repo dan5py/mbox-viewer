@@ -10,6 +10,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Toaster } from "sonner";
 
+import { RegisterServiceWorker } from "~/components/pwa/register-sw";
+
 const geist = Geist({
   subsets: ["latin"],
 });
@@ -21,6 +23,20 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "MBOX Viewer",
     description: t("description"),
+    manifest: "/manifest.webmanifest",
+    themeColor: "#22c55e",
+    icons: {
+      icon: [
+        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+      apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+    },
+    appleWebApp: {
+      capable: true,
+      title: "MBOX Viewer",
+      statusBarStyle: "default",
+    },
   };
 }
 
@@ -57,6 +73,7 @@ export default function RootLayout({
       <body className={geist.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NextIntlClientProvider>
+            <RegisterServiceWorker />
             {children}
             <Toaster />
           </NextIntlClientProvider>
