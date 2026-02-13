@@ -198,6 +198,34 @@ function getAttachmentFolderName(
   return `message-${String(fallbackIndex + 1).padStart(4, "0")}-${subject || "no-subject"}`;
 }
 
+function ensureUniqueFilename(
+  baseName: string,
+  usedNames: Set<string>,
+  fallbackName: string
+): string {
+  const normalized = baseName || fallbackName;
+
+  if (!usedNames.has(normalized)) {
+    usedNames.add(normalized);
+    return normalized;
+  }
+
+  const dotIndex = normalized.lastIndexOf(".");
+  const hasExtension = dotIndex > 0 && dotIndex < normalized.length - 1;
+  const fileStem = hasExtension ? normalized.slice(0, dotIndex) : normalized;
+  const fileExtension = hasExtension ? normalized.slice(dotIndex) : "";
+
+  let counter = 2;
+  let candidate = `${fileStem}-${counter}${fileExtension}`;
+  while (usedNames.has(candidate)) {
+    counter++;
+    candidate = `${fileStem}-${counter}${fileExtension}`;
+  }
+
+  usedNames.add(candidate);
+  return candidate;
+}
+
 export async function exportMessages({
   file,
   selectedIndices,
@@ -265,12 +293,18 @@ export async function exportMessages({
 
     const folderName = getAttachmentFolderName(message, i);
     const folder = zip.folder(`attachments/${folderName}`);
+    const usedAttachmentNames = new Set<string>();
 
     for (let j = 0; j < attachments.length; j++) {
       const att = attachments[j];
-      const filename =
+      const sanitizedFilename =
         sanitizeFilenamePart(att.filename || `attachment-${j + 1}`) ||
         `attachment-${j + 1}`;
+      const filename = ensureUniqueFilename(
+        sanitizedFilename,
+        usedAttachmentNames,
+        `attachment-${j + 1}`
+      );
       folder?.file(filename, decodeAttachment(att));
     }
   }
