@@ -295,12 +295,11 @@ export async function exportMessages({
   }
 
   if (format === "txt" || format === "html" || includeAttachments) {
-    parsedMessages = await Promise.all(
-      sortedUniqueIndices.map(async (index) => {
-        const message = await loadMessage(file.id, index);
-        return { index, message };
-      })
-    );
+    parsedMessages = [];
+    for (const index of sortedUniqueIndices) {
+      const message = await loadMessage(file.id, index);
+      parsedMessages.push({ index, message });
+    }
   }
 
   if (format === "txt") {
