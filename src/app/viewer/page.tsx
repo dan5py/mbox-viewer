@@ -971,7 +971,7 @@ export default function ViewerPage() {
   ]);
 
   useEffect(() => {
-    if (files.length === 0 || visibleMessageIndices.length === 0) {
+    if (files.length === 0) {
       return;
     }
 
@@ -984,7 +984,17 @@ export default function ViewerPage() {
         return;
       }
 
-      if (e.key === "ArrowDown") {
+      const isSelectAllShortcut =
+        (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a";
+
+      if (isSelectAllShortcut) {
+        e.preventDefault();
+        if (e.shiftKey) {
+          handleClearSelection();
+        } else {
+          handleToggleFilteredSelection();
+        }
+      } else if (e.key === "ArrowDown") {
         e.preventDefault();
         // Use selectedMessageIndex for instant navigation
         const currentPosInList = visibleMessageIndices.findIndex(
@@ -1028,6 +1038,8 @@ export default function ViewerPage() {
     visibleMessageIndices,
     selectedMessageIndex,
     handleSelectMessage,
+    handleToggleFilteredSelection,
+    handleClearSelection,
     setSelectedMessage,
     files.length,
   ]);
