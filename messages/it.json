@@ -69,6 +69,8 @@
       "deselectPage": "Deseleziona pagina",
       "selectFiltered": "Seleziona filtrati",
       "deselectFiltered": "Deseleziona filtrati",
+      "selectAll": "Seleziona tutto",
+      "deselectAll": "Deseleziona tutto",
       "clear": "Pulisci",
       "toggleMessage": "Attiva/disattiva selezione messaggio"
     },

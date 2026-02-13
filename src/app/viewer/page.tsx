@@ -814,6 +814,7 @@ export default function ViewerPage() {
   }, [currentPage, filteredMessageIndices, messagesPerPage]);
 
   const selectedCount = selectedMessageIndices.size;
+  const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
     visibleMessageIndices.every((idx) => selectedMessageIndices.has(idx));
@@ -1356,8 +1357,12 @@ export default function ViewerPage() {
                   disabled={filteredMessageIndices.length === 0}
                 >
                   {allFilteredSelected
-                    ? t("selection.deselectFiltered")
-                    : t("selection.selectFiltered")}
+                    ? hasActiveFilters
+                      ? t("selection.deselectFiltered")
+                      : t("selection.deselectAll")
+                    : hasActiveFilters
+                      ? t("selection.selectFiltered")
+                      : t("selection.selectAll")}
                 </Button>
                 <Button
                   variant="ghost"
