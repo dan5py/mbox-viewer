@@ -39,6 +39,15 @@ const EXPORT_FILENAME_DATE_FORMATTER = new Intl.DateTimeFormat("sv-SE", {
 
 const TEXT_ENCODER = new TextEncoder();
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 function sanitizeFilenamePart(value: string): string {
   return value
     .trim()
@@ -86,10 +95,7 @@ function getBodyAsHtml(message: EmailMessage): string {
     return message.htmlBody;
   }
 
-  const escaped = message.body
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
+  const escaped = escapeHtml(message.body);
 
   return `<pre>${escaped}</pre>`;
 }
@@ -126,14 +132,14 @@ function buildHtmlExport(
     .map(({ index, message }, i) => {
       return `
         <section class="message">
-          <h2>${localization.messageLabel} ${i + 1} (index: ${index + 1})</h2>
+          <h2>${escapeHtml(localization.messageLabel)} ${i + 1} (index: ${index + 1})</h2>
           <div class="meta">
-            <div><strong>${localization.fromLabel}:</strong> ${message.from || ""}</div>
-            <div><strong>${localization.toLabel}:</strong> ${message.to || ""}</div>
-            <div><strong>${localization.ccLabel}:</strong> ${message.cc || ""}</div>
-            <div><strong>${localization.bccLabel}:</strong> ${message.bcc || ""}</div>
-            <div><strong>${localization.dateLabel}:</strong> ${message.rawDate || message.date.toISOString()}</div>
-            <div><strong>${localization.subjectLabel}:</strong> ${message.subject || ""}</div>
+            <div><strong>${escapeHtml(localization.fromLabel)}:</strong> ${escapeHtml(message.from || "")}</div>
+            <div><strong>${escapeHtml(localization.toLabel)}:</strong> ${escapeHtml(message.to || "")}</div>
+            <div><strong>${escapeHtml(localization.ccLabel)}:</strong> ${escapeHtml(message.cc || "")}</div>
+            <div><strong>${escapeHtml(localization.bccLabel)}:</strong> ${escapeHtml(message.bcc || "")}</div>
+            <div><strong>${escapeHtml(localization.dateLabel)}:</strong> ${escapeHtml(message.rawDate || message.date.toISOString())}</div>
+            <div><strong>${escapeHtml(localization.subjectLabel)}:</strong> ${escapeHtml(message.subject || "")}</div>
           </div>
           <hr />
           <div class="content">
@@ -150,7 +156,7 @@ function buildHtmlExport(
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>${localization.htmlDocumentTitle}</title>
+        <title>${escapeHtml(localization.htmlDocumentTitle)}</title>
         <style>
           body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; padding: 24px; max-width: 1200px; margin: 0 auto; }
           .message { border: 1px solid #d1d5db; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
@@ -161,8 +167,8 @@ function buildHtmlExport(
         </style>
       </head>
       <body>
-        <h1>${localization.htmlHeading}</h1>
-        <p>${localization.htmlExportedText(messages.length)}</p>
+        <h1>${escapeHtml(localization.htmlHeading)}</h1>
+        <p>${escapeHtml(localization.htmlExportedText(messages.length))}</p>
         ${sections}
       </body>
     </html>
