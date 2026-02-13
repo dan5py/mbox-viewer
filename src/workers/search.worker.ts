@@ -65,7 +65,9 @@ self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
         );
 
         if (content.toLowerCase().includes(lowerCaseQuery)) {
-          matchingIndices.push(boundary.index);
+          // Use absolute position in boundaries array so results stay aligned
+          // with sorted/paginated message lists in the UI.
+          matchingIndices.push(i);
         }
 
         // Report progress every 100 messages to avoid flooding the main thread

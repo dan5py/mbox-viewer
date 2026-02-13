@@ -47,6 +47,13 @@ const useMboxStore = create<MboxState>((set, get) => ({
         const dateB = b.preview?.date ? new Date(b.preview.date).getTime() : 0;
         return dateB - dateA;
       });
+
+      // Keep boundary indices aligned with array position after sorting.
+      // Downstream features (search, pagination, export selection) rely on
+      // absolute positions in this ordered list.
+      file.messageBoundaries.forEach((boundary, index) => {
+        boundary.index = index;
+      });
     }
 
     set((state) => ({
