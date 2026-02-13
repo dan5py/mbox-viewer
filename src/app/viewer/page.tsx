@@ -710,10 +710,13 @@ export default function ViewerPage() {
     removeFile(fileId);
   };
 
-  const handleStartRenameFile = useCallback((fileId: string, currentName: string) => {
-    setEditingFileId(fileId);
-    setEditingFileName(currentName);
-  }, []);
+  const handleStartRenameFile = useCallback(
+    (fileId: string, currentName: string) => {
+      setEditingFileId(fileId);
+      setEditingFileName(currentName);
+    },
+    []
+  );
 
   const handleCancelRenameFile = useCallback(() => {
     setEditingFileId(null);
@@ -1357,7 +1360,9 @@ export default function ViewerPage() {
                     <div className="flex items-start gap-2">
                       <Checkbox
                         checked={isMessageChecked}
-                        onCheckedChange={() => handleToggleMessageSelection(index)}
+                        onCheckedChange={() =>
+                          handleToggleMessageSelection(index)
+                        }
                         aria-label={t("selection.toggleMessage")}
                         className="mt-2"
                       />
@@ -1390,7 +1395,9 @@ export default function ViewerPage() {
                               <p
                                 className={cn(
                                   "text-sm font-semibold truncate",
-                                  isSelected ? "text-primary" : "text-foreground"
+                                  isSelected
+                                    ? "text-primary"
+                                    : "text-foreground"
                                 )}
                               >
                                 {preview?.subject || (
@@ -1959,7 +1966,9 @@ export default function ViewerPage() {
               <Label>{t("export.formatLabel")}</Label>
               <RadioGroup
                 value={exportFormat}
-                onValueChange={(value) => setExportFormat(value as ExportFormat)}
+                onValueChange={(value) =>
+                  setExportFormat(value as ExportFormat)
+                }
                 className="grid grid-cols-3 gap-2"
               >
                 <div className="flex items-center space-x-2 rounded-md border p-2">

@@ -23,6 +23,7 @@ export interface MailFile {
   // Lazy loading fields
   fileReader?: ByteReader; // ByteReader instance
   messageBoundaries?: Array<{
+    index: number;
     start: number;
     end: number;
     preview?: {

@@ -19,9 +19,7 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter(
-              (key) => key !== APP_SHELL_CACHE && key !== RUNTIME_CACHE
-            )
+            .filter((key) => key !== APP_SHELL_CACHE && key !== RUNTIME_CACHE)
             .map((key) => caches.delete(key))
         )
       )

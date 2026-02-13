@@ -79,7 +79,9 @@ function getBodyAsHtml(message: EmailMessage): string {
   return `<pre>${escaped}</pre>`;
 }
 
-function buildTextExport(messages: Array<{ index: number; message: EmailMessage }>) {
+function buildTextExport(
+  messages: Array<{ index: number; message: EmailMessage }>
+) {
   return messages
     .map(({ index, message }, i) => {
       return [
@@ -100,7 +102,9 @@ function buildTextExport(messages: Array<{ index: number; message: EmailMessage 
     .join("\n");
 }
 
-function buildHtmlExport(messages: Array<{ index: number; message: EmailMessage }>) {
+function buildHtmlExport(
+  messages: Array<{ index: number; message: EmailMessage }>
+) {
   const sections = messages
     .map(({ index, message }, i) => {
       return `
@@ -153,7 +157,9 @@ async function buildMboxExport(
   selectedIndices: number[]
 ): Promise<string> {
   if (!file.fileReader || !file.messageBoundaries) {
-    throw new Error("Missing file reader or message boundaries for mbox export.");
+    throw new Error(
+      "Missing file reader or message boundaries for mbox export."
+    );
   }
 
   const chunks: string[] = [];

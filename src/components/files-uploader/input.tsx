@@ -274,11 +274,7 @@ export function FileUploadInput({
             </div>
           </div>
           <Progress value={progress?.progress ?? 0} className="h-2" />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCancel}
-          >
+          <Button variant="outline" size="sm" onClick={handleCancel}>
             {t("Viewer.input.cancel")}
           </Button>
         </div>
