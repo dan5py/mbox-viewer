@@ -11,6 +11,10 @@ A modern, fast, and privacy-focused MBOX file viewer that runs directly in your 
 - **Client-Side Processing**: All MBOX file parsing and rendering is done in the browser. Your files are never uploaded to a server, ensuring your data remains private.
 - **Modern UI**: A clean and modern interface built with Shadcn/ui and Tailwind CSS.
 - **HTML Email Rendering**: Accurately renders HTML emails, including attachments and inline images.
+- **Bulk Message Export**: Select messages across paginated results and export them as MBOX, TXT, or HTML (with optional attachment bundles).
+- **Multiple File Import**: Import many MBOX files at once with drag-and-drop or file picker multi-select.
+- **File Management**: Rename imported files directly from the Files sidebar.
+- **PWA Support**: Install the viewer as a Progressive Web App with offline-ready app shell caching.
 - **i18n Support**: Internationalization support with English and Italian locales.
 
 ## Tech Stack
