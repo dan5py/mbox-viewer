@@ -100,6 +100,21 @@ function getBodyAsHtml(message: EmailMessage): string {
   return `<pre>${escaped}</pre>`;
 }
 
+function getBodyAsText(message: EmailMessage): string {
+  if (message.body?.trim()) {
+    return message.body;
+  }
+
+  if (!message.htmlBody) {
+    return "";
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(message.htmlBody, "text/html");
+  const content = doc.body?.textContent || "";
+  return content.trim();
+}
+
 function buildTextExport(
   messages: Array<{ index: number; message: EmailMessage }>,
   localization: ExportLocalization
@@ -117,7 +132,7 @@ function buildTextExport(
         `${localization.dateLabel}: ${message.rawDate || message.date.toISOString()}`,
         `${localization.subjectLabel}: ${message.subject || ""}`,
         "",
-        message.body || "",
+        getBodyAsText(message),
         "",
       ].join("\n");
     })
