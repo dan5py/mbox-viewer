@@ -29,6 +29,30 @@ interface MboxState {
   loadMessage: (fileId: string, messageIndex: number) => Promise<EmailMessage>;
 }
 
+function getUniqueFileName(
+  proposedName: string,
+  existingNames: Set<string>
+): string {
+  if (!existingNames.has(proposedName)) {
+    return proposedName;
+  }
+
+  const dotIndex = proposedName.lastIndexOf(".");
+  const hasExtension = dotIndex > 0;
+  const stem = hasExtension ? proposedName.slice(0, dotIndex) : proposedName;
+  const extension = hasExtension ? proposedName.slice(dotIndex) : "";
+
+  let counter = 2;
+  let candidate = `${stem} (${counter})${extension}`;
+
+  while (existingNames.has(candidate)) {
+    counter++;
+    candidate = `${stem} (${counter})${extension}`;
+  }
+
+  return candidate;
+}
+
 const useMboxStore = create<MboxState>((set, get) => ({
   files: [],
   selectedFileId: null,
@@ -57,10 +81,17 @@ const useMboxStore = create<MboxState>((set, get) => ({
       });
     }
 
-    set((state) => ({
-      files: [...state.files, file],
-      selectedFileId: file.id, // Auto-select new file
-    }));
+    set((state) => {
+      const existingNames = new Set(state.files.map((f) => f.name));
+      const uniqueName = getUniqueFileName(file.name, existingNames);
+      const fileToStore =
+        uniqueName === file.name ? file : { ...file, name: uniqueName };
+
+      return {
+        files: [...state.files, fileToStore],
+        selectedFileId: file.id, // Auto-select new file
+      };
+    });
   },
 
   removeFile: (fileId: string) => {
@@ -84,11 +115,20 @@ const useMboxStore = create<MboxState>((set, get) => ({
       return;
     }
 
-    set((state) => ({
-      files: state.files.map((file) =>
-        file.id === fileId ? { ...file, name: trimmedName } : file
-      ),
-    }));
+    set((state) => {
+      const existingNames = new Set(
+        state.files
+          .filter((file) => file.id !== fileId)
+          .map((file) => file.name)
+      );
+      const uniqueName = getUniqueFileName(trimmedName, existingNames);
+
+      return {
+        files: state.files.map((file) =>
+          file.id === fileId ? { ...file, name: uniqueName } : file
+        ),
+      };
+    });
   },
 
   setSelectedFile: (fileId: string | null) => {
