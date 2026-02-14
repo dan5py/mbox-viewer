@@ -108,6 +108,9 @@
         "select": "toggle filtered selection",
         "clear": "clear all selections",
         "resetFilters": "reset active filters",
+        "navigateLabels": "move between visible label filters",
+        "jumpLabels": "jump to first or last visible label filter",
+        "jumpMenuItems": "in open menus, jump to first or last item",
         "clickKey": "Click",
         "range": "select a range"
       }

@@ -3209,6 +3209,27 @@ export default function ViewerPage() {
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
+                <Kbd>←</Kbd>
+                <Kbd>→</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.navigateLabels")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
+                <Kbd>Home</Kbd>
+                <Kbd>End</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.jumpLabels")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
+                <Kbd>Home</Kbd>
+                <Kbd>End</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.jumpMenuItems")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
                 <Kbd>Shift</Kbd>
                 <Kbd>{t("selection.shortcuts.clickKey")}</Kbd>
               </KbdGroup>
