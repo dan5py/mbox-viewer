@@ -108,6 +108,7 @@ export default function ViewerPage() {
   const [selectedMessageIndices, setSelectedMessageIndices] = useState<
     Set<number>
   >(new Set());
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<ExportFormat>("mbox");
@@ -269,6 +270,7 @@ export default function ViewerPage() {
     setSelectedMessageIndex(null);
     setSelectedMessageData(null);
     setSelectedMessageIndices(new Set());
+    setIsActionsMenuOpen(false);
     setIsExportDialogOpen(false);
     setExportProgress(0);
     setEditingFileId(null);
@@ -1150,6 +1152,7 @@ export default function ViewerPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore global shortcuts while dialogs are open.
       if (
+        isActionsMenuOpen ||
         isExportDialogOpen ||
         isShortcutsDialogOpen ||
         isFullscreenOpen ||
@@ -1247,6 +1250,7 @@ export default function ViewerPage() {
     handleSelectMessage,
     handleToggleFilteredSelection,
     handleClearSelection,
+    isActionsMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
     isFullscreenOpen,
@@ -1558,7 +1562,10 @@ export default function ViewerPage() {
                 )}
               </div>
               {totalMessages > 0 && (
-                <DropdownMenu>
+                <DropdownMenu
+                  open={isActionsMenuOpen}
+                  onOpenChange={setIsActionsMenuOpen}
+                >
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
