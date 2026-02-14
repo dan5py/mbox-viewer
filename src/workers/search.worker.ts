@@ -12,10 +12,9 @@ interface SearchPayload {
   query: string;
 }
 
-interface WorkerMessage {
-  type: "SEARCH" | "ABORT";
-  payload: SearchPayload;
-}
+type WorkerMessage =
+  | { type: "SEARCH"; payload: SearchPayload }
+  | { type: "ABORT" };
 
 // Simple ByteReader clone for the worker
 class WorkerByteReader {
@@ -27,18 +26,19 @@ class WorkerByteReader {
   }
 }
 
-let isAborted = false;
+let activeSearchRunId = 0;
 
 self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
-  const { type, payload } = event.data;
+  const { type } = event.data;
 
   if (type === "ABORT") {
-    isAborted = true;
+    activeSearchRunId += 1;
     return;
   }
 
   if (type === "SEARCH") {
-    isAborted = false;
+    const runId = ++activeSearchRunId;
+    const { payload } = event.data;
     const { file, boundaries, query } = payload;
 
     if (!file || !boundaries || !query) {
@@ -55,7 +55,7 @@ self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
 
     try {
       for (let i = 0; i < boundaries.length; i++) {
-        if (isAborted) {
+        if (runId !== activeSearchRunId) {
           return;
         }
 
@@ -78,7 +78,7 @@ self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
         }
       }
 
-      if (!isAborted) {
+      if (runId === activeSearchRunId) {
         self.postMessage({ type: "PROGRESS", payload: 100 });
         self.postMessage({ type: "RESULTS", payload: matchingIndices });
       }
