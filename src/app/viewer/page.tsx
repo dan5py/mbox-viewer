@@ -1092,16 +1092,19 @@ export default function ViewerPage() {
   const allEmailsFilterCount = integerFormatter.format(
     allEmailsFilterCountValue
   );
-  const labelFilterOptionsCount =
+  const labelFilterControlsCount =
     1 + inlineLabelFilters.length + (overflowLabelFilters.length > 0 ? 1 : 0);
+  const labelFilterOptionsTotalCount = 1 + labelFiltersForLayout.length;
   const labelFiltersGroupLabel =
     selectedLabel !== null
-      ? t("search.labelFiltersWithCountActive", {
-          count: labelFilterOptionsCount,
+      ? t("search.labelFiltersSummaryActive", {
+          controlsCount: labelFilterControlsCount,
+          optionsCount: labelFilterOptionsTotalCount,
           label: selectedLabel,
         })
-      : t("search.labelFiltersWithCount", {
-          count: labelFilterOptionsCount,
+      : t("search.labelFiltersSummary", {
+          controlsCount: labelFilterControlsCount,
+          optionsCount: labelFilterOptionsTotalCount,
         });
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
