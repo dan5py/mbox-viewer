@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "settingsAriaLabel": "Impostazioni"
+  },
   "Metadata": {
     "description": "Visualizzatore MBOX veloce e moderno per file email. Carica e visualizza archivi email in un attimo."
   },
@@ -190,6 +193,7 @@
       "description": "Aiutaci a migliorare condividendo dati di utilizzo anonimi",
       "enableTracking": "Abilita tracciamento analisi",
       "enableTrackingDescription": "Consenti analisi di utilizzo anonime per aiutare a migliorare l'applicazione",
+      "infoAriaLabel": "Quali dati raccogliamo",
       "dataCollected": "Tracciamo solo il numero di file caricati e la quantità di messaggi che contengono. Nessuna informazione personale, contenuto del file o nomi dei file vengono raccolti."
     },
     "about": {

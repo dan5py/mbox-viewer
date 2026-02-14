@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "settingsAriaLabel": "Settings"
+  },
   "Metadata": {
     "description": "Fast, modern browser-based MBOX file viewer. Upload and view email archives instantly."
   },
@@ -190,6 +193,7 @@
       "description": "Help us improve by sharing anonymous usage data",
       "enableTracking": "Enable analytics tracking",
       "enableTrackingDescription": "Allow anonymous usage analytics to help improve the application",
+      "infoAriaLabel": "What data we collect",
       "dataCollected": "We only track the number of files uploaded and the amount of messages they contain. No personal information, file content, or file names are collected."
     },
     "about": {

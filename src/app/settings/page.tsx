@@ -199,7 +199,7 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           className="inline-flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                          aria-label="What data we collect"
+                          aria-label={t("analytics.infoAriaLabel")}
                         >
                           <Info className="size-4 text-muted-foreground hover:text-foreground transition-colors" />
                         </button>
