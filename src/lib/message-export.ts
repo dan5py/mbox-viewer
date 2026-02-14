@@ -421,25 +421,23 @@ export async function exportMessages({
     const { message } = parsedMessages[i];
     const attachments = message.attachments || [];
 
-    if (attachments.length === 0) {
-      continue;
-    }
+    if (attachments.length > 0) {
+      const folderName = getAttachmentFolderName(message, i);
+      const folder = zip.folder(`attachments/${folderName}`);
+      const usedAttachmentNames = new Set<string>();
 
-    const folderName = getAttachmentFolderName(message, i);
-    const folder = zip.folder(`attachments/${folderName}`);
-    const usedAttachmentNames = new Set<string>();
-
-    for (let j = 0; j < attachments.length; j++) {
-      const att = attachments[j];
-      const sanitizedFilename =
-        sanitizeFilenamePart(att.filename || `attachment-${j + 1}`) ||
-        `attachment-${j + 1}`;
-      const filename = ensureUniqueFilename(
-        sanitizedFilename,
-        usedAttachmentNames,
-        `attachment-${j + 1}`
-      );
-      folder?.file(filename, decodeAttachment(att));
+      for (let j = 0; j < attachments.length; j++) {
+        const att = attachments[j];
+        const sanitizedFilename =
+          sanitizeFilenamePart(att.filename || `attachment-${j + 1}`) ||
+          `attachment-${j + 1}`;
+        const filename = ensureUniqueFilename(
+          sanitizedFilename,
+          usedAttachmentNames,
+          `attachment-${j + 1}`
+        );
+        folder?.file(filename, decodeAttachment(att));
+      }
     }
 
     const stageStart = format === "mbox" ? 90 : 80;
