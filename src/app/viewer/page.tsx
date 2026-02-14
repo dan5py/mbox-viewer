@@ -1523,7 +1523,7 @@ export default function ViewerPage() {
         {/* Messages List */}
         <div className="w-96 border-r border-border/60 bg-background flex flex-col">
           {/* Search */}
-          <div className="border-b border-border/60 p-3 space-y-2.5 bg-muted/20">
+          <div className="border-b border-border/60 p-2.5 space-y-2 bg-muted/20">
             <div className="flex items-center gap-1.5">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -1630,11 +1630,11 @@ export default function ViewerPage() {
             {/* Label Filter Pills */}
             {allLabels.length > 0 && (
               <ScrollArea className="w-full">
-                <div className="flex gap-2 pb-1">
+                <div className="flex gap-1.5 pb-1">
                   <button
                     onClick={() => setSelectedLabel(null)}
                     className={cn(
-                      "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0 cursor-pointer",
+                      "px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer",
                       selectedLabel === null
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -1647,7 +1647,7 @@ export default function ViewerPage() {
                       key={label}
                       onClick={() => setSelectedLabel(label)}
                       className={cn(
-                        "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0 cursor-pointer",
+                        "px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer",
                         selectedLabel === label
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -1665,7 +1665,7 @@ export default function ViewerPage() {
               <div className="flex items-center min-w-0">
                 <div className="min-w-0 flex-1">
                   {isSearching ? (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
+                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground min-w-0">
                       <Spinner
                         className="size-3"
                         label={t("search.searching")}
@@ -1683,13 +1683,13 @@ export default function ViewerPage() {
                       </span>
                     </div>
                   ) : searchFailed ? (
-                    <p className="text-xs text-destructive font-medium truncate">
+                    <p className="text-[11px] text-destructive font-medium truncate">
                       {t("search.error")}
                     </p>
                   ) : (
                     totalMessages > 0 && (
                       <p
-                        className="text-xs text-muted-foreground font-medium truncate"
+                        className="text-[11px] text-muted-foreground font-medium truncate"
                         title={messageSummaryLabel}
                       >
                         {messageSummaryLabel}
