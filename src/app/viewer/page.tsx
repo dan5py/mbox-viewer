@@ -1634,6 +1634,10 @@ export default function ViewerPage() {
         return;
       }
 
+      if (e.isComposing || e.key === "Process") {
+        return;
+      }
+
       // Ignore global shortcuts while dialogs are open.
       if (
         isActionsMenuOpen ||
