@@ -2160,6 +2160,7 @@ export default function ViewerPage() {
                 onValueChange={(value) =>
                   setExportFormat(value as ExportFormat)
                 }
+                disabled={isExporting}
                 className="grid grid-cols-3 gap-2"
               >
                 <div className="flex items-center space-x-2 rounded-md border p-2">
@@ -2198,6 +2199,7 @@ export default function ViewerPage() {
                   setIncludeAttachmentsInExport(checked === true)
                 }
                 aria-label={t("export.includeAttachments")}
+                disabled={isExporting}
               />
             </div>
 
