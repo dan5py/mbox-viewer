@@ -978,6 +978,33 @@ export default function ViewerPage() {
     setSelectedMessageIndices(new Set());
   }, []);
 
+  const resetSearchState = useCallback(() => {
+    searchWorker.current?.postMessage({ type: "ABORT" });
+    setIsSearching(false);
+    setSearchProgress(0);
+    setSearchFailed(false);
+    setSearchResults(null);
+  }, []);
+
+  const handleSearchInputChange = useCallback(
+    (value: string) => {
+      if (value.trim().length === 0) {
+        resetSearchState();
+      } else {
+        // Clear previous search error/progress while typing a new query.
+        setSearchFailed(false);
+        setSearchProgress(0);
+      }
+      setSearchQuery(value);
+    },
+    [resetSearchState, setSearchQuery]
+  );
+
+  const handleClearSearch = useCallback(() => {
+    resetSearchState();
+    setSearchQuery("");
+  }, [resetSearchState, setSearchQuery]);
+
   const exportLocalization = useMemo(
     () => ({
       locale,
@@ -1408,20 +1435,12 @@ export default function ViewerPage() {
               <Input
                 placeholder={t("search.placeholder")}
                 value={searchQuery}
-                onChange={(e) => {
-                  setSearchFailed(false);
-                  setSearchProgress(0);
-                  setSearchQuery(e.target.value);
-                }}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
                 className="text-sm pl-9 pr-9"
               />
               {searchQuery && (
                 <button
-                  onClick={() => {
-                    setSearchFailed(false);
-                    setSearchProgress(0);
-                    setSearchQuery("");
-                  }}
+                  onClick={handleClearSearch}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted transition-colors"
                   aria-label={t("search.clear")}
                 >
