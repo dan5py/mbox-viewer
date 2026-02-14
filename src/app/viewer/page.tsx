@@ -998,18 +998,29 @@ export default function ViewerPage() {
         ? "bg-primary text-primary-foreground"
         : "bg-muted text-muted-foreground hover:bg-muted/80"
     );
-  const handleSelectLabelFilter = (label: string | null) => {
-    if (label === null) {
-      setSelectedLabel(null);
-      return;
-    }
+  const handleSelectLabelFilter = useCallback(
+    (label: string | null) => {
+      if (label === null) {
+        setSelectedLabel(null);
+        return;
+      }
 
-    setSelectedLabel(selectedLabel === label ? null : label);
-  };
-  const handleSelectOverflowLabelFilter = (label: string) => {
-    handleSelectLabelFilter(label);
-    setIsLabelOverflowMenuOpen(false);
-  };
+      setSelectedLabel(selectedLabel === label ? null : label);
+    },
+    [selectedLabel, setSelectedLabel]
+  );
+  const handleSelectOverflowLabelFilter = useCallback(
+    (label: string, checked: boolean | "indeterminate") => {
+      if (checked === true) {
+        setSelectedLabel(label);
+      } else if (selectedLabel === label) {
+        setSelectedLabel(null);
+      }
+
+      setIsLabelOverflowMenuOpen(false);
+    },
+    [selectedLabel, setSelectedLabel]
+  );
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1893,8 +1904,8 @@ export default function ViewerPage() {
                           <DropdownMenuCheckboxItem
                             key={label}
                             checked={selectedLabel === label}
-                            onCheckedChange={() =>
-                              handleSelectOverflowLabelFilter(label)
+                            onCheckedChange={(checked) =>
+                              handleSelectOverflowLabelFilter(label, checked)
                             }
                             aria-label={getLabelFilterButtonLabel(
                               label,
