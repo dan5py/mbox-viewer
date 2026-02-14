@@ -1081,6 +1081,10 @@ export default function ViewerPage() {
   const allEmailsFilterCount = integerFormatter.format(
     allEmailsFilterCountValue
   );
+  const labelFilterOptionsCount = labelFiltersForLayout.length + 1;
+  const labelFiltersGroupLabel = t("search.labelFiltersWithCount", {
+    count: labelFilterOptionsCount,
+  });
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
@@ -2005,7 +2009,7 @@ export default function ViewerPage() {
                 <div
                   className="flex gap-1.5 pb-1"
                   role="group"
-                  aria-label={t("search.labelFilters")}
+                  aria-label={labelFiltersGroupLabel}
                 >
                   <button
                     type="button"
