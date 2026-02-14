@@ -1202,7 +1202,7 @@ export default function ViewerPage() {
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
   const clearPreviewShortcutLabel = "Esc";
-  const openShortcutsShortcutLabel = "? / F1";
+  const openShortcutsShortcutLabel = "? / F1 / Help";
   const toggleFilteredSelectionAriaKeyShortcuts = "Control+A Meta+A";
   const clearSelectionAriaKeyShortcuts = "Shift+Control+A Shift+Meta+A";
   const resetFiltersAriaKeyShortcuts = "Shift+Escape";
