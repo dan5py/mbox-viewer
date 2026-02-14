@@ -2507,6 +2507,7 @@ export default function ViewerPage() {
                   >
                     <div className="flex items-start gap-2">
                       <Checkbox
+                        data-allow-global-shortcuts="true"
                         checked={isMessageChecked}
                         onClick={(event) => {
                           event.stopPropagation();
