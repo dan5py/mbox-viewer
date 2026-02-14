@@ -60,6 +60,7 @@ import {
 } from "~/components/ui/dialog";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -1636,16 +1637,22 @@ export default function ViewerPage() {
                         <DropdownMenuLabel className="text-xs">
                           {selectedMenuLabel}
                         </DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={handleToggleCurrentPageSelection}
+                        <DropdownMenuCheckboxItem
+                          checked={allVisibleSelected}
+                          onCheckedChange={() => {
+                            handleToggleCurrentPageSelection();
+                          }}
                           disabled={visibleMessageIndices.length === 0}
                         >
                           {allVisibleSelected
                             ? t("selection.deselectPage")
                             : t("selection.selectPage")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={handleToggleFilteredSelection}
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={allFilteredSelected}
+                          onCheckedChange={() => {
+                            handleToggleFilteredSelection();
+                          }}
                           disabled={filteredMessageIndices.length === 0}
                         >
                           {allFilteredSelected
@@ -1658,7 +1665,7 @@ export default function ViewerPage() {
                           <DropdownMenuShortcut>
                             {toggleFilteredSelectionShortcutLabel}
                           </DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                        </DropdownMenuCheckboxItem>
                         <DropdownMenuItem
                           onClick={handleClearSelection}
                           disabled={selectedCount === 0}
