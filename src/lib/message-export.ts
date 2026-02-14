@@ -11,6 +11,7 @@ interface ExportMessagesOptions {
   includeAttachments: boolean;
   localization: ExportLocalization;
   onProgress?: (progress: number) => void;
+  signal?: AbortSignal;
   loadMessage: (fileId: string, messageIndex: number) => Promise<EmailMessage>;
 }
 
@@ -234,7 +235,8 @@ function buildHtmlExport(
 async function buildMboxExport(
   file: MailFile,
   selectedIndices: number[],
-  onMessageProcessed?: (processedCount: number, totalCount: number) => void
+  onMessageProcessed?: (processedCount: number, totalCount: number) => void,
+  signal?: AbortSignal
 ): Promise<string> {
   if (!file.fileReader || !file.messageBoundaries) {
     throw new Error(
@@ -245,6 +247,10 @@ async function buildMboxExport(
   const chunks: string[] = [];
 
   for (let i = 0; i < selectedIndices.length; i++) {
+    if (signal?.aborted) {
+      throw new Error("EXPORT_ABORTED");
+    }
+
     const index = selectedIndices[i];
     const boundary = file.messageBoundaries[index];
     if (!boundary) {
@@ -319,6 +325,7 @@ export async function exportMessages({
   includeAttachments,
   localization,
   onProgress,
+  signal,
   loadMessage,
 }: ExportMessagesOptions): Promise<void> {
   let currentProgress = 0;
@@ -326,6 +333,11 @@ export async function exportMessages({
     const normalized = Math.max(0, Math.min(100, value));
     currentProgress = Math.max(currentProgress, normalized);
     onProgress?.(currentProgress);
+  };
+  const ensureNotAborted = () => {
+    if (signal?.aborted) {
+      throw new Error("EXPORT_ABORTED");
+    }
   };
 
   const sortedUniqueIndices = Array.from(new Set(selectedIndices)).sort(
@@ -337,6 +349,7 @@ export async function exportMessages({
   }
 
   reportProgress(0);
+  ensureNotAborted();
 
   const filenameBase = getFilenameBase(file.name, sortedUniqueIndices.length);
   const extension = getMainFileExtension(format);
@@ -355,13 +368,15 @@ export async function exportMessages({
           (processedCount / totalCount) * maxProgressForStage
         );
         reportProgress(progress);
-      }
+      },
+      signal
     );
   }
 
   if (format === "txt" || format === "html" || includeAttachments) {
     parsedMessages = [];
     for (let i = 0; i < sortedUniqueIndices.length; i++) {
+      ensureNotAborted();
       const index = sortedUniqueIndices[i];
       const message = await loadMessage(file.id, index);
       parsedMessages.push({ index, message });
@@ -377,6 +392,8 @@ export async function exportMessages({
       }
     }
   }
+
+  ensureNotAborted();
 
   if (format === "txt") {
     mainContent = buildTextExport(parsedMessages, localization);
@@ -402,6 +419,7 @@ export async function exportMessages({
   zip.file(mainFilename, mainContent);
 
   for (let i = 0; i < parsedMessages.length; i++) {
+    ensureNotAborted();
     const { message } = parsedMessages[i];
     const attachments = message.attachments || [];
 
@@ -433,7 +451,9 @@ export async function exportMessages({
     reportProgress(progress);
   }
 
+  ensureNotAborted();
   const zipBlob = await zip.generateAsync({ type: "blob" }, (metadata) => {
+    ensureNotAborted();
     const zipProgress = 95 + Math.round(metadata.percent / 20);
     reportProgress(zipProgress);
   });

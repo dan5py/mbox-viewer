@@ -89,6 +89,7 @@ export default function ViewerPage() {
   const [selectedMessageData, setSelectedMessageData] =
     useState<EmailMessage | null>(null);
   const loadingAbortRef = useRef<AbortController | null>(null);
+  const exportAbortRef = useRef<AbortController | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchProgress, setSearchProgress] = useState(0);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
@@ -218,6 +219,7 @@ export default function ViewerPage() {
 
   // Reset selection when switching files
   useEffect(() => {
+    exportAbortRef.current?.abort();
     setSelectedMessageIndex(null);
     setSelectedMessageData(null);
     setSelectedMessageIndices(new Set());
@@ -226,6 +228,12 @@ export default function ViewerPage() {
     setEditingFileId(null);
     setEditingFileName("");
   }, [selectedFileId]);
+
+  useEffect(() => {
+    return () => {
+      exportAbortRef.current?.abort();
+    };
+  }, []);
 
   // Effect to trigger search in worker
   useEffect(() => {
@@ -934,6 +942,9 @@ export default function ViewerPage() {
       return;
     }
 
+    const abortController = new AbortController();
+    exportAbortRef.current = abortController;
+
     setIsExporting(true);
     setExportProgress(0);
 
@@ -945,6 +956,7 @@ export default function ViewerPage() {
         includeAttachments: includeAttachmentsInExport,
         localization: exportLocalization,
         onProgress: setExportProgress,
+        signal: abortController.signal,
         loadMessage,
       });
       setIsExportDialogOpen(false);
@@ -958,10 +970,15 @@ export default function ViewerPage() {
         toast.error(t("export.noSelection"));
         return;
       }
+      if (error instanceof Error && error.message === "EXPORT_ABORTED") {
+        toast.message(t("export.cancelled"));
+        return;
+      }
       const fallbackMessage =
         error instanceof Error ? error.message : t("export.error");
       toast.error(fallbackMessage);
     } finally {
+      exportAbortRef.current = null;
       setIsExporting(false);
       setExportProgress(0);
     }
@@ -975,6 +992,10 @@ export default function ViewerPage() {
     loadMessage,
     t,
   ]);
+
+  const handleCancelExport = useCallback(() => {
+    exportAbortRef.current?.abort();
+  }, []);
 
   useEffect(() => {
     if (files.length === 0) {
@@ -2218,10 +2239,13 @@ export default function ViewerPage() {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setIsExportDialogOpen(false)}
-              disabled={isExporting}
+              onClick={
+                isExporting
+                  ? handleCancelExport
+                  : () => setIsExportDialogOpen(false)
+              }
             >
-              {t("export.cancel")}
+              {isExporting ? t("export.cancelInProgress") : t("export.cancel")}
             </Button>
             <Button
               onClick={handleExportSelectedMessages}
