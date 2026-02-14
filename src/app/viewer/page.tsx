@@ -127,6 +127,7 @@ const globalShortcutBlockingRoles = [
 const globalShortcutBlockingRoleSet = new Set<string>(
   globalShortcutBlockingRoles
 );
+const globalShortcutAllowAttribute = "data-allow-global-shortcuts";
 const hasGlobalShortcutBlockingRole = (element: HTMLElement): boolean => {
   const roleAttribute = element.getAttribute("role");
   if (!roleAttribute) {
@@ -147,6 +148,10 @@ const shouldIgnoreGlobalShortcutTarget = (
 
   let currentElement: HTMLElement | null = target;
   while (currentElement) {
+    if (currentElement.getAttribute(globalShortcutAllowAttribute) === "true") {
+      return false;
+    }
+
     if (
       currentElement.isContentEditable ||
       globalShortcutBlockingTags.has(currentElement.tagName) ||
@@ -2515,6 +2520,7 @@ export default function ViewerPage() {
                       />
 
                       <button
+                        data-allow-global-shortcuts="true"
                         ref={(el) => {
                           if (el) {
                             messageRefs.current.set(index, el);
