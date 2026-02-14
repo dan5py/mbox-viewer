@@ -1240,6 +1240,37 @@ export default function ViewerPage() {
   ]);
 
   const totalFilteredMessages = filteredMessageIndices.length;
+  const messageSummaryLabel = useMemo(() => {
+    if (totalMessages === 0) {
+      return "";
+    }
+
+    if (searchResultCount !== null) {
+      const resultsLabel = t("search.results", {
+        count: totalFilteredMessages,
+      });
+
+      return totalFilteredMessages > 0
+        ? `${resultsLabel} ${t("pagination.of")} ${totalMessages}`
+        : resultsLabel;
+    }
+
+    if (selectedLabel !== null) {
+      return `${t("messages", {
+        count: totalFilteredMessages,
+      })} ${t("pagination.of")} ${totalMessages}`;
+    }
+
+    return t("messages", {
+      count: totalMessages,
+    });
+  }, [
+    searchResultCount,
+    selectedLabel,
+    t,
+    totalFilteredMessages,
+    totalMessages,
+  ]);
 
   const totalPages = Math.ceil(totalFilteredMessages / messagesPerPage);
 
@@ -1548,32 +1579,11 @@ export default function ViewerPage() {
                 </p>
               ) : (
                 totalMessages > 0 && (
-                  <p className="text-xs text-muted-foreground font-medium truncate">
-                    {searchResultCount !== null ? (
-                      <>
-                        {t("search.results", {
-                          count: totalFilteredMessages,
-                        })}
-                        {totalFilteredMessages > 0 && (
-                          <span className="ml-1 text-muted-foreground/70">
-                            {t("pagination.of")} {totalMessages}
-                          </span>
-                        )}
-                      </>
-                    ) : selectedLabel !== null ? (
-                      <>
-                        {t("messages", {
-                          count: totalFilteredMessages,
-                        })}
-                        <span className="ml-1 text-muted-foreground/70">
-                          {t("pagination.of")} {totalMessages}
-                        </span>
-                      </>
-                    ) : (
-                      t("messages", {
-                        count: totalMessages,
-                      })
-                    )}
+                  <p
+                    className="text-xs text-muted-foreground font-medium truncate"
+                    title={messageSummaryLabel}
+                  >
+                    {messageSummaryLabel}
                   </p>
                 )
               )}
