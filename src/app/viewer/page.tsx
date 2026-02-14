@@ -1669,30 +1669,32 @@ export default function ViewerPage() {
         return;
       }
 
-      const hasActiveViewerTextSelection = (() => {
-        const viewerPageRoot = viewerPageRootRef.current;
-        if (!viewerPageRoot) {
-          return false;
-        }
-
-        const selection = window.getSelection();
-        if (selection === null || selection.isCollapsed) {
-          return false;
-        }
-
-        const getSelectionElement = (node: Node | null) =>
-          node instanceof Element ? node : (node?.parentElement ?? null);
-        const anchorElement = getSelectionElement(selection.anchorNode);
-        const focusElement = getSelectionElement(selection.focusNode);
-
-        return (
-          (anchorElement !== null && viewerPageRoot.contains(anchorElement)) ||
-          (focusElement !== null && viewerPageRoot.contains(focusElement))
-        );
-      })();
-
       const isSelectAllShortcut =
         (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === "a";
+      const hasActiveViewerTextSelection = isSelectAllShortcut
+        ? (() => {
+            const viewerPageRoot = viewerPageRootRef.current;
+            if (!viewerPageRoot) {
+              return false;
+            }
+
+            const selection = window.getSelection();
+            if (selection === null || selection.isCollapsed) {
+              return false;
+            }
+
+            const getSelectionElement = (node: Node | null) =>
+              node instanceof Element ? node : (node?.parentElement ?? null);
+            const anchorElement = getSelectionElement(selection.anchorNode);
+            const focusElement = getSelectionElement(selection.focusNode);
+
+            return (
+              (anchorElement !== null &&
+                viewerPageRoot.contains(anchorElement)) ||
+              (focusElement !== null && viewerPageRoot.contains(focusElement))
+            );
+          })()
+        : false;
       const isOpenShortcutsHelpShortcut =
         !e.ctrlKey &&
         !e.metaKey &&
