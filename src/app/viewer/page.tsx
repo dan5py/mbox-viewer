@@ -1427,7 +1427,7 @@ export default function ViewerPage() {
         searchSummaryBaseCount
       );
 
-      return totalFilteredMessages > 0
+      return searchSummaryBaseCount > 0
         ? `${resultsLabel} ${t("pagination.of")} ${formattedSearchBaseCount}`
         : resultsLabel;
     }
