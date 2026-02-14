@@ -907,6 +907,10 @@ export default function ViewerPage() {
   }, [currentPage, filteredMessageIndices, messagesPerPage]);
 
   const selectedCount = selectedMessageIndices.size;
+  const integerFormatter = useMemo(
+    () => new Intl.NumberFormat(locale),
+    [locale]
+  );
   const selectedCountLabel = t("selection.selectedCount", {
     count: selectedCount,
   });
@@ -918,6 +922,12 @@ export default function ViewerPage() {
   });
   const selectedCountBadgeLabel =
     selectedCount > 99 ? "99+" : selectedCount.toString();
+  const visibleCountLabel = integerFormatter.format(
+    visibleMessageIndices.length
+  );
+  const filteredCountLabel = integerFormatter.format(
+    filteredMessageIndices.length
+  );
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
@@ -1660,7 +1670,7 @@ export default function ViewerPage() {
                     >
                       {togglePageSelectionLabel}{" "}
                       <span className="text-muted-foreground/80">
-                        ({visibleMessageIndices.length})
+                        ({visibleCountLabel})
                       </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
@@ -1672,7 +1682,7 @@ export default function ViewerPage() {
                     >
                       {toggleFilteredSelectionLabel}{" "}
                       <span className="text-muted-foreground/80">
-                        ({filteredMessageIndices.length})
+                        ({filteredCountLabel})
                       </span>
                       <DropdownMenuShortcut>
                         {toggleFilteredSelectionShortcutLabel}
@@ -1775,7 +1785,7 @@ export default function ViewerPage() {
                         })}
                       />
                       <span className="font-mono text-[10px] tabular-nums text-muted-foreground/80">
-                        {searchProgress}%
+                        {integerFormatter.format(searchProgress)}%
                       </span>
                     </div>
                   ) : searchFailed ? (
