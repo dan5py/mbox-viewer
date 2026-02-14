@@ -63,6 +63,7 @@
       "importCancelled": "Importazione annullata",
       "scanFailed": "Impossibile analizzare i file selezionati",
       "invalidType": "{count, plural, =1 {Tipo di file non supportato. Seleziona un file MBOX.} other {Alcuni file hanno un tipo non supportato. Seleziona solo file MBOX.}}",
+      "or": "o",
       "samplesTitle": "Prova con file di esempio",
       "samplesDescription": "Carica due file MBOX di esempio integrati per testare subito ricerca, anteprima ed esportazione.",
       "useSamples": "Usa file di esempio"

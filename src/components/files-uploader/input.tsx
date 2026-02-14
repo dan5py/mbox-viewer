@@ -346,23 +346,30 @@ export function FileUploadInput({
       )}
 
       {!isUploading && files.length === 0 && (
-        <div className="mt-3 rounded-md border border-border/60 bg-muted/20 p-3 text-left">
-          <p className="text-sm font-medium">
-            {t("Viewer.input.samplesTitle")}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {t("Viewer.input.samplesDescription")}
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-3"
-            onClick={handleUseSamples}
-          >
-            {t("Viewer.input.useSamples")}
-          </Button>
-        </div>
+        <>
+          <div className="my-3 flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border/60" />
+            <span className="font-medium">{t("Viewer.input.or")}</span>
+            <span className="h-px flex-1 bg-border/60" />
+          </div>
+          <div className="rounded-md border border-border/60 bg-muted/20 p-3 text-center">
+            <p className="text-sm font-medium">
+              {t("Viewer.input.samplesTitle")}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("Viewer.input.samplesDescription")}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={handleUseSamples}
+            >
+              {t("Viewer.input.useSamples")}
+            </Button>
+          </div>
+        </>
       )}
 
       {error && (
