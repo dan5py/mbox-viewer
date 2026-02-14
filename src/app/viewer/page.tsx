@@ -1628,7 +1628,7 @@ export default function ViewerPage() {
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
                 <Kbd>Shift</Kbd>
-                <Kbd>Click</Kbd>
+                <Kbd>{t("selection.shortcuts.clickKey")}</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.range")}</span>
             </div>

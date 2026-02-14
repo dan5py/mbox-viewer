@@ -84,6 +84,7 @@
       "shortcuts": {
         "select": "toggle filtered selection",
         "clear": "clear all selections",
+        "clickKey": "Click",
         "range": "select a range"
       }
     },

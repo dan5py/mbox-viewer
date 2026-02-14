@@ -84,6 +84,7 @@
       "shortcuts": {
         "select": "attiva/disattiva selezione filtrata",
         "clear": "pulisce tutte le selezioni",
+        "clickKey": "Clic",
         "range": "seleziona un intervallo"
       }
     },
