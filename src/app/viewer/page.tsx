@@ -1464,6 +1464,18 @@ export default function ViewerPage() {
         !e.metaKey &&
         !e.altKey &&
         (e.key === "?" || (e.shiftKey && e.key === "/"));
+      const isResetFiltersShortcut =
+        e.key === "Escape" &&
+        e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey;
+      const isClearPreviewSelectionShortcut =
+        e.key === "Escape" &&
+        !e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey;
 
       if (isOpenShortcutsHelpShortcut) {
         e.preventDefault();
@@ -1475,7 +1487,7 @@ export default function ViewerPage() {
         } else {
           handleToggleFilteredSelection();
         }
-      } else if (e.key === "Escape" && e.shiftKey) {
+      } else if (isResetFiltersShortcut) {
         e.preventDefault();
         handleResetFilters();
       } else if (e.key === "ArrowDown") {
@@ -1515,7 +1527,7 @@ export default function ViewerPage() {
             visibleMessageIndices[visibleMessageIndices.length - 1]
           );
         }
-      } else if (e.key === "Escape") {
+      } else if (isClearPreviewSelectionShortcut) {
         setSelectedMessageIndex(null);
         setSelectedMessage(null);
         setSelectedMessageData(null);
