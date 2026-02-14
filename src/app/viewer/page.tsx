@@ -1120,6 +1120,9 @@ export default function ViewerPage() {
   const moreLabelsTriggerAriaLabel = t("search.moreLabelsAria", {
     count: overflowLabelFilters.length,
   });
+  const moreLabelsMenuAriaLabel = t("search.moreLabelsMenuLabel", {
+    count: overflowLabelFilters.length,
+  });
   const shouldShowLabelFiltersRow =
     allLabels.length > 0 &&
     (selectedLabel !== null || labelFiltersForLayout.length > 0);
@@ -2121,6 +2124,7 @@ export default function ViewerPage() {
                       <DropdownMenuContent
                         id={labelOverflowMenuContentId}
                         align="start"
+                        aria-label={moreLabelsMenuAriaLabel}
                         className="max-h-72 w-56 overflow-y-auto"
                       >
                         {selectedLabel !== null && (

@@ -72,6 +72,7 @@
       "inLabel": "in “{label}”",
       "moreLabels": "+{count, plural, =1 {# more label} other {# more labels}}",
       "moreLabelsAria": "Show {count, plural, =1 {# more label} other {# more labels}}",
+      "moreLabelsMenuLabel": "Additional labels menu, {count, plural, =1 {# label} other {# labels}}",
       "labelWithCount": "{label}. {count, plural, =1 {# message} other {# messages}}",
       "noMessages": "No messages",
       "clear": "Clear search",
