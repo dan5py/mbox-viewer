@@ -3262,6 +3262,7 @@ export default function ViewerPage() {
               <KbdGroup>
                 <Kbd>?</Kbd>
                 <Kbd>F1</Kbd>
+                <Kbd>Help</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.openDialog")}</span>
             </div>
