@@ -135,7 +135,7 @@ const hasGlobalShortcutBlockingRole = (element: HTMLElement): boolean => {
 
   return roleAttribute
     .split(/\s+/)
-    .some((role) => globalShortcutBlockingRoleSet.has(role));
+    .some((role) => globalShortcutBlockingRoleSet.has(role.toLowerCase()));
 };
 
 const shouldIgnoreGlobalShortcutTarget = (
