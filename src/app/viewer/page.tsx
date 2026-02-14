@@ -1917,7 +1917,7 @@ export default function ViewerPage() {
                           {/* CC indicator */}
                           {selectedMessageData.cc && (
                             <Badge variant="outline" className="text-xs h-5">
-                              CC:{" "}
+                              {t("preview.cc")}:{" "}
                               {
                                 formatEmailAddresses(selectedMessageData.cc)
                                   .length
