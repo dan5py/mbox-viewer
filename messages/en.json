@@ -83,7 +83,8 @@
       "toggleMessageWithSubject": "Toggle message selection for {subject}",
       "shortcuts": {
         "select": "toggle filtered selection",
-        "clear": "clear all selections"
+        "clear": "clear all selections",
+        "range": "select a range"
       }
     },
     "export": {

@@ -141,6 +141,7 @@ export default function ViewerPage() {
   const searchWorker = useRef<Worker | null>(null);
   const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
   const lastNavTimeRef = useRef<number>(0);
+  const lastSelectionAnchorRef = useRef<number | null>(null);
   const store = useMboxStore();
 
   const {
@@ -250,6 +251,7 @@ export default function ViewerPage() {
   // Reset selection when switching files
   useEffect(() => {
     exportAbortRef.current?.abort();
+    lastSelectionAnchorRef.current = null;
     setSelectedMessageIndex(null);
     setSelectedMessageData(null);
     setSelectedMessageIndices(new Set());
@@ -883,17 +885,37 @@ export default function ViewerPage() {
     filteredMessageIndices.length > 0 &&
     filteredMessageIndices.every((idx) => selectedMessageIndices.has(idx));
 
-  const handleToggleMessageSelection = useCallback((index: number) => {
-    setSelectedMessageIndices((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
-      } else {
-        next.add(index);
-      }
-      return next;
-    });
-  }, []);
+  const handleToggleMessageSelection = useCallback(
+    (index: number, extendRange = false) => {
+      setSelectedMessageIndices((prev) => {
+        const next = new Set(prev);
+        const anchor = lastSelectionAnchorRef.current;
+
+        if (extendRange && anchor !== null) {
+          const start = Math.min(anchor, index);
+          const end = Math.max(anchor, index);
+          const shouldSelectRange = !next.has(index);
+
+          for (let i = start; i <= end; i++) {
+            if (shouldSelectRange) {
+              next.add(i);
+            } else {
+              next.delete(i);
+            }
+          }
+        } else if (next.has(index)) {
+          next.delete(index);
+        } else {
+          next.add(index);
+        }
+
+        return next;
+      });
+
+      lastSelectionAnchorRef.current = index;
+    },
+    []
+  );
 
   const handleToggleCurrentPageSelection = useCallback(() => {
     if (visibleMessageIndices.length === 0) {
@@ -946,6 +968,7 @@ export default function ViewerPage() {
   }, [filteredMessageIndices]);
 
   const handleClearSelection = useCallback(() => {
+    lastSelectionAnchorRef.current = null;
     setSelectedMessageIndices(new Set());
   }, []);
 
@@ -1563,6 +1586,13 @@ export default function ViewerPage() {
               </KbdGroup>
               <span>{t("selection.shortcuts.clear")}</span>
             </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
+                <Kbd>Shift</Kbd>
+                <Kbd>Click</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.range")}</span>
+            </div>
           </div>
 
           {/* Message List */}
@@ -1609,9 +1639,10 @@ export default function ViewerPage() {
                     <div className="flex items-start gap-2">
                       <Checkbox
                         checked={isMessageChecked}
-                        onCheckedChange={() =>
-                          handleToggleMessageSelection(index)
-                        }
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleToggleMessageSelection(index, event.shiftKey);
+                        }}
                         aria-label={t("selection.toggleMessageWithSubject", {
                           subject: messageSubjectForAria,
                         })}

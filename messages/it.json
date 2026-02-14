@@ -83,7 +83,8 @@
       "toggleMessageWithSubject": "Attiva/disattiva selezione del messaggio {subject}",
       "shortcuts": {
         "select": "attiva/disattiva selezione filtrata",
-        "clear": "pulisce tutte le selezioni"
+        "clear": "pulisce tutte le selezioni",
+        "range": "seleziona un intervallo"
       }
     },
     "export": {
