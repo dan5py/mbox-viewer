@@ -1726,6 +1726,8 @@ export default function ViewerPage() {
         !e.ctrlKey &&
         !e.metaKey &&
         !e.altKey;
+      const hasPreviewSelection =
+        selectedMessageIndex !== null || selectedMessageData !== null;
       const shouldIgnoreRepeatShortcut =
         e.repeat &&
         (isSelectAllShortcut ||
@@ -1792,6 +1794,11 @@ export default function ViewerPage() {
           );
         }
       } else if (isClearPreviewSelectionShortcut) {
+        if (!hasPreviewSelection) {
+          return;
+        }
+
+        e.preventDefault();
         setSelectedMessageIndex(null);
         setSelectedMessage(null);
         setSelectedMessageData(null);
@@ -1816,6 +1823,7 @@ export default function ViewerPage() {
     previewedAttachment,
     fileToDelete,
     setSelectedMessage,
+    selectedMessageData,
     files.length,
   ]);
 
