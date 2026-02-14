@@ -1598,7 +1598,9 @@ export default function ViewerPage() {
                         {toggleFilteredSelectionShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuCheckboxItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
+                      variant="destructive"
                       onClick={handleClearSelection}
                       disabled={selectedCount === 0}
                     >
