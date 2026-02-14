@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import Image from "next/image";
 import useMboxStore from "~/stores/mbox-store";
@@ -162,6 +163,7 @@ export default function ViewerPage() {
   const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
   const searchWorker = useRef<Worker | null>(null);
   const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+  const labelFiltersGroupRef = useRef<HTMLDivElement | null>(null);
   const lastNavTimeRef = useRef<number>(0);
   const lastSelectionAnchorRef = useRef<number | null>(null);
   const previousSearchQueryRef = useRef("");
@@ -1200,6 +1202,48 @@ export default function ViewerPage() {
   const handleSelectOverflowAllEmails = useCallback(() => {
     handleSelectLabelFilter(null);
   }, [handleSelectLabelFilter]);
+  const handleLabelFiltersGroupKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) {
+        return;
+      }
+
+      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
+        return;
+      }
+
+      if (!(event.target instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      if (event.target.dataset.labelFilterChip !== "true") {
+        return;
+      }
+
+      const groupElement = labelFiltersGroupRef.current;
+      if (!groupElement) {
+        return;
+      }
+
+      const chipButtons = Array.from(
+        groupElement.querySelectorAll<HTMLButtonElement>(
+          'button[data-label-filter-chip="true"]:not([disabled])'
+        )
+      );
+
+      const currentIndex = chipButtons.indexOf(event.target);
+      if (currentIndex === -1 || chipButtons.length <= 1) {
+        return;
+      }
+
+      event.preventDefault();
+      const delta = event.key === "ArrowRight" ? 1 : -1;
+      const nextIndex =
+        (currentIndex + delta + chipButtons.length) % chipButtons.length;
+      chipButtons[nextIndex]?.focus();
+    },
+    []
+  );
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -2066,11 +2110,14 @@ export default function ViewerPage() {
             {shouldShowLabelFiltersRow && (
               <ScrollArea className="w-full">
                 <div
+                  ref={labelFiltersGroupRef}
                   className="flex gap-1.5 pb-1"
                   role="group"
                   aria-label={labelFiltersGroupLabel}
+                  onKeyDown={handleLabelFiltersGroupKeyDown}
                 >
                   <button
+                    data-label-filter-chip="true"
                     type="button"
                     onClick={() => handleSelectLabelFilter(null)}
                     className={getLabelFilterChipClassName(
@@ -2094,6 +2141,7 @@ export default function ViewerPage() {
                     return (
                       <button
                         key={label}
+                        data-label-filter-chip="true"
                         type="button"
                         onClick={() => handleSelectLabelFilter(label)}
                         className={getLabelFilterChipClassName(isLabelActive)}
@@ -2119,6 +2167,7 @@ export default function ViewerPage() {
                     >
                       <DropdownMenuTrigger asChild>
                         <button
+                          data-label-filter-chip="true"
                           type="button"
                           className={getLabelFilterChipClassName(
                             isLabelOverflowMenuOpen
