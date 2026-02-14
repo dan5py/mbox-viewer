@@ -1589,7 +1589,10 @@ export default function ViewerPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="relative size-7"
+                        className={cn(
+                          "relative size-7 overflow-visible",
+                          selectedCount > 0 && "text-primary"
+                        )}
                         aria-label={`${t("selection.actions")} · ${selectedCountLabel}`}
                         title={`${t("selection.actions")} · ${selectedCountLabel}`}
                       >
