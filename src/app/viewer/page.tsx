@@ -1061,6 +1061,26 @@ export default function ViewerPage() {
     setSelectedLabel(null);
   }, [handleClearSearch, setSelectedLabel]);
 
+  const handleToggleCurrentPageSelectionFromMenu = useCallback(() => {
+    handleToggleCurrentPageSelection();
+    setIsActionsMenuOpen(false);
+  }, [handleToggleCurrentPageSelection]);
+
+  const handleToggleFilteredSelectionFromMenu = useCallback(() => {
+    handleToggleFilteredSelection();
+    setIsActionsMenuOpen(false);
+  }, [handleToggleFilteredSelection]);
+
+  const handleClearSelectionFromMenu = useCallback(() => {
+    handleClearSelection();
+    setIsActionsMenuOpen(false);
+  }, [handleClearSelection]);
+
+  const handleResetFiltersFromMenu = useCallback(() => {
+    handleResetFilters();
+    setIsActionsMenuOpen(false);
+  }, [handleResetFilters]);
+
   const handleOpenExportDialog = useCallback(() => {
     setIsActionsMenuOpen(false);
     setIsExportDialogOpen(true);
@@ -1624,7 +1644,7 @@ export default function ViewerPage() {
                     <DropdownMenuCheckboxItem
                       checked={allVisibleSelected}
                       onCheckedChange={() => {
-                        handleToggleCurrentPageSelection();
+                        handleToggleCurrentPageSelectionFromMenu();
                       }}
                       disabled={visibleMessageIndices.length === 0}
                     >
@@ -1638,7 +1658,7 @@ export default function ViewerPage() {
                     <DropdownMenuCheckboxItem
                       checked={allFilteredSelected}
                       onCheckedChange={() => {
-                        handleToggleFilteredSelection();
+                        handleToggleFilteredSelectionFromMenu();
                       }}
                       disabled={filteredMessageIndices.length === 0}
                     >
@@ -1659,7 +1679,7 @@ export default function ViewerPage() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       variant="destructive"
-                      onClick={handleClearSelection}
+                      onClick={handleClearSelectionFromMenu}
                       disabled={selectedCount === 0}
                     >
                       {t("selection.clear")}
@@ -1672,7 +1692,7 @@ export default function ViewerPage() {
                       {t("selection.sections.filters")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
-                      onClick={handleResetFilters}
+                      onClick={handleResetFiltersFromMenu}
                       disabled={!hasActiveFilters}
                     >
                       {t("selection.resetFilters")}
