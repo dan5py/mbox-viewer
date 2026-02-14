@@ -1393,6 +1393,10 @@ export default function ViewerPage() {
   const totalFilteredMessages = filteredMessageIndices.length;
   const shouldShowHeaderStatusRow =
     isSearching || searchFailed || hasActiveFilters || selectedCount > 0;
+  const searchSummaryBaseCount =
+    selectedLabel !== null && labelFilteredIndices !== null
+      ? labelFilteredIndices.length
+      : totalMessages;
   const messageSummaryLabel = useMemo(() => {
     if (totalMessages === 0) {
       if (hasSearchQuery) {
@@ -1419,16 +1423,20 @@ export default function ViewerPage() {
       const resultsLabel = t("search.results", {
         count: totalFilteredMessages,
       });
+      const formattedSearchBaseCount = integerFormatter.format(
+        searchSummaryBaseCount
+      );
 
       return totalFilteredMessages > 0
-        ? `${resultsLabel} ${t("pagination.of")} ${totalMessages}`
+        ? `${resultsLabel} ${t("pagination.of")} ${formattedSearchBaseCount}`
         : resultsLabel;
     }
 
     if (selectedLabel !== null) {
+      const formattedTotalMessages = integerFormatter.format(totalMessages);
       return `${t("messages", {
         count: totalFilteredMessages,
-      })} ${t("pagination.of")} ${totalMessages}`;
+      })} ${t("pagination.of")} ${formattedTotalMessages}`;
     }
 
     return t("messages", {
@@ -1439,10 +1447,12 @@ export default function ViewerPage() {
     selectedCount,
     selectedCountLabel,
     searchResultCount,
+    searchSummaryBaseCount,
     selectedLabel,
     t,
     totalFilteredMessages,
     totalMessages,
+    integerFormatter,
   ]);
 
   const totalPages = Math.ceil(totalFilteredMessages / messagesPerPage);
