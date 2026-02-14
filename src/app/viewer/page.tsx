@@ -17,6 +17,7 @@ import {
   Download,
   Eye,
   FileText,
+  Keyboard,
   Mail,
   Maximize2,
   Paperclip,
@@ -68,6 +69,11 @@ import {
 import { Input } from "~/components/ui/input";
 import { Kbd, KbdGroup } from "~/components/ui/kbd";
 import { Label } from "~/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { Progress } from "~/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
@@ -1621,28 +1627,49 @@ export default function ViewerPage() {
                   <Download className="size-3.5 mr-1" />
                   {t("export.action")}
                 </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      aria-label={t("selection.shortcuts.openHelp")}
+                      title={t("selection.shortcuts.openHelp")}
+                    >
+                      <Keyboard className="size-3.5" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-80 space-y-3 p-3">
+                    <p className="text-xs font-semibold text-foreground">
+                      {t("selection.shortcuts.title")}
+                    </p>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <KbdGroup>
+                          <Kbd>{shortcutModifierLabel}</Kbd>
+                          <Kbd>A</Kbd>
+                        </KbdGroup>
+                        <span>{t("selection.shortcuts.select")}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <KbdGroup>
+                          <Kbd>Shift</Kbd>
+                          <Kbd>{shortcutModifierLabel}</Kbd>
+                          <Kbd>A</Kbd>
+                        </KbdGroup>
+                        <span>{t("selection.shortcuts.clear")}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <KbdGroup>
+                          <Kbd>Shift</Kbd>
+                          <Kbd>{t("selection.shortcuts.clickKey")}</Kbd>
+                        </KbdGroup>
+                        <span>{t("selection.shortcuts.range")}</span>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <KbdGroup>
-                <Kbd>{shortcutModifierLabel}</Kbd>
-                <Kbd>A</Kbd>
-              </KbdGroup>
-              <span>{t("selection.shortcuts.select")}</span>
-              <KbdGroup>
-                <Kbd>Shift</Kbd>
-                <Kbd>{shortcutModifierLabel}</Kbd>
-                <Kbd>A</Kbd>
-              </KbdGroup>
-              <span>{t("selection.shortcuts.clear")}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <KbdGroup>
-                <Kbd>Shift</Kbd>
-                <Kbd>{t("selection.shortcuts.clickKey")}</Kbd>
-              </KbdGroup>
-              <span>{t("selection.shortcuts.range")}</span>
             </div>
           </div>
 

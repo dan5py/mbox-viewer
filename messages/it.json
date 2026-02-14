@@ -82,6 +82,8 @@
       "toggleMessage": "Attiva/disattiva selezione messaggio",
       "toggleMessageWithSubject": "Attiva/disattiva selezione del messaggio {subject}",
       "shortcuts": {
+        "title": "Scorciatoie di selezione",
+        "openHelp": "Mostra scorciatoie di selezione",
         "select": "attiva/disattiva selezione filtrata",
         "clear": "pulisce tutte le selezioni",
         "clickKey": "Clic",
