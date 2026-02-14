@@ -1532,23 +1532,23 @@ export default function ViewerPage() {
               </ScrollArea>
             )}
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 min-w-0">
               {isSearching ? (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
                   <Spinner className="size-3" label={t("search.searching")} />
-                  <span>
+                  <span className="truncate">
                     {t("search.searchingProgress", {
                       progress: searchProgress,
                     })}
                   </span>
                 </div>
               ) : searchFailed ? (
-                <p className="text-xs text-destructive font-medium">
+                <p className="text-xs text-destructive font-medium truncate">
                   {t("search.error")}
                 </p>
               ) : (
                 totalMessages > 0 && (
-                  <p className="text-xs text-muted-foreground font-medium">
+                  <p className="text-xs text-muted-foreground font-medium truncate">
                     {searchResultCount !== null ? (
                       <>
                         {t("search.results", {
