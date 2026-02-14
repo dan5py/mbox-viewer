@@ -1897,9 +1897,14 @@ export default function ViewerPage() {
                             {(() => {
                               const toAddresses = formatEmailAddresses(
                                 selectedMessageData.to
+                              ).filter(
+                                (address) => address.name || address.email
                               );
                               const firstRecipient =
-                                toAddresses[0]?.name || toAddresses[0]?.email;
+                                toAddresses[0]?.name ||
+                                toAddresses[0]?.email ||
+                                t("preview.unknown");
+
                               if (toAddresses.length === 1) {
                                 return firstRecipient;
                               } else if (toAddresses.length > 1) {
