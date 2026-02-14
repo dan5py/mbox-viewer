@@ -927,6 +927,16 @@ export default function ViewerPage() {
   const allFilteredSelected =
     filteredMessageIndices.length > 0 &&
     filteredMessageIndices.every((idx) => selectedMessageIndices.has(idx));
+  const togglePageSelectionLabel = allVisibleSelected
+    ? t("selection.deselectPage")
+    : t("selection.selectPage");
+  const toggleFilteredSelectionLabel = allFilteredSelected
+    ? hasActiveFilters
+      ? t("selection.deselectFiltered")
+      : t("selection.deselectAll")
+    : hasActiveFilters
+      ? t("selection.selectFiltered")
+      : t("selection.selectAll");
 
   const handleToggleMessageSelection = useCallback(
     (index: number, extendRange = false) => {
@@ -1648,9 +1658,7 @@ export default function ViewerPage() {
                       }}
                       disabled={visibleMessageIndices.length === 0}
                     >
-                      {allVisibleSelected
-                        ? t("selection.deselectPage")
-                        : t("selection.selectPage")}{" "}
+                      {togglePageSelectionLabel}{" "}
                       <span className="text-muted-foreground/80">
                         ({visibleMessageIndices.length})
                       </span>
@@ -1662,13 +1670,7 @@ export default function ViewerPage() {
                       }}
                       disabled={filteredMessageIndices.length === 0}
                     >
-                      {allFilteredSelected
-                        ? hasActiveFilters
-                          ? t("selection.deselectFiltered")
-                          : t("selection.deselectAll")
-                        : hasActiveFilters
-                          ? t("selection.selectFiltered")
-                          : t("selection.selectAll")}{" "}
+                      {toggleFilteredSelectionLabel}{" "}
                       <span className="text-muted-foreground/80">
                         ({filteredMessageIndices.length})
                       </span>
