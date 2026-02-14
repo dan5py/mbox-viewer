@@ -49,6 +49,43 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
+function sanitizeHtmlBodyForExport(html: string): string {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+
+  const blockedTags = doc.querySelectorAll(
+    "script, iframe, object, embed, link[rel='import']"
+  );
+  blockedTags.forEach((node) => node.remove());
+
+  const allElements = doc.querySelectorAll("*");
+  for (const element of allElements) {
+    // Remove inline event handlers and javascript: URLs.
+    const attributes = Array.from(element.attributes);
+    for (const attribute of attributes) {
+      const attributeName = attribute.name.toLowerCase();
+      const attributeValue = attribute.value.trim().toLowerCase();
+
+      if (attributeName.startsWith("on")) {
+        element.removeAttribute(attribute.name);
+        continue;
+      }
+
+      const isUrlAttribute =
+        attributeName === "href" ||
+        attributeName === "src" ||
+        attributeName === "xlink:href" ||
+        attributeName === "formaction";
+
+      if (isUrlAttribute && attributeValue.startsWith("javascript:")) {
+        element.removeAttribute(attribute.name);
+      }
+    }
+  }
+
+  return doc.body?.innerHTML || "";
+}
+
 function sanitizeFilenamePart(value: string): string {
   return value
     .trim()
@@ -96,7 +133,7 @@ function decodeAttachment(att: EmailAttachment): Uint8Array {
 
 function getBodyAsHtml(message: EmailMessage): string {
   if (message.htmlBody) {
-    return message.htmlBody;
+    return sanitizeHtmlBodyForExport(message.htmlBody);
   }
 
   const escaped = escapeHtml(message.body);
