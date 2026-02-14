@@ -111,8 +111,6 @@
         "clearPreview": "clear selected preview message",
         "navigateMessages": "move preview selection between messages",
         "navigateLabels": "move between visible label filters",
-        "jumpLabels": "jump to first or last visible label filter",
-        "jumpMenuItems": "in open menus, jump to first or last item",
         "jumpLabelsAndMenuItems": "jump to first or last visible label filter or open menu item",
         "clickKey": "Click",
         "range": "select a range"
