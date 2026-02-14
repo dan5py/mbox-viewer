@@ -1551,7 +1551,8 @@ export default function ViewerPage() {
                       size="icon"
                       className={cn(
                         "relative size-7 overflow-visible shrink-0",
-                        selectedCount > 0 && "text-primary"
+                        selectedCount > 0 &&
+                          "text-primary bg-primary/10 hover:bg-primary/15"
                       )}
                       aria-label={actionsTriggerLabel}
                       title={actionsTriggerLabel}
