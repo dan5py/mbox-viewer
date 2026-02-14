@@ -71,6 +71,7 @@
       "error": "Search failed. Please try again."
     },
     "selection": {
+      "actions": "Actions",
       "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
       "selectPage": "Select page",
       "deselectPage": "Deselect page",

@@ -59,6 +59,14 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -1581,42 +1589,51 @@ export default function ViewerPage() {
               <p className="text-xs text-muted-foreground">
                 {t("selection.selectedCount", { count: selectedCount })}
               </p>
-              <div className="flex flex-wrap items-center justify-end gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={handleToggleCurrentPageSelection}
-                  disabled={visibleMessageIndices.length === 0}
-                >
-                  {allVisibleSelected
-                    ? t("selection.deselectPage")
-                    : t("selection.selectPage")}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={handleToggleFilteredSelection}
-                  disabled={filteredMessageIndices.length === 0}
-                >
-                  {allFilteredSelected
-                    ? hasActiveFilters
-                      ? t("selection.deselectFiltered")
-                      : t("selection.deselectAll")
-                    : hasActiveFilters
-                      ? t("selection.selectFiltered")
-                      : t("selection.selectAll")}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={handleClearSelection}
-                  disabled={selectedCount === 0}
-                >
-                  {t("selection.clear")}
-                </Button>
+              <div className="flex items-center justify-end gap-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                    >
+                      {t("selection.actions")}
+                      <ChevronDown className="size-3 ml-1.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="text-xs">
+                      {t("selection.actions")}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={handleToggleCurrentPageSelection}
+                      disabled={visibleMessageIndices.length === 0}
+                    >
+                      {allVisibleSelected
+                        ? t("selection.deselectPage")
+                        : t("selection.selectPage")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleToggleFilteredSelection}
+                      disabled={filteredMessageIndices.length === 0}
+                    >
+                      {allFilteredSelected
+                        ? hasActiveFilters
+                          ? t("selection.deselectFiltered")
+                          : t("selection.deselectAll")
+                        : hasActiveFilters
+                          ? t("selection.selectFiltered")
+                          : t("selection.selectAll")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleClearSelection}
+                      disabled={selectedCount === 0}
+                    >
+                      {t("selection.clear")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button
                   variant="outline"
                   size="sm"
