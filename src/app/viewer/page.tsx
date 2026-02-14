@@ -109,6 +109,7 @@ export default function ViewerPage() {
     Set<number>
   >(new Set());
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+  const [isLabelOverflowMenuOpen, setIsLabelOverflowMenuOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<ExportFormat>("mbox");
@@ -271,6 +272,7 @@ export default function ViewerPage() {
     setSelectedMessageData(null);
     setSelectedMessageIndices(new Set());
     setIsActionsMenuOpen(false);
+    setIsLabelOverflowMenuOpen(false);
     setIsExportDialogOpen(false);
     setIsShortcutsDialogOpen(false);
     setExportProgress(0);
@@ -1004,6 +1006,10 @@ export default function ViewerPage() {
 
     setSelectedLabel(selectedLabel === label ? null : label);
   };
+  const handleSelectOverflowLabelFilter = (label: string) => {
+    handleSelectLabelFilter(label);
+    setIsLabelOverflowMenuOpen(false);
+  };
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1278,6 +1284,7 @@ export default function ViewerPage() {
       // Ignore global shortcuts while dialogs are open.
       if (
         isActionsMenuOpen ||
+        isLabelOverflowMenuOpen ||
         isExportDialogOpen ||
         isShortcutsDialogOpen ||
         isFullscreenOpen ||
@@ -1381,6 +1388,7 @@ export default function ViewerPage() {
     handleResetFilters,
     handleOpenShortcutsDialog,
     isActionsMenuOpen,
+    isLabelOverflowMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
     isFullscreenOpen,
@@ -1859,7 +1867,10 @@ export default function ViewerPage() {
                     </button>
                   ))}
                   {overflowLabelFilters.length > 0 && (
-                    <DropdownMenu>
+                    <DropdownMenu
+                      open={isLabelOverflowMenuOpen}
+                      onOpenChange={setIsLabelOverflowMenuOpen}
+                    >
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
@@ -1883,7 +1894,7 @@ export default function ViewerPage() {
                             key={label}
                             checked={selectedLabel === label}
                             onCheckedChange={() =>
-                              handleSelectLabelFilter(label)
+                              handleSelectOverflowLabelFilter(label)
                             }
                             aria-label={getLabelFilterButtonLabel(
                               label,
