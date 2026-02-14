@@ -1542,6 +1542,11 @@ export default function ViewerPage() {
       ? labelFilteredIndices.length
       : totalMessages;
   const messageSummaryLabel = useMemo(() => {
+    const selectedLabelSuffix =
+      selectedLabel !== null
+        ? ` ${t("search.inLabel", { label: selectedLabel })}`
+        : "";
+
     if (totalMessages === 0) {
       if (hasSearchQuery) {
         return t("search.results", { count: 0 });
@@ -1572,15 +1577,15 @@ export default function ViewerPage() {
       );
 
       return searchSummaryBaseCount > 0
-        ? `${resultsLabel} ${t("pagination.of")} ${formattedSearchBaseCount}`
-        : resultsLabel;
+        ? `${resultsLabel} ${t("pagination.of")} ${formattedSearchBaseCount}${selectedLabelSuffix}`
+        : `${resultsLabel}${selectedLabelSuffix}`;
     }
 
     if (selectedLabel !== null) {
       const formattedTotalMessages = integerFormatter.format(totalMessages);
       return `${t("messages", {
         count: totalFilteredMessages,
-      })} ${t("pagination.of")} ${formattedTotalMessages}`;
+      })} ${t("pagination.of")} ${formattedTotalMessages}${selectedLabelSuffix}`;
     }
 
     return t("messages", {

@@ -67,6 +67,7 @@
       "results": "{count, plural, =1 {# result} other {# results}}",
       "allEmails": "All emails",
       "labelFilters": "Label filters",
+      "inLabel": "in “{label}”",
       "moreLabels": "+{count, plural, =1 {# more label} other {# more labels}}",
       "moreLabelsAria": "{count, plural, =1 {# more label} other {# more labels}}",
       "labelWithCount": "{label}. {count, plural, =1 {# message} other {# messages}}",
