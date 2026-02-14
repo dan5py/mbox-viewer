@@ -932,14 +932,30 @@ export default function ViewerPage() {
       return allLabels;
     }
 
-    return allLabels.filter((label) => {
-      if (selectedLabel === label) {
-        return true;
-      }
+    return allLabels
+      .filter((label) => {
+        if (selectedLabel === label) {
+          return true;
+        }
 
-      return (labelDisplayCounts.get(label) ?? 0) > 0;
-    });
-  }, [allLabels, labelDisplayCounts, searchResultSet, selectedLabel]);
+        return (labelDisplayCounts.get(label) ?? 0) > 0;
+      })
+      .sort((a, b) => {
+        if (selectedLabel === a) return -1;
+        if (selectedLabel === b) return 1;
+
+        const countDiff =
+          (labelDisplayCounts.get(b) ?? 0) - (labelDisplayCounts.get(a) ?? 0);
+        if (countDiff !== 0) {
+          return countDiff;
+        }
+
+        return a.localeCompare(b, locale, {
+          sensitivity: "base",
+          numeric: true,
+        });
+      });
+  }, [allLabels, labelDisplayCounts, locale, searchResultSet, selectedLabel]);
   const maxInlineLabelFilters = 8;
   const { inlineLabelFilters, overflowLabelFilters } = useMemo(() => {
     if (labelFiltersForLayout.length <= maxInlineLabelFilters) {
