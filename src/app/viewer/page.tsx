@@ -910,6 +910,9 @@ export default function ViewerPage() {
   const selectedMenuLabel = t("selection.selectedMenuLabel", {
     count: selectedCount,
   });
+  const actionsTriggerLabel = t("selection.actionsAriaLabel", {
+    count: selectedCount,
+  });
   const selectedCountBadgeLabel =
     selectedCount > 99 ? "99+" : selectedCount.toString();
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
@@ -1622,8 +1625,8 @@ export default function ViewerPage() {
                             "relative size-7 overflow-visible",
                             selectedCount > 0 && "text-primary"
                           )}
-                          aria-label={`${t("selection.actions")} · ${selectedCountLabel}`}
-                          title={`${t("selection.actions")} · ${selectedCountLabel}`}
+                          aria-label={actionsTriggerLabel}
+                          title={actionsTriggerLabel}
                         >
                           <MoreHorizontal className="size-3.5" />
                           {selectedCount > 0 && (
