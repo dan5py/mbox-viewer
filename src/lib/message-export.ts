@@ -176,75 +176,16 @@ function buildTextExport(
   messages: Array<{ index: number; message: EmailMessage }>,
   localization: ExportLocalization
 ) {
-  return messages
-    .map(({ index, message }, i) => {
-      return [
-        "--------------------------------------------------------------------------------",
-        `${localization.messageLabel} ${i + 1} (index: ${index + 1})`,
-        "--------------------------------------------------------------------------------",
-        `${localization.fromLabel}: ${message.from || ""}`,
-        `${localization.toLabel}: ${message.to || ""}`,
-        `${localization.ccLabel}: ${message.cc || ""}`,
-        `${localization.bccLabel}: ${message.bcc || ""}`,
-        `${localization.dateLabel}: ${message.rawDate || message.date.toISOString()}`,
-        `${localization.subjectLabel}: ${message.subject || ""}`,
-        "",
-        getBodyAsText(message),
-        "",
-      ].join("\n");
-    })
-    .join("\n");
+  void localization;
+  return messages.map(({ message }) => getBodyAsText(message)).join("\n\n");
 }
 
 function buildHtmlExport(
   messages: Array<{ index: number; message: EmailMessage }>,
   localization: ExportLocalization
 ) {
-  const sections = messages
-    .map(({ index, message }, i) => {
-      return `
-        <section class="message">
-          <h2>${escapeHtml(localization.messageLabel)} ${i + 1} (index: ${index + 1})</h2>
-          <div class="meta">
-            <div><strong>${escapeHtml(localization.fromLabel)}:</strong> ${escapeHtml(message.from || "")}</div>
-            <div><strong>${escapeHtml(localization.toLabel)}:</strong> ${escapeHtml(message.to || "")}</div>
-            <div><strong>${escapeHtml(localization.ccLabel)}:</strong> ${escapeHtml(message.cc || "")}</div>
-            <div><strong>${escapeHtml(localization.bccLabel)}:</strong> ${escapeHtml(message.bcc || "")}</div>
-            <div><strong>${escapeHtml(localization.dateLabel)}:</strong> ${escapeHtml(message.rawDate || message.date.toISOString())}</div>
-            <div><strong>${escapeHtml(localization.subjectLabel)}:</strong> ${escapeHtml(message.subject || "")}</div>
-          </div>
-          <hr />
-          <div class="content">
-            ${getBodyAsHtml(message)}
-          </div>
-        </section>
-      `;
-    })
-    .join("\n");
-
-  return `
-    <!doctype html>
-    <html lang="${localization.locale}">
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>${escapeHtml(localization.htmlDocumentTitle)}</title>
-        <style>
-          body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; padding: 24px; max-width: 1200px; margin: 0 auto; }
-          .message { border: 1px solid #d1d5db; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
-          .meta { display: grid; grid-template-columns: 1fr; gap: 6px; font-size: 14px; margin-bottom: 16px; }
-          .content { background: #f9fafb; border-radius: 6px; padding: 12px; overflow-x: auto; }
-          pre { white-space: pre-wrap; word-break: break-word; margin: 0; }
-          hr { border: 0; border-top: 1px solid #e5e7eb; margin: 12px 0; }
-        </style>
-      </head>
-      <body>
-        <h1>${escapeHtml(localization.htmlHeading)}</h1>
-        <p>${escapeHtml(localization.htmlExportedText(messages.length))}</p>
-        ${sections}
-      </body>
-    </html>
-  `.trim();
+  void localization;
+  return messages.map(({ message }) => getBodyAsHtml(message)).join("\n\n");
 }
 
 function getPerMessageExportFilename(
