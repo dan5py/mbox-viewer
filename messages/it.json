@@ -85,6 +85,7 @@
       "deselectFiltered": "Deseleziona filtrati",
       "selectAll": "Seleziona tutto",
       "deselectAll": "Deseleziona tutto",
+      "resetFilters": "Azzera filtri",
       "clear": "Pulisci",
       "toggleMessage": "Attiva/disattiva selezione messaggio",
       "toggleMessageWithSubject": "Attiva/disattiva selezione del messaggio {subject}",

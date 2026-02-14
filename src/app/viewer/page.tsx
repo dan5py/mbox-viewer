@@ -1053,6 +1053,11 @@ export default function ViewerPage() {
     setSearchQuery("");
   }, [resetSearchState, setSearchQuery]);
 
+  const handleResetFilters = useCallback(() => {
+    handleClearSearch();
+    setSelectedLabel(null);
+  }, [handleClearSearch, setSelectedLabel]);
+
   const exportLocalization = useMemo(
     () => ({
       locale,
@@ -1611,6 +1616,12 @@ export default function ViewerPage() {
                         {toggleFilteredSelectionShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuCheckboxItem>
+                    <DropdownMenuItem
+                      onClick={handleResetFilters}
+                      disabled={!hasActiveFilters}
+                    >
+                      {t("selection.resetFilters")}
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       variant="destructive"
