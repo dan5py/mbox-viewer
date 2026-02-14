@@ -1581,9 +1581,9 @@ export default function ViewerPage() {
             )}
 
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs text-muted-foreground">
-                {t("selection.selectedCount", { count: selectedCount })}
-              </p>
+              <Badge variant="secondary" className="text-[11px] font-medium">
+                {t("selection.selectedCompact", { count: selectedCount })}
+              </Badge>
               <div className="flex items-center justify-end gap-1">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
