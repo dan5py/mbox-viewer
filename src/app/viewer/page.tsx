@@ -898,23 +898,35 @@ export default function ViewerPage() {
     [searchResults]
   );
   const labelDisplayCounts = useMemo(() => {
-    if (!searchResultSet) {
+    if (!searchResultSet || !currentFile?.messageBoundaries) {
       return labelMessageCounts;
     }
 
     const counts = new Map<string, number>();
-    for (const [label, indices] of labelToMessageIndices.entries()) {
-      let count = 0;
-      for (const index of indices) {
-        if (searchResultSet.has(index)) {
-          count++;
-        }
+    for (const index of searchResultSet) {
+      const labels = currentFile.messageBoundaries[index]?.preview?.labels;
+      if (!labels || labels.length === 0) {
+        continue;
       }
-      counts.set(label, count);
+
+      for (const label of new Set(labels)) {
+        counts.set(label, (counts.get(label) ?? 0) + 1);
+      }
+    }
+
+    for (const label of allLabels) {
+      if (!counts.has(label)) {
+        counts.set(label, 0);
+      }
     }
 
     return counts;
-  }, [labelMessageCounts, labelToMessageIndices, searchResultSet]);
+  }, [
+    allLabels,
+    currentFile?.messageBoundaries,
+    labelMessageCounts,
+    searchResultSet,
+  ]);
   const labelFiltersForLayout = useMemo(() => {
     if (!searchResultSet) {
       return allLabels;
