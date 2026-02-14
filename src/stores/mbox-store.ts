@@ -103,16 +103,13 @@ const useMboxStore = create<MboxState>((set, get) => ({
     set((state) => {
       const isSelectedFile = state.selectedFileId === fileId;
       const remainingFiles = state.files.filter((f) => f.id !== fileId);
-      const nextSelectedFileId =
-        isSelectedFile && remainingFiles.length > 0
-          ? remainingFiles[0].id
-          : state.selectedFileId;
+      const nextSelectedFileId = isSelectedFile
+        ? (remainingFiles[0]?.id ?? null)
+        : state.selectedFileId;
 
       return {
         files: remainingFiles,
-        selectedFileId: isSelectedFile
-          ? nextSelectedFileId
-          : state.selectedFileId,
+        selectedFileId: nextSelectedFileId,
         selectedMessageId: null,
         // Clear search and reset page if deleting the selected file
         searchQuery: isSelectedFile ? "" : state.searchQuery,
