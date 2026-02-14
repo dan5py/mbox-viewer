@@ -1094,9 +1094,15 @@ export default function ViewerPage() {
   );
   const labelFilterOptionsCount =
     1 + inlineLabelFilters.length + (overflowLabelFilters.length > 0 ? 1 : 0);
-  const labelFiltersGroupLabel = t("search.labelFiltersWithCount", {
-    count: labelFilterOptionsCount,
-  });
+  const labelFiltersGroupLabel =
+    selectedLabel !== null
+      ? t("search.labelFiltersWithCountActive", {
+          count: labelFilterOptionsCount,
+          label: selectedLabel,
+        })
+      : t("search.labelFiltersWithCount", {
+          count: labelFilterOptionsCount,
+        });
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";

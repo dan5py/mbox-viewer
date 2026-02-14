@@ -68,6 +68,7 @@
       "allEmails": "Tutte le email",
       "labelFilters": "Filtri etichetta",
       "labelFiltersWithCount": "Filtri etichetta, {count, plural, =1 {# opzione} other {# opzioni}}",
+      "labelFiltersWithCountActive": "Filtri etichetta, {count, plural, =1 {# opzione} other {# opzioni}}. Filtro attivo: {label}.",
       "inLabel": "in “{label}”",
       "moreLabels": "+{count, plural, =1 {# altra etichetta} other {# altre etichette}}",
       "moreLabelsAria": "Mostra {count, plural, =1 {# altra etichetta} other {# altre etichette}}",
