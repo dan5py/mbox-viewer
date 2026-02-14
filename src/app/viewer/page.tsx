@@ -1208,7 +1208,12 @@ export default function ViewerPage() {
         return;
       }
 
-      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
+      if (
+        event.key !== "ArrowRight" &&
+        event.key !== "ArrowLeft" &&
+        event.key !== "Home" &&
+        event.key !== "End"
+      ) {
         return;
       }
 
@@ -1237,6 +1242,16 @@ export default function ViewerPage() {
       }
 
       event.preventDefault();
+      if (event.key === "Home") {
+        chipButtons[0]?.focus();
+        return;
+      }
+
+      if (event.key === "End") {
+        chipButtons[chipButtons.length - 1]?.focus();
+        return;
+      }
+
       const delta = event.key === "ArrowRight" ? 1 : -1;
       const nextIndex =
         (currentIndex + delta + chipButtons.length) % chipButtons.length;
