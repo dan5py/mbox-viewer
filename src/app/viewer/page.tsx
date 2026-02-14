@@ -1578,21 +1578,19 @@ export default function ViewerPage() {
                         className="h-7 px-2 text-xs"
                       >
                         {t("selection.actions")}
-                        <ChevronDown className="size-3 ml-1.5" />
+                        <Badge
+                          variant="secondary"
+                          className="ml-1 h-4 min-w-4 px-1 text-[10px]"
+                        >
+                          {selectedCount}
+                        </Badge>
+                        <ChevronDown className="size-3 ml-1" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel className="text-xs">
                         {t("selection.selectedCount", { count: selectedCount })}
                       </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => setIsExportDialogOpen(true)}
-                        disabled={selectedCount === 0}
-                      >
-                        {t("export.action")}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={handleToggleCurrentPageSelection}
                         disabled={visibleMessageIndices.length === 0}
@@ -1613,12 +1611,17 @@ export default function ViewerPage() {
                             ? t("selection.selectFiltered")
                             : t("selection.selectAll")}
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={handleClearSelection}
                         disabled={selectedCount === 0}
                       >
                         {t("selection.clear")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setIsExportDialogOpen(true)}
+                        disabled={selectedCount === 0}
+                      >
+                        {t("export.action")}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
