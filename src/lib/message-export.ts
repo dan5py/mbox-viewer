@@ -286,8 +286,12 @@ function ensureUniqueFilename(
   fallbackName: string
 ): string {
   const normalized = baseName || fallbackName;
+  const normalizedUsedNames = new Set(
+    Array.from(usedNames).map((name) => name.toLowerCase())
+  );
+  const normalizedLowercase = normalized.toLowerCase();
 
-  if (!usedNames.has(normalized)) {
+  if (!normalizedUsedNames.has(normalizedLowercase)) {
     usedNames.add(normalized);
     return normalized;
   }
@@ -299,7 +303,7 @@ function ensureUniqueFilename(
 
   let counter = 2;
   let candidate = `${fileStem}-${counter}${fileExtension}`;
-  while (usedNames.has(candidate)) {
+  while (normalizedUsedNames.has(candidate.toLowerCase())) {
     counter++;
     candidate = `${fileStem}-${counter}${fileExtension}`;
   }
