@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import useMboxStore from "~/stores/mbox-store";
 import { formatDate, formatDistanceToNow } from "date-fns";
@@ -119,6 +126,7 @@ export default function ViewerPage() {
   const [exportProgress, setExportProgress] = useState(0);
   const [isApplePlatform, setIsApplePlatform] = useState<boolean | null>(null);
   const [tab, setTab] = useState("body");
+  const labelOverflowMenuContentId = useId();
 
   // Compute effective tab: fallback to first available if current tab is not available
   const { effectiveTab, hasBody, hasAttachments } = useMemo(() => {
@@ -2007,6 +2015,7 @@ export default function ViewerPage() {
                           )}
                           aria-haspopup="menu"
                           aria-expanded={isLabelOverflowMenuOpen}
+                          aria-controls={labelOverflowMenuContentId}
                           aria-label={moreLabelsTriggerAriaLabel}
                           title={moreLabelsTriggerAriaLabel}
                         >
@@ -2016,6 +2025,7 @@ export default function ViewerPage() {
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
+                        id={labelOverflowMenuContentId}
                         align="start"
                         className="max-h-72 w-56 overflow-y-auto"
                       >
