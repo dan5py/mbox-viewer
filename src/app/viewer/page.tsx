@@ -1037,8 +1037,19 @@ export default function ViewerPage() {
   });
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelDisplayCounts.get(label) ?? 0);
-  const formatActiveLabelChipText = (label: string, count: string) =>
-    `${label} (${count})`;
+  const renderLabelChipContent = (
+    label: string,
+    count: string,
+    isActive: boolean
+  ) =>
+    isActive ? (
+      <span className="inline-flex max-w-full items-center gap-1">
+        <span className="truncate">{label}</span>
+        <span className="shrink-0 tabular-nums">({count})</span>
+      </span>
+    ) : (
+      <span className="truncate">{label}</span>
+    );
   const getLabelFilterButtonLabel = (label: string, count: number) =>
     t("search.labelWithCount", {
       label,
@@ -1921,38 +1932,37 @@ export default function ViewerPage() {
                     )}
                     title={`${t("search.allEmails")} (${allEmailsFilterCount})`}
                   >
-                    {selectedLabel === null
-                      ? formatActiveLabelChipText(
-                          t("search.allEmails"),
-                          allEmailsFilterCount
-                        )
-                      : t("search.allEmails")}
+                    {renderLabelChipContent(
+                      t("search.allEmails"),
+                      allEmailsFilterCount,
+                      selectedLabel === null
+                    )}
                   </button>
-                  {inlineLabelFilters.map((label) => (
-                    <button
-                      key={label}
-                      type="button"
-                      onClick={() => handleSelectLabelFilter(label)}
-                      className={getLabelFilterChipClassName(
-                        selectedLabel === label
-                      )}
-                      aria-pressed={selectedLabel === label}
-                      aria-label={getLabelFilterButtonLabel(
-                        label,
-                        labelDisplayCounts.get(label) ?? 0
-                      )}
-                      title={`${label} (${getLabelMessageCount(label)})`}
-                    >
-                      <span className="truncate">
-                        {selectedLabel === label
-                          ? formatActiveLabelChipText(
-                              label,
-                              getLabelMessageCount(label)
-                            )
-                          : label}
-                      </span>
-                    </button>
-                  ))}
+                  {inlineLabelFilters.map((label) => {
+                    const labelCount = getLabelMessageCount(label);
+                    const isLabelActive = selectedLabel === label;
+
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => handleSelectLabelFilter(label)}
+                        className={getLabelFilterChipClassName(isLabelActive)}
+                        aria-pressed={isLabelActive}
+                        aria-label={getLabelFilterButtonLabel(
+                          label,
+                          labelDisplayCounts.get(label) ?? 0
+                        )}
+                        title={`${label} (${labelCount})`}
+                      >
+                        {renderLabelChipContent(
+                          label,
+                          labelCount,
+                          isLabelActive
+                        )}
+                      </button>
+                    );
+                  })}
                   {overflowLabelFilters.length > 0 && (
                     <DropdownMenu
                       open={isLabelOverflowMenuOpen}
