@@ -1137,15 +1137,10 @@ export default function ViewerPage() {
     },
     [selectedLabel, setSelectedLabel]
   );
-  const handleSelectOverflowAllEmails = useCallback(
-    (checked: boolean | "indeterminate") => {
-      if (checked === true) {
-        setSelectedLabel(null);
-      }
-      setIsLabelOverflowMenuOpen(false);
-    },
-    [setSelectedLabel]
-  );
+  const handleSelectOverflowAllEmails = useCallback(() => {
+    setSelectedLabel(null);
+    setIsLabelOverflowMenuOpen(false);
+  }, [setSelectedLabel]);
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -2047,9 +2042,8 @@ export default function ViewerPage() {
                       >
                         {selectedLabel !== null && (
                           <>
-                            <DropdownMenuCheckboxItem
-                              checked={selectedLabel === null}
-                              onCheckedChange={handleSelectOverflowAllEmails}
+                            <DropdownMenuItem
+                              onClick={handleSelectOverflowAllEmails}
                               aria-label={getLabelFilterButtonLabel(
                                 t("search.allEmails"),
                                 searchResultSet
@@ -2062,7 +2056,7 @@ export default function ViewerPage() {
                               <DropdownMenuShortcut>
                                 {allEmailsFilterCount}
                               </DropdownMenuShortcut>
-                            </DropdownMenuCheckboxItem>
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                           </>
                         )}
