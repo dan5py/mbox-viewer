@@ -127,17 +127,16 @@ const globalShortcutBlockingRoles = [
 const globalShortcutBlockingRoleSet = new Set<string>(
   globalShortcutBlockingRoles
 );
-const globalShortcutBlockingSelector = [
-  "a",
-  "button",
-  "details",
-  "input",
-  "select",
-  "summary",
-  "textarea",
-  "[contenteditable='true']",
-  ...globalShortcutBlockingRoles.map((role) => `[role='${role}']`),
-].join(", ");
+const hasGlobalShortcutBlockingRole = (element: HTMLElement): boolean => {
+  const roleAttribute = element.getAttribute("role");
+  if (!roleAttribute) {
+    return false;
+  }
+
+  return roleAttribute
+    .split(/\s+/)
+    .some((role) => globalShortcutBlockingRoleSet.has(role));
+};
 
 const shouldIgnoreGlobalShortcutTarget = (
   target: EventTarget | null
@@ -146,19 +145,18 @@ const shouldIgnoreGlobalShortcutTarget = (
     return false;
   }
 
-  if (target.isContentEditable) {
-    return true;
+  let currentElement: HTMLElement | null = target;
+  while (currentElement) {
+    if (
+      currentElement.isContentEditable ||
+      globalShortcutBlockingTags.has(currentElement.tagName) ||
+      hasGlobalShortcutBlockingRole(currentElement)
+    ) {
+      return true;
+    }
+    currentElement = currentElement.parentElement;
   }
-
-  const role = target.getAttribute("role");
-  if (
-    globalShortcutBlockingTags.has(target.tagName) ||
-    (role !== null && globalShortcutBlockingRoleSet.has(role))
-  ) {
-    return true;
-  }
-
-  return target.closest(globalShortcutBlockingSelector) !== null;
+  return false;
 };
 
 export default function ViewerPage() {
