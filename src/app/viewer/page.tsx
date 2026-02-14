@@ -1343,12 +1343,20 @@ export default function ViewerPage() {
               <Input
                 placeholder={t("search.placeholder")}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchFailed(false);
+                  setSearchProgress(0);
+                  setSearchQuery(e.target.value);
+                }}
                 className="text-sm pl-9 pr-9"
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery("")}
+                  onClick={() => {
+                    setSearchFailed(false);
+                    setSearchProgress(0);
+                    setSearchQuery("");
+                  }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted transition-colors"
                   aria-label={t("search.clear")}
                 >
