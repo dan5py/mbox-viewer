@@ -1458,7 +1458,7 @@ export default function ViewerPage() {
       }
 
       const isSelectAllShortcut =
-        (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a";
+        (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === "a";
       const isOpenShortcutsHelpShortcut =
         !e.ctrlKey &&
         !e.metaKey &&
@@ -1472,6 +1472,18 @@ export default function ViewerPage() {
         !e.altKey;
       const isClearPreviewSelectionShortcut =
         e.key === "Escape" &&
+        !e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey;
+      const isNavigateNextShortcut =
+        e.key === "ArrowDown" &&
+        !e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey;
+      const isNavigatePreviousShortcut =
+        e.key === "ArrowUp" &&
         !e.shiftKey &&
         !e.ctrlKey &&
         !e.metaKey &&
@@ -1490,7 +1502,7 @@ export default function ViewerPage() {
       } else if (isResetFiltersShortcut) {
         e.preventDefault();
         handleResetFilters();
-      } else if (e.key === "ArrowDown") {
+      } else if (isNavigateNextShortcut) {
         if (visibleMessageIndices.length === 0) {
           return;
         }
@@ -1508,7 +1520,7 @@ export default function ViewerPage() {
           // No selection, start from first
           handleSelectMessage(visibleMessageIndices[0]);
         }
-      } else if (e.key === "ArrowUp") {
+      } else if (isNavigatePreviousShortcut) {
         if (visibleMessageIndices.length === 0) {
           return;
         }
