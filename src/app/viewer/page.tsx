@@ -1906,6 +1906,11 @@ export default function ViewerPage() {
                       >
                         <DropdownMenuItem
                           onClick={handleSelectOverflowAllEmails}
+                          disabled={selectedLabel === null}
+                          aria-label={getLabelFilterButtonLabel(
+                            t("search.allEmails"),
+                            totalMessages
+                          )}
                         >
                           {t("search.allEmails")}
                           <DropdownMenuShortcut>
