@@ -845,6 +845,15 @@ export default function ViewerPage() {
     }
     return Array.from(labelSet).sort();
   }, [currentFile]);
+  const maxInlineLabelFilters = 8;
+  const inlineLabelFilters = useMemo(
+    () => allLabels.slice(0, maxInlineLabelFilters),
+    [allLabels]
+  );
+  const overflowLabelFilters = useMemo(
+    () => allLabels.slice(maxInlineLabelFilters),
+    [allLabels]
+  );
 
   // Compute visible message indices (before early return to use in keyboard navigation)
   const totalMessages = currentFile?.messageCount || 0;
@@ -932,6 +941,12 @@ export default function ViewerPage() {
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
   const openShortcutsShortcutLabel = "?";
+  const hasActiveOverflowLabel = overflowLabelFilters.includes(
+    selectedLabel ?? ""
+  );
+  const moreLabelsTriggerText = t("search.moreLabels", {
+    count: overflowLabelFilters.length,
+  });
   const labelFilterChipBaseClassName =
     "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors";
   const getLabelFilterChipClassName = (isActive: boolean) =>
@@ -1770,7 +1785,7 @@ export default function ViewerPage() {
                   >
                     {t("search.allEmails")}
                   </button>
-                  {allLabels.map((label) => (
+                  {inlineLabelFilters.map((label) => (
                     <button
                       key={label}
                       onClick={() => handleSelectLabelFilter(label)}
@@ -1783,6 +1798,38 @@ export default function ViewerPage() {
                       <span className="truncate">{label}</span>
                     </button>
                   ))}
+                  {overflowLabelFilters.length > 0 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className={getLabelFilterChipClassName(
+                            hasActiveOverflowLabel
+                          )}
+                          aria-label={moreLabelsTriggerText}
+                          title={moreLabelsTriggerText}
+                        >
+                          {moreLabelsTriggerText}
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="start"
+                        className="max-h-72 w-56 overflow-y-auto"
+                      >
+                        {overflowLabelFilters.map((label) => (
+                          <DropdownMenuCheckboxItem
+                            key={label}
+                            checked={selectedLabel === label}
+                            onCheckedChange={() =>
+                              handleSelectLabelFilter(label)
+                            }
+                            title={label}
+                          >
+                            <span className="truncate">{label}</span>
+                          </DropdownMenuCheckboxItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
                 <ScrollBar orientation="horizontal" hidden />
               </ScrollArea>

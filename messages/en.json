@@ -67,6 +67,7 @@
       "results": "{count, plural, =1 {# result} other {# results}}",
       "allEmails": "All emails",
       "labelFilters": "Label filters",
+      "moreLabels": "+{count, plural, =1 {# more label} other {# more labels}}",
       "noMessages": "No messages",
       "clear": "Clear search",
       "error": "Search failed. Please try again."
