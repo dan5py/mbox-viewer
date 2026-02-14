@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { cookies } from "next/headers";
 
@@ -27,6 +27,13 @@ async function getActiveLocale() {
   );
 }
 
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getActiveLocale();
   const t = await getTranslations({ locale, namespace: "Metadata" });
@@ -35,7 +42,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "MBOX Viewer",
     description: t("description"),
     manifest: "/manifest.webmanifest",
-    themeColor: "#22c55e",
     icons: {
       icon: [
         { url: "/icon-180.png", sizes: "180x180", type: "image/png" },
