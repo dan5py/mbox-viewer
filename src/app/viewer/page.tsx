@@ -982,6 +982,16 @@ export default function ViewerPage() {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore global shortcuts while dialogs are open.
+      if (
+        isExportDialogOpen ||
+        isFullscreenOpen ||
+        !!previewedAttachment ||
+        fileToDelete !== null
+      ) {
+        return;
+      }
+
       // Don't interfere with editable fields
       if (e.target instanceof HTMLElement) {
         const tagName = e.target.tagName;
@@ -1062,6 +1072,10 @@ export default function ViewerPage() {
     handleSelectMessage,
     handleToggleFilteredSelection,
     handleClearSelection,
+    isExportDialogOpen,
+    isFullscreenOpen,
+    previewedAttachment,
+    fileToDelete,
     setSelectedMessage,
     files.length,
   ]);
