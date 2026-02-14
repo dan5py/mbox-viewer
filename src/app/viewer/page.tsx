@@ -1268,6 +1268,10 @@ export default function ViewerPage() {
   }, [handleSelectLabelFilter]);
   const handleDropdownMenuBoundaryKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+
       if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
         return;
       }
@@ -1296,6 +1300,10 @@ export default function ViewerPage() {
   );
   const handleLabelFiltersGroupKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+
       if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
         return;
       }
@@ -1622,6 +1630,10 @@ export default function ViewerPage() {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) {
+        return;
+      }
+
       // Ignore global shortcuts while dialogs are open.
       if (
         isActionsMenuOpen ||
