@@ -2045,23 +2045,27 @@ export default function ViewerPage() {
                         align="start"
                         className="max-h-72 w-56 overflow-y-auto"
                       >
-                        <DropdownMenuCheckboxItem
-                          checked={selectedLabel === null}
-                          onCheckedChange={handleSelectOverflowAllEmails}
-                          aria-label={getLabelFilterButtonLabel(
-                            t("search.allEmails"),
-                            searchResultSet
-                              ? searchResultSet.size
-                              : totalMessages
-                          )}
-                          title={`${t("search.allEmails")} (${allEmailsFilterCount})`}
-                        >
-                          {t("search.allEmails")}
-                          <DropdownMenuShortcut>
-                            {allEmailsFilterCount}
-                          </DropdownMenuShortcut>
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuSeparator />
+                        {selectedLabel !== null && (
+                          <>
+                            <DropdownMenuCheckboxItem
+                              checked={selectedLabel === null}
+                              onCheckedChange={handleSelectOverflowAllEmails}
+                              aria-label={getLabelFilterButtonLabel(
+                                t("search.allEmails"),
+                                searchResultSet
+                                  ? searchResultSet.size
+                                  : totalMessages
+                              )}
+                              title={`${t("search.allEmails")} (${allEmailsFilterCount})`}
+                            >
+                              {t("search.allEmails")}
+                              <DropdownMenuShortcut>
+                                {allEmailsFilterCount}
+                              </DropdownMenuShortcut>
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuSeparator />
+                          </>
+                        )}
                         {overflowLabelFilters.map((label) => (
                           <DropdownMenuCheckboxItem
                             key={label}
