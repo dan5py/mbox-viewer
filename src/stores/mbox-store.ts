@@ -33,7 +33,12 @@ function getUniqueFileName(
   proposedName: string,
   existingNames: Set<string>
 ): string {
-  if (!existingNames.has(proposedName)) {
+  const normalizedExistingNames = new Set(
+    Array.from(existingNames).map((name) => name.toLowerCase())
+  );
+  const normalizedProposedName = proposedName.toLowerCase();
+
+  if (!normalizedExistingNames.has(normalizedProposedName)) {
     return proposedName;
   }
 
@@ -45,7 +50,7 @@ function getUniqueFileName(
   let counter = 2;
   let candidate = `${stem} (${counter})${extension}`;
 
-  while (existingNames.has(candidate)) {
+  while (normalizedExistingNames.has(candidate.toLowerCase())) {
     counter++;
     candidate = `${stem} (${counter})${extension}`;
   }
