@@ -843,8 +843,10 @@ export default function ViewerPage() {
         }
       }
     }
-    return Array.from(labelSet).sort();
-  }, [currentFile]);
+    return Array.from(labelSet).sort((a, b) =>
+      a.localeCompare(b, locale, { sensitivity: "base", numeric: true })
+    );
+  }, [currentFile, locale]);
   const maxInlineLabelFilters = 8;
   const inlineLabelFilters = useMemo(
     () => allLabels.slice(0, maxInlineLabelFilters),
@@ -947,6 +949,14 @@ export default function ViewerPage() {
   const moreLabelsTriggerText = t("search.moreLabels", {
     count: overflowLabelFilters.length,
   });
+  const overflowLabelsTriggerText =
+    hasActiveOverflowLabel && selectedLabel !== null
+      ? selectedLabel
+      : moreLabelsTriggerText;
+  const overflowLabelsTriggerTitle =
+    hasActiveOverflowLabel && selectedLabel !== null
+      ? `${selectedLabel} · ${moreLabelsTriggerText}`
+      : moreLabelsTriggerText;
   const labelFilterChipBaseClassName =
     "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors";
   const getLabelFilterChipClassName = (isActive: boolean) =>
@@ -1776,6 +1786,7 @@ export default function ViewerPage() {
                   aria-label={t("search.labelFilters")}
                 >
                   <button
+                    type="button"
                     onClick={() => handleSelectLabelFilter(null)}
                     className={getLabelFilterChipClassName(
                       selectedLabel === null
@@ -1788,6 +1799,7 @@ export default function ViewerPage() {
                   {inlineLabelFilters.map((label) => (
                     <button
                       key={label}
+                      type="button"
                       onClick={() => handleSelectLabelFilter(label)}
                       className={getLabelFilterChipClassName(
                         selectedLabel === label
@@ -1802,13 +1814,16 @@ export default function ViewerPage() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button
+                          type="button"
                           className={getLabelFilterChipClassName(
                             hasActiveOverflowLabel
                           )}
-                          aria-label={moreLabelsTriggerText}
-                          title={moreLabelsTriggerText}
+                          aria-label={overflowLabelsTriggerTitle}
+                          title={overflowLabelsTriggerTitle}
                         >
-                          {moreLabelsTriggerText}
+                          <span className="truncate">
+                            {overflowLabelsTriggerText}
+                          </span>
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
