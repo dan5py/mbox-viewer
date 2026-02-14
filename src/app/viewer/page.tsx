@@ -1580,6 +1580,13 @@ export default function ViewerPage() {
                       progress: searchProgress,
                     })}
                   </span>
+                  <Progress
+                    value={searchProgress}
+                    className="h-1.5 w-20"
+                    aria-label={t("search.searchingProgress", {
+                      progress: searchProgress,
+                    })}
+                  />
                 </div>
               ) : searchFailed ? (
                 <p className="text-xs text-destructive font-medium truncate">
@@ -1671,16 +1678,6 @@ export default function ViewerPage() {
                 )}
               </div>
             </div>
-
-            {isSearching && (
-              <Progress
-                value={searchProgress}
-                className="h-1.5"
-                aria-label={t("search.searchingProgress", {
-                  progress: searchProgress,
-                })}
-              />
-            )}
           </div>
 
           {/* Message List */}
