@@ -945,6 +945,37 @@ export default function ViewerPage() {
 
     return counts;
   }, [labelMessageCounts, labelToMessageIndices, searchResultSet]);
+  const visibleInlineLabelFilters = useMemo(() => {
+    return inlineLabelFilters.filter((label) => {
+      if (selectedLabel === label) {
+        return true;
+      }
+
+      if (!searchResultSet) {
+        return true;
+      }
+
+      return (labelDisplayCounts.get(label) ?? 0) > 0;
+    });
+  }, [inlineLabelFilters, labelDisplayCounts, searchResultSet, selectedLabel]);
+  const visibleOverflowLabelFilters = useMemo(() => {
+    return overflowLabelFilters.filter((label) => {
+      if (selectedLabel === label) {
+        return true;
+      }
+
+      if (!searchResultSet) {
+        return true;
+      }
+
+      return (labelDisplayCounts.get(label) ?? 0) > 0;
+    });
+  }, [
+    labelDisplayCounts,
+    overflowLabelFilters,
+    searchResultSet,
+    selectedLabel,
+  ]);
 
   const filteredMessageIndices = useMemo(() => {
     if (!(files.length > 0 && currentFile)) return [];
@@ -1011,7 +1042,7 @@ export default function ViewerPage() {
   const resetFiltersShortcutLabel = "Shift+Esc";
   const openShortcutsShortcutLabel = "?";
   const moreLabelsTriggerText = t("search.moreLabels", {
-    count: overflowLabelFilters.length,
+    count: visibleOverflowLabelFilters.length,
   });
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelDisplayCounts.get(label) ?? 0);
@@ -1906,7 +1937,7 @@ export default function ViewerPage() {
                         )
                       : t("search.allEmails")}
                   </button>
-                  {inlineLabelFilters.map((label) => (
+                  {visibleInlineLabelFilters.map((label) => (
                     <button
                       key={label}
                       type="button"
@@ -1931,7 +1962,7 @@ export default function ViewerPage() {
                       </span>
                     </button>
                   ))}
-                  {overflowLabelFilters.length > 0 && (
+                  {visibleOverflowLabelFilters.length > 0 && (
                     <DropdownMenu
                       open={isLabelOverflowMenuOpen}
                       onOpenChange={setIsLabelOverflowMenuOpen}
@@ -1971,7 +2002,7 @@ export default function ViewerPage() {
                           </DropdownMenuShortcut>
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuSeparator />
-                        {overflowLabelFilters.map((label) => (
+                        {visibleOverflowLabelFilters.map((label) => (
                           <DropdownMenuCheckboxItem
                             key={label}
                             checked={selectedLabel === label}
