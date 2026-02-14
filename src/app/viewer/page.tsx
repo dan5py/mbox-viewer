@@ -1131,6 +1131,7 @@ export default function ViewerPage() {
       // Ignore global shortcuts while dialogs are open.
       if (
         isExportDialogOpen ||
+        isShortcutsDialogOpen ||
         isFullscreenOpen ||
         !!previewedAttachment ||
         fileToDelete !== null
@@ -1219,6 +1220,7 @@ export default function ViewerPage() {
     handleToggleFilteredSelection,
     handleClearSelection,
     isExportDialogOpen,
+    isShortcutsDialogOpen,
     isFullscreenOpen,
     previewedAttachment,
     fileToDelete,
