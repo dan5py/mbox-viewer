@@ -1670,11 +1670,7 @@ export default function ViewerPage() {
                         className="size-3"
                         label={t("search.searching")}
                       />
-                      <span className="truncate">
-                        {t("search.searchingProgress", {
-                          progress: searchProgress,
-                        })}
-                      </span>
+                      <span className="truncate">{t("search.searching")}</span>
                       <Progress
                         value={searchProgress}
                         className="h-1.5 w-20 shrink-0"
@@ -1682,6 +1678,9 @@ export default function ViewerPage() {
                           progress: searchProgress,
                         })}
                       />
+                      <span className="font-mono text-[10px] tabular-nums text-muted-foreground/80">
+                        {searchProgress}%
+                      </span>
                     </div>
                   ) : searchFailed ? (
                     <p className="text-xs text-destructive font-medium truncate">
