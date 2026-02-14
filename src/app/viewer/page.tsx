@@ -45,6 +45,7 @@ import { ExportFormat, exportMessages } from "~/lib/message-export";
 import { PREVIEWABLE_MIME_TYPES } from "~/lib/mime-types";
 import { cn } from "~/lib/utils";
 import { useDebounce } from "~/hooks/use-debounce";
+import { useIsMobile } from "~/hooks/use-mobile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -91,6 +92,12 @@ import { Progress } from "~/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "~/components/ui/sheet";
 import { Spinner } from "~/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { FileUploadInput } from "~/components/files-uploader/input";
@@ -189,6 +196,7 @@ const dropdownMenuFocusableItemSelector =
 export default function ViewerPage() {
   const t = useTranslations("Viewer");
   const locale = useLocale();
+  const isMobile = useIsMobile();
   const dateLocale = locale === "it" ? it : enUS;
   const [loadingMessage, setLoadingMessage] = useState(false);
   const [selectedMessageIndex, setSelectedMessageIndex] = useState<
@@ -209,6 +217,10 @@ export default function ViewerPage() {
   const [isLabelOverflowMenuOpen, setIsLabelOverflowMenuOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
+  const [isMobileFilesSheetOpen, setIsMobileFilesSheetOpen] = useState(false);
+  const [mobileActivePane, setMobileActivePane] = useState<
+    "messages" | "preview"
+  >("messages");
   const [exportFormat, setExportFormat] = useState<ExportFormat>("mbox");
   const [includeAttachmentsInExport, setIncludeAttachmentsInExport] =
     useState(false);
@@ -339,6 +351,13 @@ export default function ViewerPage() {
     setIsApplePlatform(isAppleDevice);
   }, []);
 
+  useEffect(() => {
+    if (!isMobile) {
+      setIsMobileFilesSheetOpen(false);
+      setMobileActivePane("messages");
+    }
+  }, [isMobile]);
+
   // Warn user before reloading/leaving if files are loaded
   useEffect(() => {
     if (files.length === 0) {
@@ -376,6 +395,7 @@ export default function ViewerPage() {
     setIsLabelOverflowMenuOpen(false);
     setIsExportDialogOpen(false);
     setIsShortcutsDialogOpen(false);
+    setIsMobileFilesSheetOpen(false);
     setExportProgress(0);
     setEditingFileId(null);
     setEditingFileName("");
@@ -454,6 +474,9 @@ export default function ViewerPage() {
       // Update selection immediately for responsive navigation
       setSelectedMessageIndex(index);
       setSelectedMessage(`msg-${index}`);
+      if (isMobile) {
+        setMobileActivePane("preview");
+      }
 
       // Scroll the selected message into view
       // Use instant scroll when navigating rapidly (holding key), smooth for single presses
@@ -472,7 +495,7 @@ export default function ViewerPage() {
         }
       });
     },
-    [currentFile?.id, selectedMessageIndex, setSelectedMessage]
+    [currentFile?.id, isMobile, selectedMessageIndex, setSelectedMessage]
   );
 
   // Debounced message loading - only loads after navigation stops
@@ -933,6 +956,17 @@ export default function ViewerPage() {
     setEditingFileId(null);
     setEditingFileName("");
   }, [editingFileId, editingFileName, handleCancelRenameFile, renameFile]);
+
+  const handleSelectFile = useCallback(
+    (fileId: string) => {
+      setSelectedFile(fileId);
+      if (isMobile) {
+        setIsMobileFilesSheetOpen(false);
+        setMobileActivePane("messages");
+      }
+    },
+    [isMobile, setSelectedFile]
+  );
 
   const labelToMessageIndices = useMemo(() => {
     const indicesByLabel = new Map<string, number[]>();
@@ -1677,6 +1711,7 @@ export default function ViewerPage() {
         isLabelOverflowMenuOpen ||
         isExportDialogOpen ||
         isShortcutsDialogOpen ||
+        isMobileFilesSheetOpen ||
         isFullscreenOpen ||
         !!previewedAttachment ||
         fileToDelete !== null
@@ -1822,6 +1857,7 @@ export default function ViewerPage() {
     isLabelOverflowMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
+    isMobileFilesSheetOpen,
     isFullscreenOpen,
     previewedAttachment,
     fileToDelete,
@@ -1957,7 +1993,7 @@ export default function ViewerPage() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Files Sidebar */}
-        <div className="w-72 border-r border-border bg-muted/20 p-4 overflow-y-auto">
+        <div className="hidden md:block w-72 border-r border-border bg-muted/20 p-4 overflow-y-auto">
           <div className="space-y-4">
             <div className="flex flex-col justify-between items-center gap-2">
               <FileUploadInput />
@@ -1990,7 +2026,7 @@ export default function ViewerPage() {
                     <div
                       onClick={() => {
                         if (editingFileId !== file.id) {
-                          setSelectedFile(file.id);
+                          handleSelectFile(file.id);
                         }
                       }}
                       onKeyDown={(e) => {
@@ -1999,7 +2035,7 @@ export default function ViewerPage() {
                           (e.key === "Enter" || e.key === " ")
                         ) {
                           e.preventDefault();
-                          setSelectedFile(file.id);
+                          handleSelectFile(file.id);
                         }
                       }}
                       role="button"
@@ -2135,7 +2171,12 @@ export default function ViewerPage() {
         </div>
 
         {/* Messages List */}
-        <div className="w-96 border-r border-border/60 bg-background flex flex-col">
+        <div
+          className={cn(
+            "w-full min-w-0 bg-background flex flex-col md:w-96 md:border-r md:border-border/60",
+            mobileActivePane !== "messages" && "hidden md:flex"
+          )}
+        >
           {/* Search */}
           <div className="border-b border-border/60 p-2.5 space-y-2 bg-muted/20">
             <div className="flex items-center gap-1.5">
@@ -2641,7 +2682,12 @@ export default function ViewerPage() {
         </div>
 
         {/* Message Preview */}
-        <div className="flex-1 flex flex-col bg-background overflow-hidden">
+        <div
+          className={cn(
+            "flex-1 flex flex-col bg-background overflow-hidden",
+            mobileActivePane !== "preview" && "hidden md:flex"
+          )}
+        >
           {selectedMessageData &&
           selectedMessageIndex !== null &&
           selectedMessageData.id === `msg-${selectedMessageIndex}` ? (
@@ -3130,6 +3176,97 @@ export default function ViewerPage() {
           )}
         </div>
       </div>
+
+      <div className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+        <div className="grid grid-cols-3 gap-1 p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsMobileFilesSheetOpen(true)}
+            aria-label={t("mobileNav.openFiles")}
+            className={cn(
+              "h-10 justify-center gap-2",
+              isMobileFilesSheetOpen && "bg-muted text-foreground"
+            )}
+          >
+            <FileText className="size-4" />
+            <span>{t("mobileNav.files")}</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMobileActivePane("messages")}
+            className={cn(
+              "h-10 justify-center gap-2",
+              mobileActivePane === "messages" && "bg-muted text-foreground"
+            )}
+          >
+            <Mail className="size-4" />
+            <span>{t("mobileNav.messages")}</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMobileActivePane("preview")}
+            className={cn(
+              "h-10 justify-center gap-2",
+              mobileActivePane === "preview" && "bg-muted text-foreground"
+            )}
+          >
+            <Eye className="size-4" />
+            <span>{t("mobileNav.preview")}</span>
+          </Button>
+        </div>
+      </div>
+
+      <Sheet
+        open={isMobileFilesSheetOpen}
+        onOpenChange={setIsMobileFilesSheetOpen}
+      >
+        <SheetContent side="left" className="w-[88vw] max-w-sm p-0 md:hidden">
+          <SheetHeader className="border-b border-border/60">
+            <SheetTitle>{t("files.title")}</SheetTitle>
+          </SheetHeader>
+          <div className="flex h-full flex-col overflow-y-auto p-4 pt-2">
+            <div className="pb-4">
+              <FileUploadInput
+                onUploadCompleteAction={() => setIsMobileFilesSheetOpen(false)}
+              />
+            </div>
+            {files.length > 0 ? (
+              <div className="space-y-2">
+                {files.map((file) => (
+                  <button
+                    key={`mobile-${file.id}`}
+                    type="button"
+                    onClick={() => handleSelectFile(file.id)}
+                    className={cn(
+                      "w-full rounded-md border px-3 py-2 text-left transition-colors",
+                      selectedFileId === file.id
+                        ? "border-primary bg-primary/10"
+                        : "border-border/50 hover:bg-muted/50"
+                    )}
+                  >
+                    <p
+                      className="truncate text-sm font-medium"
+                      title={file.name}
+                    >
+                      {file.name}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {t("messages", { count: file.messageCount ?? 0 })}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t("noFiles.description")}
+              </p>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Export Dialog */}
       <Dialog

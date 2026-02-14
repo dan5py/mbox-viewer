@@ -47,6 +47,12 @@
     "files": {
       "title": "Files"
     },
+    "mobileNav": {
+      "openFiles": "Open files sidebar",
+      "files": "Files",
+      "messages": "Messages",
+      "preview": "Preview"
+    },
     "input": {
       "drop": "Drop one or more MBOX files here",
       "click": "or click to select files",
