@@ -861,14 +861,35 @@ export default function ViewerPage() {
     );
   }, [labelMessageCounts, locale]);
   const maxInlineLabelFilters = 8;
-  const inlineLabelFilters = useMemo(
-    () => allLabels.slice(0, maxInlineLabelFilters),
-    [allLabels]
-  );
-  const overflowLabelFilters = useMemo(
-    () => allLabels.slice(maxInlineLabelFilters),
-    [allLabels]
-  );
+  const { inlineLabelFilters, overflowLabelFilters } = useMemo(() => {
+    if (allLabels.length <= maxInlineLabelFilters) {
+      return { inlineLabelFilters: allLabels, overflowLabelFilters: [] };
+    }
+
+    if (selectedLabel && allLabels.includes(selectedLabel)) {
+      const selectedLabelIndex = allLabels.indexOf(selectedLabel);
+      if (selectedLabelIndex >= maxInlineLabelFilters) {
+        const pinnedInlineLabels = [
+          ...allLabels.slice(0, maxInlineLabelFilters - 1),
+          selectedLabel,
+        ];
+        const pinnedInlineLabelSet = new Set(pinnedInlineLabels);
+        const remainingOverflowLabels = allLabels.filter(
+          (label) => !pinnedInlineLabelSet.has(label)
+        );
+
+        return {
+          inlineLabelFilters: pinnedInlineLabels,
+          overflowLabelFilters: remainingOverflowLabels,
+        };
+      }
+    }
+
+    return {
+      inlineLabelFilters: allLabels.slice(0, maxInlineLabelFilters),
+      overflowLabelFilters: allLabels.slice(maxInlineLabelFilters),
+    };
+  }, [allLabels, selectedLabel]);
 
   useEffect(() => {
     if (selectedLabel !== null && !labelMessageCounts.has(selectedLabel)) {
