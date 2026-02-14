@@ -1697,7 +1697,7 @@ export default function ViewerPage() {
         !e.ctrlKey &&
         !e.metaKey &&
         !e.altKey &&
-        (e.key === "F1" ||
+        ((e.key === "F1" && !e.shiftKey) ||
           e.key === "?" ||
           (e.shiftKey && (e.key === "/" || e.code === "Slash")));
       const isResetFiltersShortcut =
