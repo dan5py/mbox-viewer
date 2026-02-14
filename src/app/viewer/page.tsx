@@ -1160,7 +1160,7 @@ export default function ViewerPage() {
   );
   const allEmailsFilterTitle = `${allEmailsLabel} (${allEmailsFilterCount})`;
   const labelFilterChipBaseClassName =
-    "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors";
+    "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1";
   const getLabelFilterChipClassName = (isActive: boolean) =>
     cn(
       labelFilterChipBaseClassName,
