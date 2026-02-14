@@ -272,6 +272,7 @@ export default function ViewerPage() {
     setSelectedMessageIndices(new Set());
     setIsActionsMenuOpen(false);
     setIsExportDialogOpen(false);
+    setIsShortcutsDialogOpen(false);
     setExportProgress(0);
     setEditingFileId(null);
     setEditingFileName("");
@@ -1060,6 +1061,16 @@ export default function ViewerPage() {
     setSelectedLabel(null);
   }, [handleClearSearch, setSelectedLabel]);
 
+  const handleOpenExportDialog = useCallback(() => {
+    setIsActionsMenuOpen(false);
+    setIsExportDialogOpen(true);
+  }, []);
+
+  const handleOpenShortcutsDialog = useCallback(() => {
+    setIsActionsMenuOpen(false);
+    setIsShortcutsDialogOpen(true);
+  }, []);
+
   const exportLocalization = useMemo(
     () => ({
       locale,
@@ -1190,7 +1201,7 @@ export default function ViewerPage() {
 
       if (isOpenShortcutsHelpShortcut) {
         e.preventDefault();
-        setIsShortcutsDialogOpen(true);
+        handleOpenShortcutsDialog();
       } else if (isSelectAllShortcut) {
         e.preventDefault();
         if (e.shiftKey) {
@@ -1254,6 +1265,7 @@ export default function ViewerPage() {
     handleToggleFilteredSelection,
     handleClearSelection,
     handleResetFilters,
+    handleOpenShortcutsDialog,
     isActionsMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
@@ -1671,14 +1683,12 @@ export default function ViewerPage() {
                       {t("selection.sections.tools")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
-                      onClick={() => setIsExportDialogOpen(true)}
+                      onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
                     >
                       {t("export.action")}
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => setIsShortcutsDialogOpen(true)}
-                    >
+                    <DropdownMenuItem onClick={handleOpenShortcutsDialog}>
                       {t("selection.shortcuts.openHelp")}
                       <DropdownMenuShortcut>?</DropdownMenuShortcut>
                     </DropdownMenuItem>
