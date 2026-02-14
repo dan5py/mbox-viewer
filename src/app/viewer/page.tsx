@@ -898,15 +898,32 @@ export default function ViewerPage() {
         const anchor = lastSelectionAnchorRef.current;
 
         if (extendRange && anchor !== null) {
-          const start = Math.min(anchor, index);
-          const end = Math.max(anchor, index);
+          const anchorPos = filteredMessageIndices.indexOf(anchor);
+          const currentPos = filteredMessageIndices.indexOf(index);
           const shouldSelectRange = !next.has(index);
 
-          for (let i = start; i <= end; i++) {
-            if (shouldSelectRange) {
-              next.add(i);
-            } else {
-              next.delete(i);
+          if (anchorPos !== -1 && currentPos !== -1) {
+            const start = Math.min(anchorPos, currentPos);
+            const end = Math.max(anchorPos, currentPos);
+
+            for (let i = start; i <= end; i++) {
+              const rangeIndex = filteredMessageIndices[i];
+              if (shouldSelectRange) {
+                next.add(rangeIndex);
+              } else {
+                next.delete(rangeIndex);
+              }
+            }
+          } else {
+            const start = Math.min(anchor, index);
+            const end = Math.max(anchor, index);
+
+            for (let i = start; i <= end; i++) {
+              if (shouldSelectRange) {
+                next.add(i);
+              } else {
+                next.delete(i);
+              }
             }
           }
         } else if (next.has(index)) {
@@ -920,7 +937,7 @@ export default function ViewerPage() {
 
       lastSelectionAnchorRef.current = index;
     },
-    []
+    [filteredMessageIndices]
   );
 
   const handleToggleCurrentPageSelection = useCallback(() => {
