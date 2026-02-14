@@ -165,6 +165,7 @@
       "bcc": "Bcc",
       "subject": "Oggetto",
       "date": "Data",
+      "messageListRegion": "Elenco messaggi",
       "html": "HTML",
       "plainText": "Testo",
       "body": "Corpo",

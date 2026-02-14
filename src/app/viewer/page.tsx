@@ -2425,7 +2425,12 @@ export default function ViewerPage() {
           </div>
 
           {/* Message List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+          <div
+            className="flex-1 overflow-y-auto p-2 space-y-1.5"
+            role="region"
+            aria-label={t("preview.messageListRegion")}
+            aria-keyshortcuts="ArrowUp ArrowDown"
+          >
             {visibleMessageIndices.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center p-8">
                 <Mail className="size-10 text-muted-foreground mb-3 opacity-50" />
