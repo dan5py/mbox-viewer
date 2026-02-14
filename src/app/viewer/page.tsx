@@ -1172,29 +1172,28 @@ export default function ViewerPage() {
     (label: string | null) => {
       if (label === null) {
         setSelectedLabel(null);
-        return;
+      } else {
+        setSelectedLabel(selectedLabel === label ? null : label);
       }
-
-      setSelectedLabel(selectedLabel === label ? null : label);
+      setIsLabelOverflowMenuOpen(false);
     },
     [selectedLabel, setSelectedLabel]
   );
   const handleSelectOverflowLabelFilter = useCallback(
     (label: string, checked: boolean | "indeterminate") => {
       if (checked === true) {
-        setSelectedLabel(label);
+        handleSelectLabelFilter(label);
       } else if (selectedLabel === label) {
-        setSelectedLabel(null);
+        handleSelectLabelFilter(null);
+      } else {
+        setIsLabelOverflowMenuOpen(false);
       }
-
-      setIsLabelOverflowMenuOpen(false);
     },
-    [selectedLabel, setSelectedLabel]
+    [handleSelectLabelFilter, selectedLabel]
   );
   const handleSelectOverflowAllEmails = useCallback(() => {
-    setSelectedLabel(null);
-    setIsLabelOverflowMenuOpen(false);
-  }, [setSelectedLabel]);
+    handleSelectLabelFilter(null);
+  }, [handleSelectLabelFilter]);
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
