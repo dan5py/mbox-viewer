@@ -239,9 +239,7 @@ async function buildMboxExport(
   signal?: AbortSignal
 ): Promise<string> {
   if (!file.fileReader || !file.messageBoundaries) {
-    throw new Error(
-      "Missing file reader or message boundaries for mbox export."
-    );
+    throw new Error("EXPORT_FILE_UNAVAILABLE");
   }
 
   const chunks: string[] = [];

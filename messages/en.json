@@ -102,6 +102,7 @@
       "success": "{count, plural, =1 {Export completed for # message} other {Export completed for # messages}}",
       "error": "Failed to export selected messages",
       "noSelection": "No messages selected for export",
+      "fileUnavailable": "The selected file is no longer available for export",
       "cancelled": "Export cancelled",
       "localization": {
         "message": "Message",

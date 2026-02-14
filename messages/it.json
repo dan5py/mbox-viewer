@@ -102,6 +102,7 @@
       "success": "{count, plural, =1 {Esportazione completata per # messaggio} other {Esportazione completata per # messaggi}}",
       "error": "Impossibile esportare i messaggi selezionati",
       "noSelection": "Nessun messaggio selezionato per l'esportazione",
+      "fileUnavailable": "Il file selezionato non è più disponibile per l'esportazione",
       "cancelled": "Esportazione annullata",
       "localization": {
         "message": "Messaggio",

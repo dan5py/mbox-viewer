@@ -996,17 +996,23 @@ export default function ViewerPage() {
         })
       );
     } catch (error) {
-      if (error instanceof Error && error.message === "EXPORT_NO_SELECTION") {
-        toast.error(t("export.noSelection"));
-        return;
+      if (error instanceof Error) {
+        if (error.message === "EXPORT_NO_SELECTION") {
+          toast.error(t("export.noSelection"));
+          return;
+        }
+        if (error.message === "EXPORT_ABORTED") {
+          toast.message(t("export.cancelled"));
+          return;
+        }
+        if (error.message === "EXPORT_FILE_UNAVAILABLE") {
+          toast.error(t("export.fileUnavailable"));
+          return;
+        }
+
+        console.error("Export failed:", error);
       }
-      if (error instanceof Error && error.message === "EXPORT_ABORTED") {
-        toast.message(t("export.cancelled"));
-        return;
-      }
-      const fallbackMessage =
-        error instanceof Error ? error.message : t("export.error");
-      toast.error(fallbackMessage);
+      toast.error(t("export.error"));
     } finally {
       exportAbortRef.current = null;
       setIsExporting(false);
