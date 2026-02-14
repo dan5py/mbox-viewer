@@ -1517,6 +1517,8 @@ export default function ViewerPage() {
                 // Use index for instant selection highlighting
                 const isSelected = selectedMessageIndex === index;
                 const isMessageChecked = selectedMessageIndices.has(index);
+                const messageSubjectForAria =
+                  preview?.subject || t("preview.noSubject");
                 const from = preview?.from || t("preview.unknown");
                 const date = preview?.date
                   ? new Date(preview.date)
@@ -1543,7 +1545,9 @@ export default function ViewerPage() {
                         onCheckedChange={() =>
                           handleToggleMessageSelection(index)
                         }
-                        aria-label={t("selection.toggleMessage")}
+                        aria-label={t("selection.toggleMessageWithSubject", {
+                          subject: messageSubjectForAria,
+                        })}
                         className="mt-2"
                       />
 

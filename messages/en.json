@@ -75,6 +75,7 @@
       "deselectAll": "Deselect all",
       "clear": "Clear",
       "toggleMessage": "Toggle message selection",
+      "toggleMessageWithSubject": "Toggle message selection for {subject}",
       "shortcuts": {
         "select": "toggle filtered selection",
         "clear": "clear all selections"

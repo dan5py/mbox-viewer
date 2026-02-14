@@ -75,6 +75,7 @@
       "deselectAll": "Deseleziona tutto",
       "clear": "Pulisci",
       "toggleMessage": "Attiva/disattiva selezione messaggio",
+      "toggleMessageWithSubject": "Attiva/disattiva selezione del messaggio {subject}",
       "shortcuts": {
         "select": "attiva/disattiva selezione filtrata",
         "clear": "pulisce tutte le selezioni"
