@@ -159,7 +159,7 @@ const shouldIgnoreGlobalShortcutTarget = (
   return false;
 };
 const dropdownMenuFocusableItemSelector =
-  '[role="menuitem"]:not([aria-disabled="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]), [role="menuitemradio"]:not([aria-disabled="true"])';
+  '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled])';
 
 export default function ViewerPage() {
   const t = useTranslations("Viewer");
