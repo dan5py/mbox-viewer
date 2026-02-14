@@ -25,6 +25,86 @@ interface UploadProgress {
   totalFiles: number;
 }
 
+function createSampleMboxFiles(): File[] {
+  const sampleInbox = `From alice@example.com Fri Jan 01 09:10:00 2021
+Date: Fri, 1 Jan 2021 09:10:00 +0000
+From: Alice Example <alice@example.com>
+To: Bob Example <bob@example.com>
+Subject: Welcome to MBOX Viewer 😊
+Message-ID: <sample-1@example.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Hello Bob,
+
+This is a sample email so you can test search, selection, and export quickly.
+It also includes emoji support: 🚀✨📬
+
+Best,
+Alice
+
+From bob@example.com Fri Jan 01 10:25:00 2021
+Date: Fri, 1 Jan 2021 10:25:00 +0000
+From: Bob Example <bob@example.com>
+To: Alice Example <alice@example.com>
+Subject: Re: Welcome to MBOX Viewer
+Message-ID: <sample-2@example.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Thanks Alice!
+
+I can already test:
+- pagination
+- keyboard shortcuts
+- per-message exports
+`;
+
+  const sampleProject = `From manager@example.com Tue Feb 09 13:30:00 2021
+Date: Tue, 9 Feb 2021 13:30:00 +0000
+From: Project Manager <manager@example.com>
+To: Team <team@example.com>
+Cc: Stakeholders <stakeholders@example.com>
+Subject: Sprint planning notes
+Message-ID: <sample-3@example.com>
+Content-Type: multipart/alternative; boundary="sample-boundary"
+
+--sample-boundary
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Team,
+
+Sprint planning is complete. See the HTML part for highlighted tasks ✅
+
+--sample-boundary
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+<html><body>
+  <p><strong>Team,</strong></p>
+  <p>Sprint planning is complete. Top priorities:</p>
+  <ul>
+    <li>Mobile responsive navigation</li>
+    <li>Export polish</li>
+    <li>Search performance</li>
+  </ul>
+  <p>Thanks! ✅</p>
+</body></html>
+
+--sample-boundary--
+`;
+
+  return [
+    new File([sampleInbox], "sample-inbox.mbox", {
+      type: "application/mbox",
+    }),
+    new File([sampleProject], "sample-project.mbox", {
+      type: "application/mbox",
+    }),
+  ];
+}
+
 export function FileUploadInput({
   onUploadCompleteAction,
 }: {
@@ -36,8 +116,14 @@ export function FileUploadInput({
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const { addFile, setIsUploading, isUploading, setIsParsing, isParsing } =
-    createMboxStore();
+  const {
+    addFile,
+    files,
+    setIsUploading,
+    isUploading,
+    setIsParsing,
+    isParsing,
+  } = createMboxStore();
 
   const handleFiles = useCallback(
     async (acceptedFiles: File[]) => {
@@ -207,6 +293,12 @@ export function FileUploadInput({
     }
   }, []);
 
+  const handleUseSamples = useCallback(() => {
+    setError(null);
+    const sampleFiles = createSampleMboxFiles();
+    void handleFiles(sampleFiles);
+  }, [handleFiles]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
@@ -250,6 +342,26 @@ export function FileUploadInput({
           <p className="text-xs text-muted-foreground">
             {t("Viewer.input.click")}
           </p>
+        </div>
+      )}
+
+      {!isUploading && files.length === 0 && (
+        <div className="mt-3 rounded-md border border-border/60 bg-muted/20 p-3 text-left">
+          <p className="text-sm font-medium">
+            {t("Viewer.input.samplesTitle")}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t("Viewer.input.samplesDescription")}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-3"
+            onClick={handleUseSamples}
+          >
+            {t("Viewer.input.useSamples")}
+          </Button>
         </div>
       )}
 
