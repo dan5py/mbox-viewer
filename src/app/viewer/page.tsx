@@ -832,21 +832,32 @@ export default function ViewerPage() {
     setEditingFileName("");
   }, [editingFileId, editingFileName, handleCancelRenameFile, renameFile]);
 
-  // Extract all unique labels from the current file
-  const allLabels = useMemo(() => {
-    if (!currentFile?.messageBoundaries) return [];
-    const labelSet = new Set<string>();
+  const labelMessageCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    if (!currentFile?.messageBoundaries) {
+      return counts;
+    }
+
     for (const boundary of currentFile.messageBoundaries) {
-      if (boundary.preview?.labels) {
-        for (const label of boundary.preview.labels) {
-          labelSet.add(label);
-        }
+      const boundaryLabels = boundary.preview?.labels;
+      if (!boundaryLabels || boundaryLabels.length === 0) {
+        continue;
+      }
+
+      for (const label of new Set(boundaryLabels)) {
+        counts.set(label, (counts.get(label) ?? 0) + 1);
       }
     }
-    return Array.from(labelSet).sort((a, b) =>
+
+    return counts;
+  }, [currentFile]);
+
+  // Extract all unique labels from the current file
+  const allLabels = useMemo(() => {
+    return Array.from(labelMessageCounts.keys()).sort((a, b) =>
       a.localeCompare(b, locale, { sensitivity: "base", numeric: true })
     );
-  }, [currentFile, locale]);
+  }, [labelMessageCounts, locale]);
   const maxInlineLabelFilters = 8;
   const inlineLabelFilters = useMemo(
     () => allLabels.slice(0, maxInlineLabelFilters),
@@ -856,6 +867,12 @@ export default function ViewerPage() {
     () => allLabels.slice(maxInlineLabelFilters),
     [allLabels]
   );
+
+  useEffect(() => {
+    if (selectedLabel !== null && !labelMessageCounts.has(selectedLabel)) {
+      setSelectedLabel(null);
+    }
+  }, [labelMessageCounts, selectedLabel, setSelectedLabel]);
 
   // Compute visible message indices (before early return to use in keyboard navigation)
   const totalMessages = currentFile?.messageCount || 0;
@@ -957,6 +974,8 @@ export default function ViewerPage() {
     hasActiveOverflowLabel && selectedLabel !== null
       ? `${selectedLabel} · ${moreLabelsTriggerText}`
       : moreLabelsTriggerText;
+  const getLabelMessageCount = (label: string) =>
+    integerFormatter.format(labelMessageCounts.get(label) ?? 0);
   const labelFilterChipBaseClassName =
     "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors";
   const getLabelFilterChipClassName = (isActive: boolean) =>
@@ -1805,7 +1824,7 @@ export default function ViewerPage() {
                         selectedLabel === label
                       )}
                       aria-pressed={selectedLabel === label}
-                      title={label}
+                      title={`${label} (${getLabelMessageCount(label)})`}
                     >
                       <span className="truncate">{label}</span>
                     </button>
@@ -1837,9 +1856,12 @@ export default function ViewerPage() {
                             onCheckedChange={() =>
                               handleSelectLabelFilter(label)
                             }
-                            title={label}
+                            title={`${label} (${getLabelMessageCount(label)})`}
                           >
                             <span className="truncate">{label}</span>
+                            <DropdownMenuShortcut>
+                              {getLabelMessageCount(label)}
+                            </DropdownMenuShortcut>
                           </DropdownMenuCheckboxItem>
                         ))}
                       </DropdownMenuContent>
