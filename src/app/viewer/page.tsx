@@ -1601,6 +1601,13 @@ export default function ViewerPage() {
                       {t("selection.actions")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
+                      onClick={() => setIsExportDialogOpen(true)}
+                      disabled={selectedCount === 0}
+                    >
+                      {t("export.action")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
                       onClick={handleToggleCurrentPageSelection}
                       disabled={visibleMessageIndices.length === 0}
                     >
@@ -1635,16 +1642,6 @@ export default function ViewerPage() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => setIsExportDialogOpen(true)}
-                  disabled={selectedCount === 0}
-                >
-                  <Download className="size-3.5 mr-1" />
-                  {t("export.action")}
-                </Button>
               </div>
             </div>
           </div>
