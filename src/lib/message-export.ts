@@ -55,7 +55,7 @@ function sanitizeHtmlBodyForExport(html: string): string {
   const doc = parser.parseFromString(html, "text/html");
 
   const blockedTags = doc.querySelectorAll(
-    "script, iframe, object, embed, base, link[rel='import']"
+    "script, iframe, object, embed, base, meta[http-equiv='refresh'], link[rel='import']"
   );
   blockedTags.forEach((node) => node.remove());
 
