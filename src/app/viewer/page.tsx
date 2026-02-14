@@ -158,6 +158,8 @@ const shouldIgnoreGlobalShortcutTarget = (
   }
   return false;
 };
+const dropdownMenuFocusableItemSelector =
+  '[role="menuitem"]:not([aria-disabled="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]), [role="menuitemradio"]:not([aria-disabled="true"])';
 
 export default function ViewerPage() {
   const t = useTranslations("Viewer");
@@ -1264,6 +1266,34 @@ export default function ViewerPage() {
   const handleSelectOverflowAllEmails = useCallback(() => {
     handleSelectLabelFilter(null);
   }, [handleSelectLabelFilter]);
+  const handleDropdownMenuBoundaryKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) {
+        return;
+      }
+
+      if (event.key !== "Home" && event.key !== "End") {
+        return;
+      }
+
+      const menuItems = Array.from(
+        event.currentTarget.querySelectorAll<HTMLElement>(
+          dropdownMenuFocusableItemSelector
+        )
+      );
+      if (menuItems.length === 0) {
+        return;
+      }
+
+      event.preventDefault();
+      if (event.key === "Home") {
+        menuItems[0]?.focus();
+      } else {
+        menuItems[menuItems.length - 1]?.focus();
+      }
+    },
+    []
+  );
   const handleLabelFiltersGroupKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
       if (event.altKey || event.ctrlKey || event.metaKey) {
@@ -2085,6 +2115,7 @@ export default function ViewerPage() {
                     align="end"
                     loop
                     aria-label={actionsTriggerLabel}
+                    onKeyDown={handleDropdownMenuBoundaryKeyDown}
                     className="w-56"
                   >
                     <DropdownMenuLabel className="text-xs">
@@ -2256,6 +2287,7 @@ export default function ViewerPage() {
                         align="start"
                         loop
                         aria-label={moreLabelsMenuAriaLabel}
+                        onKeyDown={handleDropdownMenuBoundaryKeyDown}
                         className="max-h-72 w-56 overflow-y-auto"
                       >
                         {selectedLabel !== null && (
