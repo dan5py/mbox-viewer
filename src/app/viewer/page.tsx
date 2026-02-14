@@ -97,6 +97,70 @@ import { FileUploadInput } from "~/components/files-uploader/input";
 import { Navbar } from "~/components/navbar";
 import HtmlRenderer from "~/components/viewer/html-renderer";
 
+const globalShortcutBlockingTags = new Set([
+  "A",
+  "BUTTON",
+  "DETAILS",
+  "INPUT",
+  "SELECT",
+  "SUMMARY",
+  "TEXTAREA",
+]);
+const globalShortcutBlockingRoles = [
+  "button",
+  "checkbox",
+  "combobox",
+  "link",
+  "listbox",
+  "menu",
+  "menuitem",
+  "menuitemcheckbox",
+  "menuitemradio",
+  "option",
+  "radio",
+  "slider",
+  "spinbutton",
+  "switch",
+  "tab",
+  "textbox",
+] as const;
+const globalShortcutBlockingRoleSet = new Set<string>(
+  globalShortcutBlockingRoles
+);
+const globalShortcutBlockingSelector = [
+  "a",
+  "button",
+  "details",
+  "input",
+  "select",
+  "summary",
+  "textarea",
+  "[contenteditable='true']",
+  ...globalShortcutBlockingRoles.map((role) => `[role='${role}']`),
+].join(", ");
+
+const shouldIgnoreGlobalShortcutTarget = (
+  target: EventTarget | null
+): target is HTMLElement => {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  if (target.isContentEditable) {
+    return true;
+  }
+
+  const role = target.getAttribute("role");
+  if (
+    globalShortcutBlockingTags.has(target.tagName) ||
+    (role !== null && globalShortcutBlockingRoleSet.has(role))
+  ) {
+    return true;
+  }
+
+  return target.closest(globalShortcutBlockingSelector) !== null;
+};
+
 export default function ViewerPage() {
   const t = useTranslations("Viewer");
   const locale = useLocale();
@@ -1543,43 +1607,8 @@ export default function ViewerPage() {
         return;
       }
 
-      // Don't interfere with editable fields
-      if (e.target instanceof HTMLElement) {
-        const tagName = e.target.tagName;
-        const role = e.target.getAttribute("role");
-        const isInteractiveTag =
-          tagName === "BUTTON" ||
-          tagName === "A" ||
-          tagName === "SUMMARY" ||
-          tagName === "DETAILS";
-        const isInteractiveRole =
-          role === "button" ||
-          role === "link" ||
-          role === "menuitem" ||
-          role === "menuitemcheckbox" ||
-          role === "menuitemradio" ||
-          role === "checkbox" ||
-          role === "switch" ||
-          role === "radio" ||
-          role === "tab" ||
-          role === "option" ||
-          role === "listbox" ||
-          role === "menu" ||
-          role === "slider";
-
-        if (
-          tagName === "INPUT" ||
-          tagName === "TEXTAREA" ||
-          tagName === "SELECT" ||
-          e.target.isContentEditable ||
-          role === "textbox" ||
-          role === "combobox" ||
-          role === "spinbutton" ||
-          isInteractiveTag ||
-          isInteractiveRole
-        ) {
-          return;
-        }
+      if (shouldIgnoreGlobalShortcutTarget(e.target)) {
+        return;
       }
 
       const isSelectAllShortcut =
