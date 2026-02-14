@@ -1987,7 +1987,7 @@ export default function ViewerPage() {
   }
 
   return (
-    <div ref={viewerPageRootRef} className="flex flex-col h-screen">
+    <div ref={viewerPageRootRef} className="flex h-[100dvh] flex-col">
       <Navbar />
 
       {/* Main Content */}
@@ -3177,7 +3177,10 @@ export default function ViewerPage() {
         </div>
       </div>
 
-      <div className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div
+        className="sticky bottom-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 md:hidden"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <div className="grid grid-cols-3 gap-1 p-2">
           <Button
             variant="ghost"
@@ -3223,7 +3226,10 @@ export default function ViewerPage() {
         open={isMobileFilesSheetOpen}
         onOpenChange={setIsMobileFilesSheetOpen}
       >
-        <SheetContent side="left" className="w-[88vw] max-w-sm p-0 md:hidden">
+        <SheetContent
+          side="left"
+          className="h-[100dvh] w-[88vw] max-w-sm p-0 md:hidden"
+        >
           <SheetHeader className="border-b border-border/60">
             <SheetTitle>{t("files.title")}</SheetTitle>
           </SheetHeader>
@@ -3236,27 +3242,110 @@ export default function ViewerPage() {
             {files.length > 0 ? (
               <div className="space-y-2">
                 {files.map((file) => (
-                  <button
+                  <div
                     key={`mobile-${file.id}`}
-                    type="button"
-                    onClick={() => handleSelectFile(file.id)}
                     className={cn(
-                      "w-full rounded-md border px-3 py-2 text-left transition-colors",
+                      "rounded-md border p-2",
                       selectedFileId === file.id
                         ? "border-primary bg-primary/10"
-                        : "border-border/50 hover:bg-muted/50"
+                        : "border-border/50"
                     )}
                   >
-                    <p
-                      className="truncate text-sm font-medium"
-                      title={file.name}
-                    >
-                      {file.name}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {t("messages", { count: file.messageCount ?? 0 })}
-                    </p>
-                  </button>
+                    {editingFileId === file.id ? (
+                      <div className="space-y-2">
+                        <Input
+                          value={editingFileName}
+                          onChange={(e) => setEditingFileName(e.target.value)}
+                          onFocus={(e) => e.target.select()}
+                          onBlur={(e) => {
+                            const nextTarget =
+                              e.relatedTarget as HTMLElement | null;
+                            if (nextTarget?.dataset.renameAction) {
+                              return;
+                            }
+                            handleCommitRenameFile();
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleCommitRenameFile();
+                            } else if (e.key === "Escape") {
+                              e.preventDefault();
+                              handleCancelRenameFile();
+                            }
+                          }}
+                          autoFocus
+                          className="h-8 text-sm"
+                        />
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-xs"
+                            data-rename-action="save"
+                            disabled={!editingFileName.trim()}
+                            onClick={handleCommitRenameFile}
+                          >
+                            <Check className="mr-1 size-3" />
+                            {t("rename.save")}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs"
+                            data-rename-action="cancel"
+                            onClick={handleCancelRenameFile}
+                          >
+                            {t("rename.cancel")}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFile(file.id)}
+                          className="w-full text-left"
+                        >
+                          <p
+                            className="truncate text-sm font-medium"
+                            title={file.name}
+                          >
+                            {file.name}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {t("messages", { count: file.messageCount ?? 0 })}
+                          </p>
+                        </button>
+                        <div className="mt-2 flex items-center justify-end gap-2">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className="size-8"
+                            onClick={() =>
+                              handleStartRenameFile(file.id, file.name)
+                            }
+                            aria-label={t("rename.ariaLabel")}
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            onClick={() => setFileToDelete(file.id)}
+                            aria-label={t("delete.ariaLabel")}
+                          >
+                            <Trash className="size-4" />
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 ))}
               </div>
             ) : (
