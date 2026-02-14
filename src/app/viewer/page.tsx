@@ -1021,6 +1021,10 @@ export default function ViewerPage() {
     },
     [selectedLabel, setSelectedLabel]
   );
+  const handleSelectOverflowAllEmails = useCallback(() => {
+    setSelectedLabel(null);
+    setIsLabelOverflowMenuOpen(false);
+  }, [setSelectedLabel]);
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1900,6 +1904,15 @@ export default function ViewerPage() {
                         align="start"
                         className="max-h-72 w-56 overflow-y-auto"
                       >
+                        <DropdownMenuItem
+                          onClick={handleSelectOverflowAllEmails}
+                        >
+                          {t("search.allEmails")}
+                          <DropdownMenuShortcut>
+                            {integerFormatter.format(totalMessages)}
+                          </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         {overflowLabelFilters.map((label) => (
                           <DropdownMenuCheckboxItem
                             key={label}
