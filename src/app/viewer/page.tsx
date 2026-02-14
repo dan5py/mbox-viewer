@@ -989,13 +989,17 @@ export default function ViewerPage() {
   const moreLabelsTriggerText = t("search.moreLabels", {
     count: overflowLabelFilters.length,
   });
-  const overflowLabelsTriggerText =
+  const activeOverflowLabelCount =
     hasActiveOverflowLabel && selectedLabel !== null
-      ? selectedLabel
+      ? integerFormatter.format(labelMessageCounts.get(selectedLabel) ?? 0)
+      : null;
+  const overflowLabelsTriggerText =
+    hasActiveOverflowLabel && selectedLabel !== null && activeOverflowLabelCount
+      ? `${selectedLabel} (${activeOverflowLabelCount})`
       : moreLabelsTriggerText;
   const overflowLabelsTriggerTitle =
-    hasActiveOverflowLabel && selectedLabel !== null
-      ? `${selectedLabel} · ${moreLabelsTriggerText}`
+    hasActiveOverflowLabel && selectedLabel !== null && activeOverflowLabelCount
+      ? `${selectedLabel} (${activeOverflowLabelCount}) · ${moreLabelsTriggerText}`
       : moreLabelsTriggerText;
   const overflowLabelsTriggerAriaLabel = hasActiveOverflowLabel
     ? t("search.moreLabelsWithActive", {
