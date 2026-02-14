@@ -66,6 +66,7 @@
       "searchingProgress": "Ricerca in corso... {progress}%",
       "results": "{count, plural, =1 {# risultato} other {# risultati}}",
       "allEmails": "Tutte le email",
+      "labelFilters": "Filtri etichetta",
       "noMessages": "Nessun messaggio",
       "clear": "Cancella ricerca",
       "error": "Ricerca non riuscita. Riprova."

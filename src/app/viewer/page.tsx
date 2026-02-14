@@ -941,6 +941,14 @@ export default function ViewerPage() {
         ? "bg-primary text-primary-foreground"
         : "bg-muted text-muted-foreground hover:bg-muted/80"
     );
+  const handleSelectLabelFilter = (label: string | null) => {
+    if (label === null) {
+      setSelectedLabel(null);
+      return;
+    }
+
+    setSelectedLabel(selectedLabel === label ? null : label);
+  };
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1747,20 +1755,25 @@ export default function ViewerPage() {
             {/* Label Filter Pills */}
             {allLabels.length > 0 && (
               <ScrollArea className="w-full">
-                <div className="flex gap-1.5 pb-1">
+                <div
+                  className="flex gap-1.5 pb-1"
+                  role="group"
+                  aria-label={t("search.labelFilters")}
+                >
                   <button
-                    onClick={() => setSelectedLabel(null)}
+                    onClick={() => handleSelectLabelFilter(null)}
                     className={getLabelFilterChipClassName(
                       selectedLabel === null
                     )}
                     aria-pressed={selectedLabel === null}
+                    title={t("search.allEmails")}
                   >
                     {t("search.allEmails")}
                   </button>
                   {allLabels.map((label) => (
                     <button
                       key={label}
-                      onClick={() => setSelectedLabel(label)}
+                      onClick={() => handleSelectLabelFilter(label)}
                       className={getLabelFilterChipClassName(
                         selectedLabel === label
                       )}
