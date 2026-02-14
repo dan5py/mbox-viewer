@@ -1256,6 +1256,14 @@ export default function ViewerPage() {
     isSearching || searchFailed || hasActiveFilters || selectedCount > 0;
   const messageSummaryLabel = useMemo(() => {
     if (totalMessages === 0) {
+      if (hasSearchQuery) {
+        return t("search.results", { count: 0 });
+      }
+
+      if (selectedLabel !== null) {
+        return t("messages", { count: 0 });
+      }
+
       return "";
     }
 
@@ -1279,6 +1287,7 @@ export default function ViewerPage() {
       count: totalMessages,
     });
   }, [
+    hasSearchQuery,
     searchResultCount,
     selectedLabel,
     t,
