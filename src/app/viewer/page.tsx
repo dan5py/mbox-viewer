@@ -1512,7 +1512,7 @@ export default function ViewerPage() {
             <div className="flex items-center justify-between">
               {isSearching ? (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Spinner className="size-3" />
+                  <Spinner className="size-3" label={t("search.searching")} />
                   <span>
                     {t("search.searchingProgress", {
                       progress: searchProgress,
@@ -2272,7 +2272,10 @@ export default function ViewerPage() {
             <div className="flex flex-col items-center justify-center h-full text-center p-8">
               {loadingMessage || selectedMessageIndex !== null ? (
                 <>
-                  <Spinner className="size-16 mx-auto mb-4 text-primary" />
+                  <Spinner
+                    className="size-16 mx-auto mb-4 text-primary"
+                    label={t("preview.loading")}
+                  />
                   <p className="text-sm font-medium text-foreground mb-1">
                     {t("preview.loading")}
                   </p>
@@ -2399,7 +2402,10 @@ export default function ViewerPage() {
             >
               {isExporting ? (
                 <>
-                  <Spinner className="size-4 mr-2" />
+                  <Spinner
+                    className="size-4 mr-2"
+                    label={t("export.exporting")}
+                  />
                   {t("export.exporting")}
                 </>
               ) : (
@@ -2568,7 +2574,10 @@ export default function ViewerPage() {
                       />
                     ) : (
                       <div className="flex items-center justify-center">
-                        <Spinner className="size-8" />
+                        <Spinner
+                          className="size-8"
+                          label={t("preview.loading")}
+                        />
                       </div>
                     )}
                   </div>
@@ -2582,7 +2591,10 @@ export default function ViewerPage() {
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full">
-                        <Spinner className="size-8" />
+                        <Spinner
+                          className="size-8"
+                          label={t("preview.loading")}
+                        />
                       </div>
                     )}
                   </div>
