@@ -915,15 +915,12 @@ export default function ViewerPage() {
               }
             }
           } else {
-            const start = Math.min(anchor, index);
-            const end = Math.max(anchor, index);
-
-            for (let i = start; i <= end; i++) {
-              if (shouldSelectRange) {
-                next.add(i);
-              } else {
-                next.delete(i);
-              }
+            // If either endpoint is no longer in current filtered order,
+            // fall back to toggling only the current message.
+            if (shouldSelectRange) {
+              next.add(index);
+            } else {
+              next.delete(index);
             }
           }
         } else if (next.has(index)) {
