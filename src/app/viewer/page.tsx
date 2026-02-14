@@ -1393,7 +1393,10 @@ export default function ViewerPage() {
                               </div>
                             </div>
                           ) : (
-                            <p className="text-sm font-medium truncate">
+                            <p
+                              className="text-sm font-medium truncate"
+                              title={file.name}
+                            >
                               {file.name}
                             </p>
                           )}
@@ -1653,6 +1656,8 @@ export default function ViewerPage() {
                 // Use index for instant selection highlighting
                 const isSelected = selectedMessageIndex === index;
                 const isMessageChecked = selectedMessageIndices.has(index);
+                const messageSubjectLabel =
+                  preview?.subject || t("preview.noSubject");
                 const messageSubjectForAria =
                   preview?.subject || t("preview.noSubject");
                 const from = preview?.from || t("preview.unknown");
@@ -1720,6 +1725,7 @@ export default function ViewerPage() {
                                     ? "text-primary"
                                     : "text-foreground"
                                 )}
+                                title={messageSubjectLabel}
                               >
                                 {preview?.subject || (
                                   <span className="italic text-muted-foreground">
