@@ -1248,6 +1248,8 @@ export default function ViewerPage() {
   ]);
 
   const totalFilteredMessages = filteredMessageIndices.length;
+  const shouldShowHeaderStatusRow =
+    isSearching || searchFailed || totalMessages > 0;
   const messageSummaryLabel = useMemo(() => {
     if (totalMessages === 0) {
       return "";
@@ -1571,113 +1573,115 @@ export default function ViewerPage() {
               </ScrollArea>
             )}
 
-            <div className="flex items-center justify-between gap-2 min-w-0">
-              {isSearching ? (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
-                  <Spinner className="size-3" label={t("search.searching")} />
-                  <span className="truncate">
-                    {t("search.searchingProgress", {
-                      progress: searchProgress,
-                    })}
-                  </span>
-                  <Progress
-                    value={searchProgress}
-                    className="h-1.5 w-20"
-                    aria-label={t("search.searchingProgress", {
-                      progress: searchProgress,
-                    })}
-                  />
-                </div>
-              ) : searchFailed ? (
-                <p className="text-xs text-destructive font-medium truncate">
-                  {t("search.error")}
-                </p>
-              ) : (
-                totalMessages > 0 && (
-                  <p
-                    className="text-xs text-muted-foreground font-medium truncate"
-                    title={messageSummaryLabel}
-                  >
-                    {messageSummaryLabel}
+            {shouldShowHeaderStatusRow && (
+              <div className="flex items-center justify-between gap-2 min-w-0">
+                {isSearching ? (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
+                    <Spinner className="size-3" label={t("search.searching")} />
+                    <span className="truncate">
+                      {t("search.searchingProgress", {
+                        progress: searchProgress,
+                      })}
+                    </span>
+                    <Progress
+                      value={searchProgress}
+                      className="h-1.5 w-20"
+                      aria-label={t("search.searchingProgress", {
+                        progress: searchProgress,
+                      })}
+                    />
+                  </div>
+                ) : searchFailed ? (
+                  <p className="text-xs text-destructive font-medium truncate">
+                    {t("search.error")}
                   </p>
-                )
-              )}
-              <div className="flex items-center gap-1">
-                {totalMessages > 0 && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                          "relative size-7 overflow-visible",
-                          selectedCount > 0 && "text-primary"
-                        )}
-                        aria-label={`${t("selection.actions")} · ${selectedCountLabel}`}
-                        title={`${t("selection.actions")} · ${selectedCountLabel}`}
-                      >
-                        <MoreHorizontal className="size-3.5" />
-                        {selectedCount > 0 && (
-                          <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
-                            {selectedCountBadgeLabel}
-                          </Badge>
-                        )}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuLabel className="text-xs">
-                        {selectedMenuLabel}
-                      </DropdownMenuLabel>
-                      <DropdownMenuItem
-                        onClick={handleToggleCurrentPageSelection}
-                        disabled={visibleMessageIndices.length === 0}
-                      >
-                        {allVisibleSelected
-                          ? t("selection.deselectPage")
-                          : t("selection.selectPage")}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={handleToggleFilteredSelection}
-                        disabled={filteredMessageIndices.length === 0}
-                      >
-                        {allFilteredSelected
-                          ? hasActiveFilters
-                            ? t("selection.deselectFiltered")
-                            : t("selection.deselectAll")
-                          : hasActiveFilters
-                            ? t("selection.selectFiltered")
-                            : t("selection.selectAll")}
-                        <DropdownMenuShortcut>
-                          {toggleFilteredSelectionShortcutLabel}
-                        </DropdownMenuShortcut>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={handleClearSelection}
-                        disabled={selectedCount === 0}
-                      >
-                        {t("selection.clear")}
-                        <DropdownMenuShortcut>
-                          {clearSelectionShortcutLabel}
-                        </DropdownMenuShortcut>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setIsExportDialogOpen(true)}
-                        disabled={selectedCount === 0}
-                      >
-                        {t("export.action")}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => setIsShortcutsDialogOpen(true)}
-                      >
-                        {t("selection.shortcuts.openHelp")}
-                        <DropdownMenuShortcut>?</DropdownMenuShortcut>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                ) : (
+                  totalMessages > 0 && (
+                    <p
+                      className="text-xs text-muted-foreground font-medium truncate"
+                      title={messageSummaryLabel}
+                    >
+                      {messageSummaryLabel}
+                    </p>
+                  )
                 )}
+                <div className="flex items-center gap-1">
+                  {totalMessages > 0 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn(
+                            "relative size-7 overflow-visible",
+                            selectedCount > 0 && "text-primary"
+                          )}
+                          aria-label={`${t("selection.actions")} · ${selectedCountLabel}`}
+                          title={`${t("selection.actions")} · ${selectedCountLabel}`}
+                        >
+                          <MoreHorizontal className="size-3.5" />
+                          {selectedCount > 0 && (
+                            <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
+                              {selectedCountBadgeLabel}
+                            </Badge>
+                          )}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel className="text-xs">
+                          {selectedMenuLabel}
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onClick={handleToggleCurrentPageSelection}
+                          disabled={visibleMessageIndices.length === 0}
+                        >
+                          {allVisibleSelected
+                            ? t("selection.deselectPage")
+                            : t("selection.selectPage")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={handleToggleFilteredSelection}
+                          disabled={filteredMessageIndices.length === 0}
+                        >
+                          {allFilteredSelected
+                            ? hasActiveFilters
+                              ? t("selection.deselectFiltered")
+                              : t("selection.deselectAll")
+                            : hasActiveFilters
+                              ? t("selection.selectFiltered")
+                              : t("selection.selectAll")}
+                          <DropdownMenuShortcut>
+                            {toggleFilteredSelectionShortcutLabel}
+                          </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={handleClearSelection}
+                          disabled={selectedCount === 0}
+                        >
+                          {t("selection.clear")}
+                          <DropdownMenuShortcut>
+                            {clearSelectionShortcutLabel}
+                          </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setIsExportDialogOpen(true)}
+                          disabled={selectedCount === 0}
+                        >
+                          {t("export.action")}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => setIsShortcutsDialogOpen(true)}
+                        >
+                          {t("selection.shortcuts.openHelp")}
+                          <DropdownMenuShortcut>?</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Message List */}
