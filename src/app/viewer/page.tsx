@@ -834,32 +834,45 @@ export default function ViewerPage() {
     setEditingFileName("");
   }, [editingFileId, editingFileName, handleCancelRenameFile, renameFile]);
 
-  const labelMessageCounts = useMemo(() => {
-    const counts = new Map<string, number>();
+  const labelToMessageIndices = useMemo(() => {
+    const indicesByLabel = new Map<string, number[]>();
     if (!currentFile?.messageBoundaries) {
-      return counts;
+      return indicesByLabel;
     }
 
-    for (const boundary of currentFile.messageBoundaries) {
-      const boundaryLabels = boundary.preview?.labels;
+    for (let index = 0; index < currentFile.messageBoundaries.length; index++) {
+      const boundaryLabels =
+        currentFile.messageBoundaries[index]?.preview?.labels;
       if (!boundaryLabels || boundaryLabels.length === 0) {
         continue;
       }
 
       for (const label of new Set(boundaryLabels)) {
-        counts.set(label, (counts.get(label) ?? 0) + 1);
+        const labelIndices = indicesByLabel.get(label);
+        if (labelIndices) {
+          labelIndices.push(index);
+        } else {
+          indicesByLabel.set(label, [index]);
+        }
       }
     }
 
-    return counts;
+    return indicesByLabel;
   }, [currentFile]);
+  const labelMessageCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const [label, indices] of labelToMessageIndices.entries()) {
+      counts.set(label, indices.length);
+    }
+    return counts;
+  }, [labelToMessageIndices]);
 
   // Extract all unique labels from the current file
   const allLabels = useMemo(() => {
-    return Array.from(labelMessageCounts.keys()).sort((a, b) =>
+    return Array.from(labelToMessageIndices.keys()).sort((a, b) =>
       a.localeCompare(b, locale, { sensitivity: "base", numeric: true })
     );
-  }, [labelMessageCounts, locale]);
+  }, [labelToMessageIndices, locale]);
   const maxInlineLabelFilters = 8;
   const { inlineLabelFilters, overflowLabelFilters } = useMemo(() => {
     if (allLabels.length <= maxInlineLabelFilters) {
@@ -892,10 +905,10 @@ export default function ViewerPage() {
   }, [allLabels, selectedLabel]);
 
   useEffect(() => {
-    if (selectedLabel !== null && !labelMessageCounts.has(selectedLabel)) {
+    if (selectedLabel !== null && !labelToMessageIndices.has(selectedLabel)) {
       setSelectedLabel(null);
     }
-  }, [labelMessageCounts, selectedLabel, setSelectedLabel]);
+  }, [labelToMessageIndices, selectedLabel, setSelectedLabel]);
 
   // Compute visible message indices (before early return to use in keyboard navigation)
   const totalMessages = currentFile?.messageCount || 0;
@@ -903,19 +916,12 @@ export default function ViewerPage() {
 
   // Filter messages by label if a label is selected
   const labelFilteredIndices = useMemo(() => {
-    if (!currentFile?.messageBoundaries || selectedLabel === null) {
+    if (selectedLabel === null) {
       return null; // null means no label filtering
     }
-    const filtered: number[] = [];
-    for (let i = 0; i < currentFile.messageBoundaries.length; i++) {
-      const boundary = currentFile.messageBoundaries[i];
-      const labels = boundary.preview?.labels || [];
-      if (labels.includes(selectedLabel)) {
-        filtered.push(i);
-      }
-    }
-    return filtered;
-  }, [currentFile, selectedLabel]);
+
+    return labelToMessageIndices.get(selectedLabel) ?? [];
+  }, [labelToMessageIndices, selectedLabel]);
 
   const searchResultSet = useMemo(
     () => (searchResults ? new Set(searchResults) : null),
