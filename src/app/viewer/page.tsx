@@ -873,36 +873,6 @@ export default function ViewerPage() {
       a.localeCompare(b, locale, { sensitivity: "base", numeric: true })
     );
   }, [labelToMessageIndices, locale]);
-  const maxInlineLabelFilters = 8;
-  const { inlineLabelFilters, overflowLabelFilters } = useMemo(() => {
-    if (allLabels.length <= maxInlineLabelFilters) {
-      return { inlineLabelFilters: allLabels, overflowLabelFilters: [] };
-    }
-
-    if (selectedLabel && allLabels.includes(selectedLabel)) {
-      const selectedLabelIndex = allLabels.indexOf(selectedLabel);
-      if (selectedLabelIndex >= maxInlineLabelFilters) {
-        const pinnedInlineLabels = [
-          ...allLabels.slice(0, maxInlineLabelFilters - 1),
-          selectedLabel,
-        ];
-        const pinnedInlineLabelSet = new Set(pinnedInlineLabels);
-        const remainingOverflowLabels = allLabels.filter(
-          (label) => !pinnedInlineLabelSet.has(label)
-        );
-
-        return {
-          inlineLabelFilters: pinnedInlineLabels,
-          overflowLabelFilters: remainingOverflowLabels,
-        };
-      }
-    }
-
-    return {
-      inlineLabelFilters: allLabels.slice(0, maxInlineLabelFilters),
-      overflowLabelFilters: allLabels.slice(maxInlineLabelFilters),
-    };
-  }, [allLabels, selectedLabel]);
 
   useEffect(() => {
     if (selectedLabel !== null && !labelToMessageIndices.has(selectedLabel)) {
@@ -945,37 +915,52 @@ export default function ViewerPage() {
 
     return counts;
   }, [labelMessageCounts, labelToMessageIndices, searchResultSet]);
-  const visibleInlineLabelFilters = useMemo(() => {
-    return inlineLabelFilters.filter((label) => {
-      if (selectedLabel === label) {
-        return true;
-      }
+  const labelFiltersForLayout = useMemo(() => {
+    if (!searchResultSet) {
+      return allLabels;
+    }
 
-      if (!searchResultSet) {
+    return allLabels.filter((label) => {
+      if (selectedLabel === label) {
         return true;
       }
 
       return (labelDisplayCounts.get(label) ?? 0) > 0;
     });
-  }, [inlineLabelFilters, labelDisplayCounts, searchResultSet, selectedLabel]);
-  const visibleOverflowLabelFilters = useMemo(() => {
-    return overflowLabelFilters.filter((label) => {
-      if (selectedLabel === label) {
-        return true;
-      }
+  }, [allLabels, labelDisplayCounts, searchResultSet, selectedLabel]);
+  const maxInlineLabelFilters = 8;
+  const { inlineLabelFilters, overflowLabelFilters } = useMemo(() => {
+    if (labelFiltersForLayout.length <= maxInlineLabelFilters) {
+      return {
+        inlineLabelFilters: labelFiltersForLayout,
+        overflowLabelFilters: [],
+      };
+    }
 
-      if (!searchResultSet) {
-        return true;
-      }
+    if (selectedLabel && labelFiltersForLayout.includes(selectedLabel)) {
+      const selectedLabelIndex = labelFiltersForLayout.indexOf(selectedLabel);
+      if (selectedLabelIndex >= maxInlineLabelFilters) {
+        const pinnedInlineLabels = [
+          ...labelFiltersForLayout.slice(0, maxInlineLabelFilters - 1),
+          selectedLabel,
+        ];
+        const pinnedInlineLabelSet = new Set(pinnedInlineLabels);
+        const remainingOverflowLabels = labelFiltersForLayout.filter(
+          (label) => !pinnedInlineLabelSet.has(label)
+        );
 
-      return (labelDisplayCounts.get(label) ?? 0) > 0;
-    });
-  }, [
-    labelDisplayCounts,
-    overflowLabelFilters,
-    searchResultSet,
-    selectedLabel,
-  ]);
+        return {
+          inlineLabelFilters: pinnedInlineLabels,
+          overflowLabelFilters: remainingOverflowLabels,
+        };
+      }
+    }
+
+    return {
+      inlineLabelFilters: labelFiltersForLayout.slice(0, maxInlineLabelFilters),
+      overflowLabelFilters: labelFiltersForLayout.slice(maxInlineLabelFilters),
+    };
+  }, [labelFiltersForLayout, selectedLabel]);
 
   const filteredMessageIndices = useMemo(() => {
     if (!(files.length > 0 && currentFile)) return [];
@@ -1042,7 +1027,7 @@ export default function ViewerPage() {
   const resetFiltersShortcutLabel = "Shift+Esc";
   const openShortcutsShortcutLabel = "?";
   const moreLabelsTriggerText = t("search.moreLabels", {
-    count: visibleOverflowLabelFilters.length,
+    count: overflowLabelFilters.length,
   });
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelDisplayCounts.get(label) ?? 0);
@@ -1937,7 +1922,7 @@ export default function ViewerPage() {
                         )
                       : t("search.allEmails")}
                   </button>
-                  {visibleInlineLabelFilters.map((label) => (
+                  {inlineLabelFilters.map((label) => (
                     <button
                       key={label}
                       type="button"
@@ -1962,7 +1947,7 @@ export default function ViewerPage() {
                       </span>
                     </button>
                   ))}
-                  {visibleOverflowLabelFilters.length > 0 && (
+                  {overflowLabelFilters.length > 0 && (
                     <DropdownMenu
                       open={isLabelOverflowMenuOpen}
                       onOpenChange={setIsLabelOverflowMenuOpen}
@@ -2002,7 +1987,7 @@ export default function ViewerPage() {
                           </DropdownMenuShortcut>
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuSeparator />
-                        {visibleOverflowLabelFilters.map((label) => (
+                        {overflowLabelFilters.map((label) => (
                           <DropdownMenuCheckboxItem
                             key={label}
                             checked={selectedLabel === label}
