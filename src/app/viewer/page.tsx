@@ -3591,10 +3591,10 @@ export default function ViewerPage() {
 
       {/* Fullscreen Body Dialog */}
       <Dialog open={isFullscreenOpen} onOpenChange={setIsFullscreenOpen}>
-        <DialogContent className="max-w-[calc(100dvw-8rem)] max-h-[calc(100dvh-8rem)] w-full h-full sm:max-w-[calc(100dvw-8rem)] flex flex-col gap-0">
-          <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
-            <DialogTitle className="flex items-center justify-between h-10">
-              <span>
+        <DialogContent className="h-[calc(100dvh-1rem)] w-[calc(100dvw-1rem)] max-w-none max-h-none gap-0 p-0 sm:h-[calc(100dvh-4rem)] sm:w-[calc(100dvw-4rem)] sm:max-w-[calc(100dvw-4rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col">
+          <DialogHeader className="border-b px-4 pt-4 pb-3 shrink-0 sm:px-6 sm:pt-6 sm:pb-4">
+            <DialogTitle className="flex min-h-10 flex-wrap items-start justify-between gap-2 pr-8">
+              <span className="line-clamp-2 min-w-0 flex-1 text-left">
                 {selectedMessageData?.subject || t("preview.noSubject")}
               </span>
               {selectedMessageData?.htmlBody && (
@@ -3603,8 +3603,9 @@ export default function ViewerPage() {
                   onValueChange={(value) =>
                     setBodyTab(value as "html" | "text")
                   }
+                  className="shrink-0"
                 >
-                  <TabsList className="p-0 ml-4">
+                  <TabsList className="ml-0 p-0">
                     <TabsTrigger value="html" className="text-xs">
                       <CodeXml />
                       {t("preview.html")}
@@ -3618,10 +3619,10 @@ export default function ViewerPage() {
               )}
             </DialogTitle>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             {selectedMessageData?.htmlBody ? (
               bodyTab === "html" ? (
-                <div className="bg-white rounded-lg p-4 border border-border/40">
+                <div className="bg-white rounded-lg p-3 sm:p-4 border border-border/40">
                   <HtmlRenderer
                     html={selectedMessageData.htmlBody}
                     className="w-full"
@@ -3629,14 +3630,14 @@ export default function ViewerPage() {
                   />
                 </div>
               ) : (
-                <div className="bg-muted/30 rounded-lg p-4 border border-border/40">
+                <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border border-border/40">
                   <pre className="text-sm whitespace-pre-wrap font-sans text-foreground">
                     {selectedMessageData.body}
                   </pre>
                 </div>
               )
             ) : selectedMessageData?.body ? (
-              <div className="bg-muted/30 rounded-lg p-4 border border-border/40">
+              <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border border-border/40">
                 <pre className="text-sm whitespace-pre-wrap font-sans text-foreground">
                   {selectedMessageData.body}
                 </pre>
@@ -3651,8 +3652,8 @@ export default function ViewerPage() {
         open={!!previewedAttachment}
         onOpenChange={(open) => !open && setPreviewedAttachment(null)}
       >
-        <DialogContent className="max-w-[calc(100dvw-8rem)] max-h-[calc(100dvh-8rem)] w-full h-full sm:max-w-[calc(100dvw-8rem)] flex flex-col gap-0">
-          <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
+        <DialogContent className="h-[calc(100dvh-1rem)] w-[calc(100dvw-1rem)] max-w-none max-h-none gap-0 p-0 sm:h-[calc(100dvh-4rem)] sm:w-[calc(100dvw-4rem)] sm:max-w-[calc(100dvw-4rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col">
+          <DialogHeader className="border-b px-4 pt-4 pb-3 shrink-0 sm:px-6 sm:pt-6 sm:pb-4">
             <DialogTitle className="flex items-center justify-between">
               <span
                 className="truncate flex-1 mr-4"
@@ -3692,7 +3693,7 @@ export default function ViewerPage() {
               </div>
             </DialogTitle>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             {previewedAttachment && (
               <>
                 {isImageType(previewedAttachment.mimeType) ? (
@@ -3702,7 +3703,7 @@ export default function ViewerPage() {
                       <img
                         src={previewObjectUrl}
                         alt={previewedAttachment.filename}
-                        className="max-w-full max-h-[calc(100vh-16rem)] object-contain rounded-lg border border-border/40 bg-background"
+                        className="max-w-full max-h-[calc(100dvh-10rem)] object-contain rounded-lg border border-border/40 bg-background"
                       />
                     ) : (
                       <div className="flex items-center justify-center">

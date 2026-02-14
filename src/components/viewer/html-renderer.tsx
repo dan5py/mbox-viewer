@@ -47,8 +47,17 @@ const HtmlRenderer: FC<HtmlRendererProps> = ({
   const resizeIframe = useCallback(() => {
     if (iframeRef.current) {
       const iframeDoc = iframeRef.current.contentWindow?.document;
-      if (iframeDoc?.body) {
-        const newHeight = iframeDoc.body.scrollHeight;
+      if (iframeDoc?.body && iframeDoc?.documentElement) {
+        const body = iframeDoc.body;
+        const documentElement = iframeDoc.documentElement;
+        const newHeight = Math.max(
+          body.scrollHeight,
+          body.offsetHeight,
+          body.clientHeight,
+          documentElement.scrollHeight,
+          documentElement.offsetHeight,
+          documentElement.clientHeight
+        );
         if (
           newHeight > 0 &&
           iframeRef.current.style.height !== `${newHeight}px`
@@ -63,13 +72,34 @@ const HtmlRenderer: FC<HtmlRendererProps> = ({
     const iframe = iframeRef.current;
     if (!iframe) return;
 
+    let resizeObserver: ResizeObserver | null = null;
+    let mutationObserver: MutationObserver | null = null;
+    let removeImageListeners: Array<() => void> = [];
+
     const handleLoad = () => {
       resizeIframe();
+      const iframeDoc = iframe.contentWindow?.document;
+      if (!iframeDoc?.body || !iframeDoc?.documentElement) {
+        return;
+      }
+
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      if (mutationObserver) {
+        mutationObserver.disconnect();
+      }
+      removeImageListeners.forEach((removeListener) => removeListener());
+      removeImageListeners = [];
 
       // Observe content changes for dynamic resizing (e.g., images loading)
-      const observer = new MutationObserver(resizeIframe);
-      if (iframe.contentWindow?.document.body) {
-        observer.observe(iframe.contentWindow.document.body, {
+      if (typeof ResizeObserver !== "undefined") {
+        resizeObserver = new ResizeObserver(() => resizeIframe());
+        resizeObserver.observe(iframeDoc.body);
+        resizeObserver.observe(iframeDoc.documentElement);
+      } else {
+        mutationObserver = new MutationObserver(resizeIframe);
+        mutationObserver.observe(iframeDoc.body, {
           childList: true,
           subtree: true,
           attributes: true,
@@ -77,25 +107,33 @@ const HtmlRenderer: FC<HtmlRendererProps> = ({
       }
 
       // Also handle images loading
-      const images = iframe.contentWindow?.document.querySelectorAll("img");
-      images?.forEach((img) => {
-        img.addEventListener("load", resizeIframe);
-      });
-
-      return () => {
-        observer.disconnect();
-        images?.forEach((img) => {
+      const images = iframeDoc.querySelectorAll("img");
+      images.forEach((img) => {
+        img.addEventListener("load", resizeIframe, { once: true });
+        img.addEventListener("error", resizeIframe, { once: true });
+        removeImageListeners.push(() => {
           img.removeEventListener("load", resizeIframe);
+          img.removeEventListener("error", resizeIframe);
         });
-      };
+      });
     };
 
     iframe.addEventListener("load", handleLoad);
     window.addEventListener("resize", resizeIframe);
+    if (iframe.contentWindow?.document.readyState === "complete") {
+      handleLoad();
+    }
 
     return () => {
       iframe.removeEventListener("load", handleLoad);
       window.removeEventListener("resize", resizeIframe);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      if (mutationObserver) {
+        mutationObserver.disconnect();
+      }
+      removeImageListeners.forEach((removeListener) => removeListener());
     };
   }, [resizeIframe]);
 
@@ -104,7 +142,10 @@ const HtmlRenderer: FC<HtmlRendererProps> = ({
     <style>
       body { 
         margin: 0; 
-        overflow: hidden; 
+        overflow-x: hidden;
+        overflow-y: visible;
+        word-break: break-word;
+        overflow-wrap: anywhere;
       }
     </style>
     <base target="_blank">
