@@ -1549,11 +1549,11 @@ export default function ViewerPage() {
 
     if (totalMessages === 0) {
       if (hasSearchQuery) {
-        return t("search.results", { count: 0 });
+        return `${t("search.results", { count: 0 })}${selectedLabelSuffix}`;
       }
 
       if (selectedLabel !== null) {
-        return t("messages", { count: 0 });
+        return `${t("messages", { count: 0 })}${selectedLabelSuffix}`;
       }
 
       return "";
