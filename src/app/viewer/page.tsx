@@ -1027,10 +1027,15 @@ export default function ViewerPage() {
     },
     [selectedLabel, setSelectedLabel]
   );
-  const handleSelectOverflowAllEmails = useCallback(() => {
-    setSelectedLabel(null);
-    setIsLabelOverflowMenuOpen(false);
-  }, [setSelectedLabel]);
+  const handleSelectOverflowAllEmails = useCallback(
+    (checked: boolean | "indeterminate") => {
+      if (checked === true) {
+        setSelectedLabel(null);
+      }
+      setIsLabelOverflowMenuOpen(false);
+    },
+    [setSelectedLabel]
+  );
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1922,19 +1927,20 @@ export default function ViewerPage() {
                         align="start"
                         className="max-h-72 w-56 overflow-y-auto"
                       >
-                        <DropdownMenuItem
-                          onClick={handleSelectOverflowAllEmails}
-                          disabled={selectedLabel === null}
+                        <DropdownMenuCheckboxItem
+                          checked={selectedLabel === null}
+                          onCheckedChange={handleSelectOverflowAllEmails}
                           aria-label={getLabelFilterButtonLabel(
                             t("search.allEmails"),
                             totalMessages
                           )}
+                          title={`${t("search.allEmails")} (${integerFormatter.format(totalMessages)})`}
                         >
                           {t("search.allEmails")}
                           <DropdownMenuShortcut>
                             {integerFormatter.format(totalMessages)}
                           </DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                        </DropdownMenuCheckboxItem>
                         <DropdownMenuSeparator />
                         {overflowLabelFilters.map((label) => (
                           <DropdownMenuCheckboxItem
