@@ -49,6 +49,7 @@ self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
     const reader = new WorkerByteReader(file);
     const lowerCaseQuery = query.toLowerCase();
     const matchingIndices: number[] = [];
+    const progressInterval = Math.max(1, Math.floor(boundaries.length / 100));
 
     self.postMessage({ type: "PROGRESS", payload: 0 });
 
@@ -70,8 +71,8 @@ self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
           matchingIndices.push(i);
         }
 
-        // Report progress every 100 messages to avoid flooding the main thread
-        if ((i + 1) % 100 === 0) {
+        // Report progress at adaptive intervals for smooth feedback
+        if ((i + 1) % progressInterval === 0 || i + 1 === boundaries.length) {
           const progress = Math.round(((i + 1) / boundaries.length) * 100);
           self.postMessage({ type: "PROGRESS", payload: progress });
         }
