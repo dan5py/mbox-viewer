@@ -1547,6 +1547,25 @@ export default function ViewerPage() {
       if (e.target instanceof HTMLElement) {
         const tagName = e.target.tagName;
         const role = e.target.getAttribute("role");
+        const isInteractiveTag =
+          tagName === "BUTTON" ||
+          tagName === "A" ||
+          tagName === "SUMMARY" ||
+          tagName === "DETAILS";
+        const isInteractiveRole =
+          role === "button" ||
+          role === "link" ||
+          role === "menuitem" ||
+          role === "menuitemcheckbox" ||
+          role === "menuitemradio" ||
+          role === "checkbox" ||
+          role === "switch" ||
+          role === "radio" ||
+          role === "tab" ||
+          role === "option" ||
+          role === "listbox" ||
+          role === "menu" ||
+          role === "slider";
 
         if (
           tagName === "INPUT" ||
@@ -1555,7 +1574,9 @@ export default function ViewerPage() {
           e.target.isContentEditable ||
           role === "textbox" ||
           role === "combobox" ||
-          role === "spinbutton"
+          role === "spinbutton" ||
+          isInteractiveTag ||
+          isInteractiveRole
         ) {
           return;
         }
