@@ -1122,9 +1122,15 @@ export default function ViewerPage() {
   const moreLabelsTriggerAriaLabel = t("search.moreLabelsAria", {
     count: overflowLabelFilters.length,
   });
-  const moreLabelsMenuAriaLabel = t("search.moreLabelsMenuLabel", {
-    count: overflowMenuItemsCount,
-  });
+  const moreLabelsMenuAriaLabel =
+    selectedLabel !== null
+      ? t("search.moreLabelsMenuLabelActive", {
+          count: overflowMenuItemsCount,
+          label: selectedLabel,
+        })
+      : t("search.moreLabelsMenuLabel", {
+          count: overflowMenuItemsCount,
+        });
   const shouldShowLabelFiltersRow =
     allLabels.length > 0 &&
     (selectedLabel !== null || labelFiltersForLayout.length > 0);

@@ -73,6 +73,7 @@
       "moreLabels": "+{count, plural, =1 {# altra etichetta} other {# altre etichette}}",
       "moreLabelsAria": "Mostra {count, plural, =1 {# altra etichetta} other {# altre etichette}}",
       "moreLabelsMenuLabel": "Menu etichette aggiuntive, {count, plural, =1 {# voce} other {# voci}}",
+      "moreLabelsMenuLabelActive": "Menu etichette aggiuntive, {count, plural, =1 {# voce} other {# voci}}. Filtro attivo: {label}.",
       "labelWithCount": "{label}. {count, plural, =1 {# messaggio} other {# messaggi}}",
       "noMessages": "Nessun messaggio",
       "clear": "Cancella ricerca",
