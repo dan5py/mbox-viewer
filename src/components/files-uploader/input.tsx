@@ -213,6 +213,15 @@ export function FileUploadInput({
         handleFiles(acceptedFiles);
       }
     },
+    onDropRejected: (fileRejections) => {
+      if (fileRejections.length > 0) {
+        setError(
+          t("Viewer.input.invalidType", {
+            count: fileRejections.length,
+          })
+        );
+      }
+    },
     accept: {
       "application/mbox": [".mbox"],
       "text/plain": [".mbox", ".txt"],

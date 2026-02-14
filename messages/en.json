@@ -51,7 +51,8 @@
       "queueProgress": "File {current} of {total}",
       "partialFailure": "{count, plural, =1 {1 file could not be imported} other {# files could not be imported}}",
       "importCancelled": "Import cancelled",
-      "scanFailed": "Failed to scan selected files"
+      "scanFailed": "Failed to scan selected files",
+      "invalidType": "{count, plural, =1 {Unsupported file type. Please select an MBOX file.} other {Some files have unsupported types. Please select MBOX files only.}}"
     },
     "messages": "{count, plural, =1 {# message} other {# messages}}",
     "parsing": "Parsing...",
