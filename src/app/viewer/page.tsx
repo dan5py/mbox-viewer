@@ -243,6 +243,8 @@ export default function ViewerPage() {
   }, [files.length]);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
+  const normalizedSearchQuery = debouncedSearchQuery.trim();
+  const hasSearchQuery = searchQuery.trim().length > 0;
 
   const currentFile = files.find((f) => f.id === selectedFileId);
   const shortcutModifierLabel =
@@ -269,7 +271,11 @@ export default function ViewerPage() {
 
   // Effect to trigger search in worker
   useEffect(() => {
-    if (debouncedSearchQuery && searchWorker && currentFile?.fileReader?.file) {
+    if (
+      normalizedSearchQuery &&
+      searchWorker &&
+      currentFile?.fileReader?.file
+    ) {
       if (!currentFile.messageBoundaries) {
         console.warn("Cannot search, message boundaries not scanned.");
         return;
@@ -291,10 +297,10 @@ export default function ViewerPage() {
         payload: {
           file: currentFile.fileReader.file,
           boundaries: currentFile.messageBoundaries,
-          query: debouncedSearchQuery,
+          query: normalizedSearchQuery,
         },
       });
-    } else if (!debouncedSearchQuery) {
+    } else if (!normalizedSearchQuery) {
       // Clear search results when query is cleared
       searchWorker.current?.postMessage({
         type: "ABORT",
@@ -304,7 +310,7 @@ export default function ViewerPage() {
       setSearchFailed(false);
       setSearchResults(null);
     }
-  }, [debouncedSearchQuery, searchWorker, currentFile, setCurrentPage]);
+  }, [normalizedSearchQuery, searchWorker, currentFile, setCurrentPage]);
 
   // Immediate selection handler - updates index without waiting for load
   const handleSelectMessage = useCallback(
@@ -1503,7 +1509,7 @@ export default function ViewerPage() {
                   </p>
                 )
               )}
-              {searchQuery && searchResultCount !== null && (
+              {hasSearchQuery && searchResultCount !== null && (
                 <Badge variant="secondary" className="text-xs">
                   {totalFilteredMessages}
                 </Badge>
@@ -1601,7 +1607,7 @@ export default function ViewerPage() {
               <div className="flex flex-col items-center justify-center h-full text-center p-8">
                 <Mail className="size-10 text-muted-foreground mb-3 opacity-50" />
                 <p className="text-sm text-muted-foreground">
-                  {searchQuery
+                  {hasSearchQuery
                     ? searchFailed
                       ? t("search.error")
                       : t("search.results", { count: 0 })
