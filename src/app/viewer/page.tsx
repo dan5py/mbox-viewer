@@ -64,6 +64,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import {
@@ -259,6 +260,9 @@ export default function ViewerPage() {
   const currentFile = files.find((f) => f.id === selectedFileId);
   const shortcutModifierLabel =
     isApplePlatform === null ? "Ctrl/Cmd" : isApplePlatform ? "⌘" : "Ctrl";
+  const selectAllShortcutLabel = `${shortcutModifierLabel}+A`;
+  const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
+  const rangeShortcutLabel = `Shift+${t("selection.shortcuts.clickKey")}`;
 
   // Reset selection when switching files
   useEffect(() => {
@@ -1601,6 +1605,9 @@ export default function ViewerPage() {
                         {allVisibleSelected
                           ? t("selection.deselectPage")
                           : t("selection.selectPage")}
+                        <DropdownMenuShortcut>
+                          {selectAllShortcutLabel}
+                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={handleToggleFilteredSelection}
@@ -1613,12 +1620,18 @@ export default function ViewerPage() {
                           : hasActiveFilters
                             ? t("selection.selectFiltered")
                             : t("selection.selectAll")}
+                        <DropdownMenuShortcut>
+                          {selectAllShortcutLabel}
+                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={handleClearSelection}
                         disabled={selectedCount === 0}
                       >
                         {t("selection.clear")}
+                        <DropdownMenuShortcut>
+                          {clearSelectionShortcutLabel}
+                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => setIsExportDialogOpen(true)}
@@ -1631,6 +1644,9 @@ export default function ViewerPage() {
                         onClick={() => setIsShortcutsDialogOpen(true)}
                       >
                         {t("selection.shortcuts.openHelp")}
+                        <DropdownMenuShortcut>
+                          {rangeShortcutLabel}
+                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
