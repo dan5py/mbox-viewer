@@ -1578,6 +1578,10 @@ export default function ViewerPage() {
                     <DropdownMenuLabel className="text-xs">
                       {selectedMenuLabel}
                     </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
+                      {t("selection.sections.selection")}
+                    </DropdownMenuLabel>
                     <DropdownMenuCheckboxItem
                       checked={allVisibleSelected}
                       onCheckedChange={() => {
@@ -1625,6 +1629,9 @@ export default function ViewerPage() {
                       {t("export.action")}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
+                      {t("selection.sections.tools")}
+                    </DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={() => setIsShortcutsDialogOpen(true)}
                     >

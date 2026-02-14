@@ -75,6 +75,10 @@
       "actionsAriaLabel": "{count, plural, =0 {Azioni di selezione. Nessun messaggio selezionato} =1 {Azioni di selezione. # messaggio selezionato} other {Azioni di selezione. # messaggi selezionati}}",
       "selectedCount": "{count, plural, =0 {Nessun messaggio selezionato} =1 {# messaggio selezionato} other {# messaggi selezionati}}",
       "selectedMenuLabel": "{count, plural, =0 {Selezionati: nessuno} =1 {Selezionati: #} other {Selezionati: #}}",
+      "sections": {
+        "selection": "Selezione",
+        "tools": "Strumenti"
+      },
       "selectPage": "Seleziona pagina",
       "deselectPage": "Deseleziona pagina",
       "selectFiltered": "Seleziona filtrati",
