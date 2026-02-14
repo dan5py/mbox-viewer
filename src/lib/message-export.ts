@@ -386,13 +386,16 @@ export async function exportMessages({
     }
 
     const stageStart = format === "mbox" ? 90 : 80;
-    const stageSpan = format === "mbox" ? 10 : 20;
+    const stageSpan = format === "mbox" ? 5 : 15;
     const progress =
       stageStart + Math.round(((i + 1) / parsedMessages.length) * stageSpan);
     reportProgress(progress);
   }
 
-  const zipBlob = await zip.generateAsync({ type: "blob" });
+  const zipBlob = await zip.generateAsync({ type: "blob" }, (metadata) => {
+    const zipProgress = 95 + Math.round(metadata.percent / 20);
+    reportProgress(zipProgress);
+  });
   downloadBlob(zipBlob, `${filenameBase}.zip`);
   reportProgress(100);
 }
