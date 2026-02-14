@@ -86,6 +86,11 @@
       "title": "Esporta messaggi selezionati",
       "description": "Esporta {count, plural, =1 {# messaggio selezionato} other {# messaggi selezionati}}.",
       "formatLabel": "Formato",
+      "formats": {
+        "mbox": "MBOX",
+        "txt": "TXT",
+        "html": "HTML"
+      },
       "includeAttachments": "Includi allegati",
       "includeAttachmentsHint": "Gli allegati vengono inclusi in un archivio ZIP insieme al file esportato.",
       "cancel": "Annulla",

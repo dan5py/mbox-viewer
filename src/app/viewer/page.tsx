@@ -2158,19 +2158,19 @@ export default function ViewerPage() {
                 <div className="flex items-center space-x-2 rounded-md border p-2">
                   <RadioGroupItem value="mbox" id="export-mbox" />
                   <Label htmlFor="export-mbox" className="cursor-pointer">
-                    MBOX
+                    {t("export.formats.mbox")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2 rounded-md border p-2">
                   <RadioGroupItem value="txt" id="export-txt" />
                   <Label htmlFor="export-txt" className="cursor-pointer">
-                    TXT
+                    {t("export.formats.txt")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2 rounded-md border p-2">
                   <RadioGroupItem value="html" id="export-html" />
                   <Label htmlFor="export-html" className="cursor-pointer">
-                    HTML
+                    {t("export.formats.html")}
                   </Label>
                 </div>
               </RadioGroup>

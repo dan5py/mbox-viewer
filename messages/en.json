@@ -86,6 +86,11 @@
       "title": "Export selected messages",
       "description": "Export {count, plural, =1 {# selected message} other {# selected messages}}.",
       "formatLabel": "Format",
+      "formats": {
+        "mbox": "MBOX",
+        "txt": "TXT",
+        "html": "HTML"
+      },
       "includeAttachments": "Include attachments",
       "includeAttachmentsHint": "Attachments are packaged in a ZIP archive together with the exported file.",
       "cancel": "Cancel",
