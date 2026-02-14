@@ -24,6 +24,13 @@ A modern, fast, and privacy-focused MBOX file viewer that runs directly in your 
 - **Bulk selection shortcuts**:
   - `Ctrl/Cmd + A` → toggle filtered selection
   - `Shift + Ctrl/Cmd + A` → clear selection
+  - `Shift + Esc` → reset active search/label filters
+  - `Esc` → clear current previewed message
+  - `?` (`Shift + /`) → open shortcuts help
+- **Keyboard navigation**:
+  - `↑ / ↓` → move preview selection through visible messages
+  - `← / →` → move focus across visible label-filter chips
+  - `Home / End` → jump to first/last label chip or menu item (when a dropdown menu is open)
 
 ## Tech Stack
 
