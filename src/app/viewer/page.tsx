@@ -927,6 +927,24 @@ export default function ViewerPage() {
     () => (searchResults ? new Set(searchResults) : null),
     [searchResults]
   );
+  const labelDisplayCounts = useMemo(() => {
+    if (!searchResultSet) {
+      return labelMessageCounts;
+    }
+
+    const counts = new Map<string, number>();
+    for (const [label, indices] of labelToMessageIndices.entries()) {
+      let count = 0;
+      for (const index of indices) {
+        if (searchResultSet.has(index)) {
+          count++;
+        }
+      }
+      counts.set(label, count);
+    }
+
+    return counts;
+  }, [labelMessageCounts, labelToMessageIndices, searchResultSet]);
 
   const filteredMessageIndices = useMemo(() => {
     if (!(files.length > 0 && currentFile)) return [];
@@ -985,6 +1003,9 @@ export default function ViewerPage() {
   const filteredCountLabel = integerFormatter.format(
     filteredMessageIndices.length
   );
+  const allEmailsFilterCount = integerFormatter.format(
+    searchResultSet ? searchResultSet.size : totalMessages
+  );
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
@@ -993,7 +1014,7 @@ export default function ViewerPage() {
     count: overflowLabelFilters.length,
   });
   const getLabelMessageCount = (label: string) =>
-    integerFormatter.format(labelMessageCounts.get(label) ?? 0);
+    integerFormatter.format(labelDisplayCounts.get(label) ?? 0);
   const formatActiveLabelChipText = (label: string, count: string) =>
     `${label} (${count})`;
   const getLabelFilterButtonLabel = (label: string, count: number) =>
@@ -1874,14 +1895,14 @@ export default function ViewerPage() {
                     aria-pressed={selectedLabel === null}
                     aria-label={getLabelFilterButtonLabel(
                       t("search.allEmails"),
-                      totalMessages
+                      searchResultSet ? searchResultSet.size : totalMessages
                     )}
-                    title={`${t("search.allEmails")} (${integerFormatter.format(totalMessages)})`}
+                    title={`${t("search.allEmails")} (${allEmailsFilterCount})`}
                   >
                     {selectedLabel === null
                       ? formatActiveLabelChipText(
                           t("search.allEmails"),
-                          integerFormatter.format(totalMessages)
+                          allEmailsFilterCount
                         )
                       : t("search.allEmails")}
                   </button>
@@ -1896,7 +1917,7 @@ export default function ViewerPage() {
                       aria-pressed={selectedLabel === label}
                       aria-label={getLabelFilterButtonLabel(
                         label,
-                        labelMessageCounts.get(label) ?? 0
+                        labelDisplayCounts.get(label) ?? 0
                       )}
                       title={`${label} (${getLabelMessageCount(label)})`}
                     >
@@ -1938,13 +1959,15 @@ export default function ViewerPage() {
                           onCheckedChange={handleSelectOverflowAllEmails}
                           aria-label={getLabelFilterButtonLabel(
                             t("search.allEmails"),
-                            totalMessages
+                            searchResultSet
+                              ? searchResultSet.size
+                              : totalMessages
                           )}
-                          title={`${t("search.allEmails")} (${integerFormatter.format(totalMessages)})`}
+                          title={`${t("search.allEmails")} (${allEmailsFilterCount})`}
                         >
                           {t("search.allEmails")}
                           <DropdownMenuShortcut>
-                            {integerFormatter.format(totalMessages)}
+                            {allEmailsFilterCount}
                           </DropdownMenuShortcut>
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuSeparator />
@@ -1957,7 +1980,7 @@ export default function ViewerPage() {
                             }
                             aria-label={getLabelFilterButtonLabel(
                               label,
-                              labelMessageCounts.get(label) ?? 0
+                              labelDisplayCounts.get(label) ?? 0
                             )}
                             title={`${label} (${getLabelMessageCount(label)})`}
                           >
