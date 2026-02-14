@@ -974,8 +974,19 @@ export default function ViewerPage() {
     hasActiveOverflowLabel && selectedLabel !== null
       ? `${selectedLabel} · ${moreLabelsTriggerText}`
       : moreLabelsTriggerText;
+  const overflowLabelsTriggerAriaLabel = hasActiveOverflowLabel
+    ? t("search.moreLabelsWithActive", {
+        label: selectedLabel ?? "",
+        count: overflowLabelFilters.length,
+      })
+    : moreLabelsTriggerText;
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelMessageCounts.get(label) ?? 0);
+  const getLabelFilterButtonLabel = (label: string, count: number) =>
+    t("search.labelWithCount", {
+      label,
+      count,
+    });
   const labelFilterChipBaseClassName =
     "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors";
   const getLabelFilterChipClassName = (isActive: boolean) =>
@@ -1811,7 +1822,11 @@ export default function ViewerPage() {
                       selectedLabel === null
                     )}
                     aria-pressed={selectedLabel === null}
-                    title={t("search.allEmails")}
+                    aria-label={getLabelFilterButtonLabel(
+                      t("search.allEmails"),
+                      totalMessages
+                    )}
+                    title={`${t("search.allEmails")} (${integerFormatter.format(totalMessages)})`}
                   >
                     {t("search.allEmails")}
                   </button>
@@ -1824,6 +1839,10 @@ export default function ViewerPage() {
                         selectedLabel === label
                       )}
                       aria-pressed={selectedLabel === label}
+                      aria-label={getLabelFilterButtonLabel(
+                        label,
+                        labelMessageCounts.get(label) ?? 0
+                      )}
                       title={`${label} (${getLabelMessageCount(label)})`}
                     >
                       <span className="truncate">{label}</span>
@@ -1837,7 +1856,7 @@ export default function ViewerPage() {
                           className={getLabelFilterChipClassName(
                             hasActiveOverflowLabel
                           )}
-                          aria-label={overflowLabelsTriggerTitle}
+                          aria-label={overflowLabelsTriggerAriaLabel}
                           title={overflowLabelsTriggerTitle}
                         >
                           <span className="truncate">
@@ -1856,6 +1875,10 @@ export default function ViewerPage() {
                             onCheckedChange={() =>
                               handleSelectLabelFilter(label)
                             }
+                            aria-label={getLabelFilterButtonLabel(
+                              label,
+                              labelMessageCounts.get(label) ?? 0
+                            )}
                             title={`${label} (${getLabelMessageCount(label)})`}
                           >
                             <span className="truncate">{label}</span>
