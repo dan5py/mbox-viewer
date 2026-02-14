@@ -1085,6 +1085,9 @@ export default function ViewerPage() {
   const moreLabelsTriggerAriaLabel = t("search.moreLabelsAria", {
     count: overflowLabelFilters.length,
   });
+  const shouldShowLabelFiltersRow =
+    allLabels.length > 0 &&
+    (selectedLabel !== null || labelFiltersForLayout.length > 0);
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelDisplayCounts.get(label) ?? 0);
   const renderLabelChipContent = (
@@ -1962,7 +1965,7 @@ export default function ViewerPage() {
             </div>
 
             {/* Label Filter Pills */}
-            {allLabels.length > 0 && (
+            {shouldShowLabelFiltersRow && (
               <ScrollArea className="w-full">
                 <div
                   className="flex gap-1.5 pb-1"
