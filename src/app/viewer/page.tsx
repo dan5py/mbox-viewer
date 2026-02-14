@@ -1338,20 +1338,27 @@ export default function ViewerPage() {
       );
 
       const currentIndex = chipButtons.indexOf(event.target);
-      if (currentIndex === -1 || chipButtons.length <= 1) {
+      if (currentIndex === -1) {
         return;
       }
 
-      event.preventDefault();
       if (event.key === "Home") {
+        event.preventDefault();
         chipButtons[0]?.focus();
         return;
       }
 
       if (event.key === "End") {
+        event.preventDefault();
         chipButtons[chipButtons.length - 1]?.focus();
         return;
       }
+
+      if (chipButtons.length <= 1) {
+        return;
+      }
+
+      event.preventDefault();
 
       const delta = event.key === "ArrowRight" ? 1 : -1;
       const nextIndex =
