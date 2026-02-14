@@ -197,5 +197,10 @@
       "description": "Informazioni sull'applicazione"
     },
     "goBack": "Torna indietro"
+  },
+  "Offline": {
+    "title": "Sei offline",
+    "description": "La rete non è al momento disponibile. Puoi riprovare ad aprire il visualizzatore quando la connessione torna attiva.",
+    "retry": "Riprova"
   }
 }

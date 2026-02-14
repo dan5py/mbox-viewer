@@ -1,8 +1,9 @@
-const APP_SHELL_CACHE = "mbox-viewer-app-shell-v3";
+const APP_SHELL_CACHE = "mbox-viewer-app-shell-v4";
 const RUNTIME_CACHE = "mbox-viewer-runtime-v1";
 const APP_SHELL_ASSETS = [
   "/",
   "/viewer",
+  "/offline",
   "/manifest.webmanifest",
   "/icon-180.png",
   "/icon-192.png",
@@ -59,7 +60,7 @@ self.addEventListener("fetch", (event) => {
           if (cached) {
             return cached;
           }
-          return caches.match("/viewer");
+          return (await caches.match("/offline")) || caches.match("/viewer");
         })
     );
     return;

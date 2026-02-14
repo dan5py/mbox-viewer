@@ -197,5 +197,10 @@
       "description": "Information about the application"
     },
     "goBack": "Go back"
+  },
+  "Offline": {
+    "title": "You are offline",
+    "description": "The network is currently unavailable. You can try reopening the viewer once your connection is restored.",
+    "retry": "Retry"
   }
 }
