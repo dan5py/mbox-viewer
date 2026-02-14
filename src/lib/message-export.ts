@@ -291,6 +291,16 @@ function getMainFileExtension(format: ExportFormat): string {
   return "txt";
 }
 
+function getExportMimeType(format: ExportFormat): string {
+  if (format === "html") {
+    return "text/html;charset=utf-8";
+  }
+  if (format === "mbox") {
+    return "application/mbox;charset=utf-8";
+  }
+  return "text/plain;charset=utf-8";
+}
+
 function getAttachmentFolderName(
   message: EmailMessage,
   fallbackIndex: number
@@ -417,10 +427,7 @@ export async function exportMessages({
   if (!includeAttachments) {
     downloadBlob(
       new Blob([mainContent], {
-        type:
-          format === "html"
-            ? "text/html;charset=utf-8"
-            : "text/plain;charset=utf-8",
+        type: getExportMimeType(format),
       }),
       mainFilename
     );
