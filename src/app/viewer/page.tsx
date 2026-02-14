@@ -1464,7 +1464,7 @@ export default function ViewerPage() {
         {/* Messages List */}
         <div className="w-96 border-r border-border/60 bg-background flex flex-col">
           {/* Search */}
-          <div className="border-b border-border/60 p-4 space-y-3 bg-muted/20">
+          <div className="border-b border-border/60 p-3 space-y-2.5 bg-muted/20">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
