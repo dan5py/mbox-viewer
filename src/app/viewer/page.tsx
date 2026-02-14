@@ -2083,7 +2083,7 @@ export default function ViewerPage() {
                       )}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" loop className="w-56">
                     <DropdownMenuLabel className="text-xs">
                       {selectedMenuLabel}
                     </DropdownMenuLabel>
@@ -2251,6 +2251,7 @@ export default function ViewerPage() {
                       <DropdownMenuContent
                         id={labelOverflowMenuContentId}
                         align="start"
+                        loop
                         aria-label={moreLabelsMenuAriaLabel}
                         className="max-h-72 w-56 overflow-y-auto"
                       >
