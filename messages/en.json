@@ -87,6 +87,7 @@
         "title": "Selection shortcuts",
         "description": "Use these shortcuts to select and clear messages faster.",
         "openHelp": "Show selection shortcuts",
+        "openDialog": "open shortcuts help",
         "select": "toggle filtered selection",
         "clear": "clear all selections",
         "clickKey": "Click",

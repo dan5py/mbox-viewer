@@ -1171,7 +1171,10 @@ export default function ViewerPage() {
       const isSelectAllShortcut =
         (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a";
 
-      if (isSelectAllShortcut) {
+      if (e.key === "?") {
+        e.preventDefault();
+        setIsShortcutsDialogOpen(true);
+      } else if (isSelectAllShortcut) {
         e.preventDefault();
         if (e.shiftKey) {
           handleClearSelection();
@@ -1656,6 +1659,7 @@ export default function ViewerPage() {
                         onClick={() => setIsShortcutsDialogOpen(true)}
                       >
                         {t("selection.shortcuts.openHelp")}
+                        <DropdownMenuShortcut>?</DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -2468,6 +2472,12 @@ export default function ViewerPage() {
           </DialogHeader>
 
           <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
+                <Kbd>?</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.openDialog")}</span>
+            </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
                 <Kbd>{shortcutModifierLabel}</Kbd>

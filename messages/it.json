@@ -87,6 +87,7 @@
         "title": "Scorciatoie di selezione",
         "description": "Usa queste scorciatoie per selezionare e pulire i messaggi più velocemente.",
         "openHelp": "Mostra scorciatoie di selezione",
+        "openDialog": "apre la guida scorciatoie",
         "select": "attiva/disattiva selezione filtrata",
         "clear": "pulisce tutte le selezioni",
         "clickKey": "Clic",
