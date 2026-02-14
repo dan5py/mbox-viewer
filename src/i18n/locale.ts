@@ -1,14 +1,26 @@
 import { headers } from "next/headers";
 import { match } from "@formatjs/intl-localematcher";
-import { defaultLocale, locales } from "~/i18n/config";
+import { defaultLocale, Locale, locales } from "~/i18n/config";
 import Negotiator from "negotiator";
 
-export async function getPreferredLocale() {
+export function resolveSupportedLocale(
+  locale: string | undefined,
+  fallback: Locale = defaultLocale
+): Locale {
+  if (locale && locales.includes(locale as Locale)) {
+    return locale as Locale;
+  }
+
+  return fallback;
+}
+
+export async function getPreferredLocale(): Promise<Locale> {
   const acceptLanguage = (await headers()).get("accept-language") ?? undefined;
   const languages = new Negotiator({
     headers: {
       "accept-language": acceptLanguage,
     },
   }).languages();
-  return match(languages, locales, defaultLocale);
+  const matchedLocale = match(languages, locales, defaultLocale);
+  return resolveSupportedLocale(matchedLocale);
 }

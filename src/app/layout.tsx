@@ -5,8 +5,8 @@ import { cookies } from "next/headers";
 import "./globals.css";
 
 import Script from "next/script";
-import { defaultLocale, localeCookieName } from "~/i18n/config";
-import { getPreferredLocale } from "~/i18n/locale";
+import { localeCookieName } from "~/i18n/config";
+import { getPreferredLocale, resolveSupportedLocale } from "~/i18n/locale";
 import { ThemeProvider } from "~/providers/theme-provider";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -52,10 +52,10 @@ export default async function RootLayout({
 }) {
   const cookieStore = await cookies();
   const preferredLocale = await getPreferredLocale();
-  const activeLocale =
-    cookieStore.get(localeCookieName)?.value ||
-    preferredLocale ||
-    defaultLocale;
+  const activeLocale = resolveSupportedLocale(
+    cookieStore.get(localeCookieName)?.value,
+    preferredLocale
+  );
 
   return (
     <html lang={activeLocale} suppressHydrationWarning>
