@@ -407,7 +407,6 @@ export default function ViewerPage() {
       setIsSearching(true);
       setSearchProgress(0);
       setSearchFailed(false);
-      setSearchResults(null); // Reset previous results
       setCurrentPage(1); // Go back to the first page for new search
 
       searchWorker.current?.postMessage({
