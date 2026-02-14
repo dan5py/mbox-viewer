@@ -2213,6 +2213,7 @@ export default function ViewerPage() {
                   className="flex gap-1.5 pb-1"
                   role="group"
                   aria-label={labelFiltersGroupLabel}
+                  aria-keyshortcuts="ArrowLeft ArrowRight Home End"
                   onKeyDown={handleLabelFiltersGroupKeyDown}
                 >
                   <button
