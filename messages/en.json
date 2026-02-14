@@ -72,6 +72,7 @@
       "inLabel": "in “{label}”",
       "moreLabels": "+{count, plural, =1 {# more label} other {# more labels}}",
       "moreLabelsAria": "Show {count, plural, =1 {# more label} other {# more labels}}",
+      "moreLabelsAriaActive": "Show {count, plural, =1 {# more label} other {# more labels}}. Active filter: {label}.",
       "moreLabelsMenuLabel": "Additional labels menu, {count, plural, =1 {# item} other {# items}}",
       "moreLabelsMenuLabelActive": "Additional labels menu, {count, plural, =1 {# item} other {# items}}. Active filter: {label}.",
       "labelWithCount": "{label}. {count, plural, =1 {# message} other {# messages}}",

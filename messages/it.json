@@ -72,6 +72,7 @@
       "inLabel": "in “{label}”",
       "moreLabels": "+{count, plural, =1 {# altra etichetta} other {# altre etichette}}",
       "moreLabelsAria": "Mostra {count, plural, =1 {# altra etichetta} other {# altre etichette}}",
+      "moreLabelsAriaActive": "Mostra {count, plural, =1 {# altra etichetta} other {# altre etichette}}. Filtro attivo: {label}.",
       "moreLabelsMenuLabel": "Menu etichette aggiuntive, {count, plural, =1 {# voce} other {# voci}}",
       "moreLabelsMenuLabelActive": "Menu etichette aggiuntive, {count, plural, =1 {# voce} other {# voci}}. Filtro attivo: {label}.",
       "labelWithCount": "{label}. {count, plural, =1 {# messaggio} other {# messaggi}}",

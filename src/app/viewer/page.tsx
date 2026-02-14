@@ -1119,9 +1119,15 @@ export default function ViewerPage() {
   const moreLabelsTriggerText = t("search.moreLabels", {
     count: overflowLabelFilters.length,
   });
-  const moreLabelsTriggerAriaLabel = t("search.moreLabelsAria", {
-    count: overflowLabelFilters.length,
-  });
+  const moreLabelsTriggerAriaLabel =
+    selectedLabel !== null
+      ? t("search.moreLabelsAriaActive", {
+          count: overflowLabelFilters.length,
+          label: selectedLabel,
+        })
+      : t("search.moreLabelsAria", {
+          count: overflowLabelFilters.length,
+        });
   const moreLabelsMenuAriaLabel =
     selectedLabel !== null
       ? t("search.moreLabelsMenuLabelActive", {
