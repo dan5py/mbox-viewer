@@ -874,13 +874,21 @@ export default function ViewerPage() {
     }
     return counts;
   }, [labelToMessageIndices]);
+  const labelSortCollator = useMemo(
+    () =>
+      new Intl.Collator(locale, {
+        sensitivity: "base",
+        numeric: true,
+      }),
+    [locale]
+  );
 
   // Extract all unique labels from the current file
   const allLabels = useMemo(() => {
-    return Array.from(labelToMessageIndices.keys()).sort((a, b) =>
-      a.localeCompare(b, locale, { sensitivity: "base", numeric: true })
+    return Array.from(labelToMessageIndices.keys()).sort(
+      labelSortCollator.compare
     );
-  }, [labelToMessageIndices, locale]);
+  }, [labelSortCollator, labelToMessageIndices]);
 
   useEffect(() => {
     if (selectedLabel !== null && !labelToMessageIndices.has(selectedLabel)) {
@@ -958,12 +966,15 @@ export default function ViewerPage() {
           return countDiff;
         }
 
-        return a.localeCompare(b, locale, {
-          sensitivity: "base",
-          numeric: true,
-        });
+        return labelSortCollator.compare(a, b);
       });
-  }, [allLabels, labelDisplayCounts, locale, searchResultSet, selectedLabel]);
+  }, [
+    allLabels,
+    labelDisplayCounts,
+    labelSortCollator,
+    searchResultSet,
+    selectedLabel,
+  ]);
   const maxInlineLabelFilters = 8;
   const { inlineLabelFilters, overflowLabelFilters } = useMemo(() => {
     if (labelFiltersForLayout.length <= maxInlineLabelFilters) {
