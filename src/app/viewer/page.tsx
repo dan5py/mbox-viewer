@@ -2083,7 +2083,12 @@ export default function ViewerPage() {
                       )}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" loop className="w-56">
+                  <DropdownMenuContent
+                    align="end"
+                    loop
+                    aria-label={actionsTriggerLabel}
+                    className="w-56"
+                  >
                     <DropdownMenuLabel className="text-xs">
                       {selectedMenuLabel}
                     </DropdownMenuLabel>
