@@ -1504,6 +1504,16 @@ export default function ViewerPage() {
         !e.ctrlKey &&
         !e.metaKey &&
         !e.altKey;
+      const shouldIgnoreRepeatShortcut =
+        e.repeat &&
+        (isSelectAllShortcut ||
+          isOpenShortcutsHelpShortcut ||
+          isResetFiltersShortcut ||
+          isClearPreviewSelectionShortcut);
+
+      if (shouldIgnoreRepeatShortcut) {
+        return;
+      }
 
       if (isOpenShortcutsHelpShortcut) {
         e.preventDefault();
