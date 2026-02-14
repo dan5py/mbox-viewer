@@ -226,6 +226,7 @@ export default function ViewerPage() {
     useState<EmailAttachment | null>(null);
   const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
   const searchWorker = useRef<Worker | null>(null);
+  const viewerPageRootRef = useRef<HTMLDivElement | null>(null);
   const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
   const labelFiltersGroupRef = useRef<HTMLDivElement | null>(null);
   const lastNavTimeRef = useRef<number>(0);
@@ -1668,9 +1669,26 @@ export default function ViewerPage() {
         return;
       }
 
-      const hasActiveTextSelection = (() => {
+      const hasActiveViewerTextSelection = (() => {
+        const viewerPageRoot = viewerPageRootRef.current;
+        if (!viewerPageRoot) {
+          return false;
+        }
+
         const selection = window.getSelection();
-        return selection !== null && !selection.isCollapsed;
+        if (selection === null || selection.isCollapsed) {
+          return false;
+        }
+
+        const getSelectionElement = (node: Node | null) =>
+          node instanceof Element ? node : (node?.parentElement ?? null);
+        const anchorElement = getSelectionElement(selection.anchorNode);
+        const focusElement = getSelectionElement(selection.focusNode);
+
+        return (
+          (anchorElement !== null && viewerPageRoot.contains(anchorElement)) ||
+          (focusElement !== null && viewerPageRoot.contains(focusElement))
+        );
       })();
 
       const isSelectAllShortcut =
@@ -1716,7 +1734,7 @@ export default function ViewerPage() {
         return;
       }
 
-      if (isSelectAllShortcut && hasActiveTextSelection) {
+      if (isSelectAllShortcut && hasActiveViewerTextSelection) {
         return;
       }
 
@@ -1919,7 +1937,7 @@ export default function ViewerPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div ref={viewerPageRootRef} className="flex flex-col h-screen">
       <Navbar />
 
       {/* Main Content */}
