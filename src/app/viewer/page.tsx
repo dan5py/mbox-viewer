@@ -1114,6 +1114,8 @@ export default function ViewerPage() {
   const clearSelectionAriaKeyShortcuts = "Shift+Control+A Shift+Meta+A";
   const resetFiltersAriaKeyShortcuts = "Shift+Escape";
   const openShortcutsAriaKeyShortcuts = "Shift+Slash";
+  const overflowMenuItemsCount =
+    overflowLabelFilters.length + (selectedLabel !== null ? 1 : 0);
   const moreLabelsTriggerText = t("search.moreLabels", {
     count: overflowLabelFilters.length,
   });
@@ -1121,7 +1123,7 @@ export default function ViewerPage() {
     count: overflowLabelFilters.length,
   });
   const moreLabelsMenuAriaLabel = t("search.moreLabelsMenuLabel", {
-    count: overflowLabelFilters.length,
+    count: overflowMenuItemsCount,
   });
   const shouldShowLabelFiltersRow =
     allLabels.length > 0 &&
