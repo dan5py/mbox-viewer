@@ -1616,12 +1616,6 @@ export default function ViewerPage() {
                         {toggleFilteredSelectionShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuCheckboxItem>
-                    <DropdownMenuItem
-                      onClick={handleResetFilters}
-                      disabled={!hasActiveFilters}
-                    >
-                      {t("selection.resetFilters")}
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       variant="destructive"
@@ -1633,16 +1627,26 @@ export default function ViewerPage() {
                         {clearSelectionShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
+                      {t("selection.sections.filters")}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={handleResetFilters}
+                      disabled={!hasActiveFilters}
+                    >
+                      {t("selection.resetFilters")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
+                      {t("selection.sections.tools")}
+                    </DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={() => setIsExportDialogOpen(true)}
                       disabled={selectedCount === 0}
                     >
                       {t("export.action")}
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
-                      {t("selection.sections.tools")}
-                    </DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={() => setIsShortcutsDialogOpen(true)}
                     >
