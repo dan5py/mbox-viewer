@@ -1253,7 +1253,7 @@ export default function ViewerPage() {
 
   const totalFilteredMessages = filteredMessageIndices.length;
   const shouldShowHeaderStatusRow =
-    isSearching || searchFailed || totalMessages > 0;
+    isSearching || searchFailed || hasActiveFilters || selectedCount > 0;
   const messageSummaryLabel = useMemo(() => {
     if (totalMessages === 0) {
       return "";
