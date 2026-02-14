@@ -1860,22 +1860,24 @@ export default function ViewerPage() {
                       {/* Sender name and date */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
-                          <h3
-                            className="font-semibold text-base text-foreground truncate"
-                            title={
-                              formatEmailAddresses(selectedMessageData.from)[0]
-                                ?.name ||
-                              formatEmailAddresses(selectedMessageData.from)[0]
-                                ?.email ||
-                              t("preview.unknown")
-                            }
-                          >
-                            {formatEmailAddresses(selectedMessageData.from)[0]
-                              ?.name ||
-                              formatEmailAddresses(selectedMessageData.from)[0]
-                                ?.email ||
-                              t("preview.unknown")}
-                          </h3>
+                          {(() => {
+                            const primarySender =
+                              formatEmailAddresses(selectedMessageData.from)
+                                .filter(
+                                  (address) => address.name || address.email
+                                )
+                                .map((address) => address.name || address.email)
+                                .at(0) || t("preview.unknown");
+
+                            return (
+                              <h3
+                                className="font-semibold text-base text-foreground truncate"
+                                title={primarySender}
+                              >
+                                {primarySender}
+                              </h3>
+                            );
+                          })()}
                         </div>
                         <div className="text-sm text-muted-foreground whitespace-nowrap shrink-0">
                           {formatDate(selectedMessageData.date, "MMM d, p", {
