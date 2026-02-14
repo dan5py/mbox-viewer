@@ -18,8 +18,17 @@ const geist = Geist({
   subsets: ["latin"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
+async function getActiveLocale() {
+  const cookieStore = await cookies();
   const locale = await getPreferredLocale();
+  return resolveSupportedLocale(
+    cookieStore.get(localeCookieName)?.value,
+    locale
+  );
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getActiveLocale();
   const t = await getTranslations({ locale, namespace: "Metadata" });
 
   return {
@@ -50,12 +59,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const preferredLocale = await getPreferredLocale();
-  const activeLocale = resolveSupportedLocale(
-    cookieStore.get(localeCookieName)?.value,
-    preferredLocale
-  );
+  const activeLocale = await getActiveLocale();
 
   return (
     <html lang={activeLocale} suppressHydrationWarning>
