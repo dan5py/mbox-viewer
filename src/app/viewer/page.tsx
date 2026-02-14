@@ -930,6 +930,8 @@ export default function ViewerPage() {
   );
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
+  const resetFiltersShortcutLabel = "Shift+Esc";
+  const openShortcutsShortcutLabel = "?";
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1708,7 +1710,9 @@ export default function ViewerPage() {
                       disabled={!hasActiveFilters}
                     >
                       {t("selection.resetFilters")}
-                      <DropdownMenuShortcut>Shift+Esc</DropdownMenuShortcut>
+                      <DropdownMenuShortcut>
+                        {resetFiltersShortcutLabel}
+                      </DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
@@ -1722,7 +1726,9 @@ export default function ViewerPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleOpenShortcutsDialog}>
                       {t("selection.shortcuts.openHelp")}
-                      <DropdownMenuShortcut>?</DropdownMenuShortcut>
+                      <DropdownMenuShortcut>
+                        {openShortcutsShortcutLabel}
+                      </DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -2603,7 +2609,7 @@ export default function ViewerPage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
-                <Kbd>?</Kbd>
+                <Kbd>{openShortcutsShortcutLabel}</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.openDialog")}</span>
             </div>
