@@ -136,6 +136,7 @@
       "bcc": "Bcc",
       "subject": "Oggetto",
       "date": "Data",
+      "html": "HTML",
       "plainText": "Testo",
       "body": "Corpo",
       "headers": "Headers",

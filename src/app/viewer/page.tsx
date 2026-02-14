@@ -2102,7 +2102,7 @@ export default function ViewerPage() {
                           <TabsList className="p-0">
                             <TabsTrigger value="html" className="text-xs">
                               <CodeXml />
-                              HTML
+                              {t("preview.html")}
                             </TabsTrigger>
                             <TabsTrigger value="text" className="text-xs">
                               <TextInitial />
@@ -2445,7 +2445,7 @@ export default function ViewerPage() {
                   <TabsList className="p-0 ml-4">
                     <TabsTrigger value="html" className="text-xs">
                       <CodeXml />
-                      HTML
+                      {t("preview.html")}
                     </TabsTrigger>
                     <TabsTrigger value="text" className="text-xs">
                       <TextInitial />

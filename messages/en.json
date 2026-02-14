@@ -136,6 +136,7 @@
       "bcc": "Bcc",
       "subject": "Subject",
       "date": "Date",
+      "html": "HTML",
       "plainText": "Plain Text",
       "body": "Body",
       "headers": "Headers",
