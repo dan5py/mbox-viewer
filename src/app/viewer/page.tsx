@@ -1074,8 +1074,12 @@ export default function ViewerPage() {
   const filteredCountLabel = integerFormatter.format(
     filteredMessageIndices.length
   );
+  const allEmailsLabel = t("search.allEmails");
+  const allEmailsFilterCountValue = searchResultSet
+    ? searchResultSet.size
+    : totalMessages;
   const allEmailsFilterCount = integerFormatter.format(
-    searchResultSet ? searchResultSet.size : totalMessages
+    allEmailsFilterCountValue
   );
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
@@ -1110,6 +1114,11 @@ export default function ViewerPage() {
       label,
       count,
     });
+  const allEmailsFilterAriaLabel = getLabelFilterButtonLabel(
+    allEmailsLabel,
+    allEmailsFilterCountValue
+  );
+  const allEmailsFilterTitle = `${allEmailsLabel} (${allEmailsFilterCount})`;
   const labelFilterChipBaseClassName =
     "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors";
   const getLabelFilterChipClassName = (isActive: boolean) =>
@@ -1981,14 +1990,11 @@ export default function ViewerPage() {
                       selectedLabel === null
                     )}
                     aria-pressed={selectedLabel === null}
-                    aria-label={getLabelFilterButtonLabel(
-                      t("search.allEmails"),
-                      searchResultSet ? searchResultSet.size : totalMessages
-                    )}
-                    title={`${t("search.allEmails")} (${allEmailsFilterCount})`}
+                    aria-label={allEmailsFilterAriaLabel}
+                    title={allEmailsFilterTitle}
                   >
                     {renderLabelChipContent(
-                      t("search.allEmails"),
+                      allEmailsLabel,
                       allEmailsFilterCount,
                       selectedLabel === null
                     )}
@@ -2049,15 +2055,10 @@ export default function ViewerPage() {
                           <>
                             <DropdownMenuItem
                               onClick={handleSelectOverflowAllEmails}
-                              aria-label={getLabelFilterButtonLabel(
-                                t("search.allEmails"),
-                                searchResultSet
-                                  ? searchResultSet.size
-                                  : totalMessages
-                              )}
-                              title={`${t("search.allEmails")} (${allEmailsFilterCount})`}
+                              aria-label={allEmailsFilterAriaLabel}
+                              title={allEmailsFilterTitle}
                             >
-                              {t("search.allEmails")}
+                              {allEmailsLabel}
                               <DropdownMenuShortcut>
                                 {allEmailsFilterCount}
                               </DropdownMenuShortcut>
