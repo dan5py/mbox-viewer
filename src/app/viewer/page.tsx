@@ -962,6 +962,12 @@ export default function ViewerPage() {
     };
   }, [labelFiltersForLayout, selectedLabel]);
 
+  useEffect(() => {
+    if (overflowLabelFilters.length === 0 && isLabelOverflowMenuOpen) {
+      setIsLabelOverflowMenuOpen(false);
+    }
+  }, [overflowLabelFilters.length, isLabelOverflowMenuOpen]);
+
   const filteredMessageIndices = useMemo(() => {
     if (!(files.length > 0 && currentFile)) return [];
 
