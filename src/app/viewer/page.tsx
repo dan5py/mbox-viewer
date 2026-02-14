@@ -1596,7 +1596,10 @@ export default function ViewerPage() {
                     >
                       {allVisibleSelected
                         ? t("selection.deselectPage")
-                        : t("selection.selectPage")}
+                        : t("selection.selectPage")}{" "}
+                      <span className="text-muted-foreground/80">
+                        ({visibleMessageIndices.length})
+                      </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
                       checked={allFilteredSelected}
@@ -1611,7 +1614,10 @@ export default function ViewerPage() {
                           : t("selection.deselectAll")
                         : hasActiveFilters
                           ? t("selection.selectFiltered")
-                          : t("selection.selectAll")}
+                          : t("selection.selectAll")}{" "}
+                      <span className="text-muted-foreground/80">
+                        ({filteredMessageIndices.length})
+                      </span>
                       <DropdownMenuShortcut>
                         {toggleFilteredSelectionShortcutLabel}
                       </DropdownMenuShortcut>
