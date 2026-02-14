@@ -97,9 +97,7 @@ export default function SettingsPage() {
                 <SettingsIcon className="size-8 text-primary" />
                 <h1 className="text-3xl font-bold">{t("title")}</h1>
               </div>
-              <p className="text-muted-foreground">
-                Manage your application preferences
-              </p>
+              <p className="text-muted-foreground">{t("description")}</p>
             </div>
           </div>
 
