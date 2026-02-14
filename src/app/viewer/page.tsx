@@ -1672,7 +1672,11 @@ export default function ViewerPage() {
 
             {shouldShowHeaderStatusRow && (
               <div className="flex items-center min-w-0">
-                <div className="min-w-0 flex-1">
+                <div
+                  className="min-w-0 flex-1"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
                   {isSearching ? (
                     <div className="flex items-center gap-2 text-[11px] text-muted-foreground min-w-0">
                       <Spinner
