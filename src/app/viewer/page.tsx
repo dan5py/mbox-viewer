@@ -1652,7 +1652,12 @@ export default function ViewerPage() {
         return;
       }
 
-      if (shouldIgnoreGlobalShortcutTarget(e.target)) {
+      const activeElement = document.activeElement;
+      if (
+        shouldIgnoreGlobalShortcutTarget(e.target) ||
+        (activeElement !== e.target &&
+          shouldIgnoreGlobalShortcutTarget(activeElement))
+      ) {
         return;
       }
 
