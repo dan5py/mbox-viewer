@@ -1268,7 +1268,7 @@ export default function ViewerPage() {
   }, [handleSelectLabelFilter]);
   const handleDropdownMenuBoundaryKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
-      if (event.altKey || event.ctrlKey || event.metaKey) {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
         return;
       }
 
@@ -1296,7 +1296,7 @@ export default function ViewerPage() {
   );
   const handleLabelFiltersGroupKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
-      if (event.altKey || event.ctrlKey || event.metaKey) {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
         return;
       }
 
