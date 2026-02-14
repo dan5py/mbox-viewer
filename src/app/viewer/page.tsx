@@ -1175,6 +1175,7 @@ export default function ViewerPage() {
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
+  const clearPreviewShortcutLabel = "Esc";
   const openShortcutsShortcutLabel = "?";
   const toggleFilteredSelectionAriaKeyShortcuts = "Control+A Meta+A";
   const clearSelectionAriaKeyShortcuts = "Shift+Control+A Shift+Meta+A";
@@ -3222,6 +3223,12 @@ export default function ViewerPage() {
                 <Kbd>Esc</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.resetFilters")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
+                <Kbd>{clearPreviewShortcutLabel}</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.clearPreview")}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
