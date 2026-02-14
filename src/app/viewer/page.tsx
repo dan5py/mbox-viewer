@@ -262,7 +262,6 @@ export default function ViewerPage() {
     isApplePlatform === null ? "Ctrl/Cmd" : isApplePlatform ? "⌘" : "Ctrl";
   const selectAllShortcutLabel = `${shortcutModifierLabel}+A`;
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
-  const rangeShortcutLabel = `Shift+${t("selection.shortcuts.clickKey")}`;
 
   // Reset selection when switching files
   useEffect(() => {
@@ -1605,9 +1604,6 @@ export default function ViewerPage() {
                         {allVisibleSelected
                           ? t("selection.deselectPage")
                           : t("selection.selectPage")}
-                        <DropdownMenuShortcut>
-                          {selectAllShortcutLabel}
-                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={handleToggleFilteredSelection}
@@ -1644,9 +1640,6 @@ export default function ViewerPage() {
                         onClick={() => setIsShortcutsDialogOpen(true)}
                       >
                         {t("selection.shortcuts.openHelp")}
-                        <DropdownMenuShortcut>
-                          {rangeShortcutLabel}
-                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
