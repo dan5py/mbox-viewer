@@ -165,8 +165,9 @@ function getBodyAsText(message: EmailMessage): string {
     return "";
   }
 
+  const sanitizedHtml = sanitizeHtmlBodyForExport(message.htmlBody);
   const parser = new DOMParser();
-  const doc = parser.parseFromString(message.htmlBody, "text/html");
+  const doc = parser.parseFromString(sanitizedHtml, "text/html");
   const content = doc.body?.textContent || "";
   return content.trim();
 }
