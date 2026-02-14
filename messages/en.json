@@ -97,6 +97,7 @@
         "openDialog": "open shortcuts help",
         "select": "toggle filtered selection",
         "clear": "clear all selections",
+        "resetFilters": "reset active filters",
         "clickKey": "Click",
         "range": "select a range"
       }

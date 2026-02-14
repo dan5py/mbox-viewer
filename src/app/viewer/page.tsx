@@ -1198,6 +1198,9 @@ export default function ViewerPage() {
         } else {
           handleToggleFilteredSelection();
         }
+      } else if (e.key === "Escape" && e.shiftKey) {
+        e.preventDefault();
+        handleResetFilters();
       } else if (e.key === "ArrowDown") {
         if (visibleMessageIndices.length === 0) {
           return;
@@ -1250,6 +1253,7 @@ export default function ViewerPage() {
     handleSelectMessage,
     handleToggleFilteredSelection,
     handleClearSelection,
+    handleResetFilters,
     isActionsMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
@@ -1660,6 +1664,7 @@ export default function ViewerPage() {
                       disabled={!hasActiveFilters}
                     >
                       {t("selection.resetFilters")}
+                      <DropdownMenuShortcut>Shift+Esc</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
@@ -2574,6 +2579,13 @@ export default function ViewerPage() {
                 <Kbd>A</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.clear")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
+                <Kbd>Shift</Kbd>
+                <Kbd>Esc</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.resetFilters")}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>

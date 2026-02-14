@@ -97,6 +97,7 @@
         "openDialog": "apre la guida scorciatoie",
         "select": "attiva/disattiva selezione filtrata",
         "clear": "pulisce tutte le selezioni",
+        "resetFilters": "azzera i filtri attivi",
         "clickKey": "Clic",
         "range": "seleziona un intervallo"
       }
