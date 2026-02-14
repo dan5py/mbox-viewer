@@ -1580,10 +1580,7 @@ export default function ViewerPage() {
               />
             )}
 
-            <div className="flex items-center justify-between gap-2">
-              <Badge variant="secondary" className="text-[11px] font-medium">
-                {t("selection.selectedCompact", { count: selectedCount })}
-              </Badge>
+            {totalMessages > 0 && (
               <div className="flex items-center justify-end gap-1">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -1598,8 +1595,9 @@ export default function ViewerPage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel className="text-xs">
-                      {t("selection.actions")}
+                      {t("selection.selectedCount", { count: selectedCount })}
                     </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => setIsExportDialogOpen(true)}
                       disabled={selectedCount === 0}
@@ -1643,7 +1641,7 @@ export default function ViewerPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Message List */}

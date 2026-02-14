@@ -73,7 +73,6 @@
     "selection": {
       "actions": "Actions",
       "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
-      "selectedCompact": "{count, plural, =0 {0 selected} =1 {# selected} other {# selected}}",
       "selectPage": "Select page",
       "deselectPage": "Deselect page",
       "selectFiltered": "Select filtered",
