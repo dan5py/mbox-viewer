@@ -2459,7 +2459,7 @@ export default function ViewerPage() {
 
       {/* Fullscreen Body Dialog */}
       <Dialog open={isFullscreenOpen} onOpenChange={setIsFullscreenOpen}>
-        <DialogContent className="max-w-[calc(100dvw-8rem)] max-h-[calc(100dvh-8rem)] w-full h-full sm:max-w-[calc(100dwh-8rem)] flex flex-col gap-0">
+        <DialogContent className="max-w-[calc(100dvw-8rem)] max-h-[calc(100dvh-8rem)] w-full h-full sm:max-w-[calc(100dvw-8rem)] flex flex-col gap-0">
           <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
             <DialogTitle className="flex items-center justify-between h-10">
               <span>
