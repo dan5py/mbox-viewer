@@ -1575,37 +1575,42 @@ export default function ViewerPage() {
 
             {shouldShowHeaderStatusRow && (
               <div className="flex items-center justify-between gap-2 min-w-0">
-                {isSearching ? (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
-                    <Spinner className="size-3" label={t("search.searching")} />
-                    <span className="truncate">
-                      {t("search.searchingProgress", {
-                        progress: searchProgress,
-                      })}
-                    </span>
-                    <Progress
-                      value={searchProgress}
-                      className="h-1.5 w-20"
-                      aria-label={t("search.searchingProgress", {
-                        progress: searchProgress,
-                      })}
-                    />
-                  </div>
-                ) : searchFailed ? (
-                  <p className="text-xs text-destructive font-medium truncate">
-                    {t("search.error")}
-                  </p>
-                ) : (
-                  totalMessages > 0 && (
-                    <p
-                      className="text-xs text-muted-foreground font-medium truncate"
-                      title={messageSummaryLabel}
-                    >
-                      {messageSummaryLabel}
+                <div className="min-w-0 flex-1">
+                  {isSearching ? (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
+                      <Spinner
+                        className="size-3"
+                        label={t("search.searching")}
+                      />
+                      <span className="truncate">
+                        {t("search.searchingProgress", {
+                          progress: searchProgress,
+                        })}
+                      </span>
+                      <Progress
+                        value={searchProgress}
+                        className="h-1.5 w-20 shrink-0"
+                        aria-label={t("search.searchingProgress", {
+                          progress: searchProgress,
+                        })}
+                      />
+                    </div>
+                  ) : searchFailed ? (
+                    <p className="text-xs text-destructive font-medium truncate">
+                      {t("search.error")}
                     </p>
-                  )
-                )}
-                <div className="flex items-center gap-1">
+                  ) : (
+                    totalMessages > 0 && (
+                      <p
+                        className="text-xs text-muted-foreground font-medium truncate"
+                        title={messageSummaryLabel}
+                      >
+                        {messageSummaryLabel}
+                      </p>
+                    )
+                  )}
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
                   {totalMessages > 0 && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
