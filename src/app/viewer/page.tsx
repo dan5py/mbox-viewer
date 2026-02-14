@@ -1065,7 +1065,9 @@ export default function ViewerPage() {
     count: selectedCount,
   });
   const selectedCountBadgeLabel =
-    selectedCount > 99 ? "99+" : selectedCount.toString();
+    selectedCount > 99
+      ? `${integerFormatter.format(99)}+`
+      : integerFormatter.format(selectedCount);
   const visibleCountLabel = integerFormatter.format(
     visibleMessageIndices.length
   );
