@@ -260,8 +260,6 @@ export default function ViewerPage() {
   const currentFile = files.find((f) => f.id === selectedFileId);
   const shortcutModifierLabel =
     isApplePlatform === null ? "Ctrl/Cmd" : isApplePlatform ? "⌘" : "Ctrl";
-  const selectAllShortcutLabel = `${shortcutModifierLabel}+A`;
-  const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
 
   // Reset selection when switching files
   useEffect(() => {
@@ -905,6 +903,13 @@ export default function ViewerPage() {
   }, [currentPage, filteredMessageIndices, messagesPerPage]);
 
   const selectedCount = selectedMessageIndices.size;
+  const selectedCountLabel = t("selection.selectedCount", {
+    count: selectedCount,
+  });
+  const selectedCountBadgeLabel =
+    selectedCount > 99 ? "99+" : selectedCount.toString();
+  const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
+  const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1582,20 +1587,20 @@ export default function ViewerPage() {
                         variant="ghost"
                         size="icon"
                         className="relative size-7"
-                        aria-label={t("selection.actions")}
-                        title={t("selection.actions")}
+                        aria-label={`${t("selection.actions")} · ${selectedCountLabel}`}
+                        title={`${t("selection.actions")} · ${selectedCountLabel}`}
                       >
                         <MoreHorizontal className="size-3.5" />
                         {selectedCount > 0 && (
                           <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
-                            {selectedCount}
+                            {selectedCountBadgeLabel}
                           </Badge>
                         )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel className="text-xs">
-                        {t("selection.selectedCount", { count: selectedCount })}
+                        {selectedCountLabel}
                       </DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={handleToggleCurrentPageSelection}
@@ -1617,7 +1622,7 @@ export default function ViewerPage() {
                             ? t("selection.selectFiltered")
                             : t("selection.selectAll")}
                         <DropdownMenuShortcut>
-                          {selectAllShortcutLabel}
+                          {toggleFilteredSelectionShortcutLabel}
                         </DropdownMenuShortcut>
                       </DropdownMenuItem>
                       <DropdownMenuItem
