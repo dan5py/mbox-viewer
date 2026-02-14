@@ -1,8 +1,9 @@
-const APP_SHELL_CACHE = "mbox-viewer-app-shell-v2";
+const APP_SHELL_CACHE = "mbox-viewer-app-shell-v3";
 const RUNTIME_CACHE = "mbox-viewer-runtime-v1";
 const APP_SHELL_ASSETS = [
   "/",
   "/viewer",
+  "/manifest.webmanifest",
   "/icon-180.png",
   "/icon-192.png",
   "/icon-512.png",
