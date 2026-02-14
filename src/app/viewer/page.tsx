@@ -103,6 +103,7 @@ export default function ViewerPage() {
     useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
+  const [isApplePlatform, setIsApplePlatform] = useState<boolean | null>(null);
   const [tab, setTab] = useState("body");
 
   // Compute effective tab: fallback to first available if current tab is not available
@@ -195,6 +196,33 @@ export default function ViewerPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const userAgentDataPlatform =
+      "userAgentData" in navigator
+        ? (
+            navigator as Navigator & {
+              userAgentData?: { platform?: string };
+            }
+          ).userAgentData?.platform
+        : undefined;
+
+    const uaPlatform = (
+      userAgentDataPlatform ||
+      navigator.platform ||
+      ""
+    ).toLowerCase();
+    const isAppleDevice =
+      uaPlatform.includes("mac") ||
+      uaPlatform.includes("iphone") ||
+      uaPlatform.includes("ipad");
+
+    setIsApplePlatform(isAppleDevice);
+  }, []);
+
   // Warn user before reloading/leaving if files are loaded
   useEffect(() => {
     if (files.length === 0) {
@@ -216,6 +244,8 @@ export default function ViewerPage() {
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
 
   const currentFile = files.find((f) => f.id === selectedFileId);
+  const shortcutModifierLabel =
+    isApplePlatform === null ? "Ctrl/Cmd" : isApplePlatform ? "⌘" : "Ctrl";
 
   // Reset selection when switching files
   useEffect(() => {
@@ -1516,13 +1546,13 @@ export default function ViewerPage() {
 
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
-                <Kbd>{locale === "it" ? "⌘/Ctrl" : "Ctrl/Cmd"}</Kbd>
+                <Kbd>{shortcutModifierLabel}</Kbd>
                 <Kbd>A</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.select")}</span>
               <KbdGroup>
                 <Kbd>Shift</Kbd>
-                <Kbd>{locale === "it" ? "⌘/Ctrl" : "Ctrl/Cmd"}</Kbd>
+                <Kbd>{shortcutModifierLabel}</Kbd>
                 <Kbd>A</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.clear")}</span>
