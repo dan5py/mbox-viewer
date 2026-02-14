@@ -1101,6 +1101,10 @@ export default function ViewerPage() {
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
   const openShortcutsShortcutLabel = "?";
+  const toggleFilteredSelectionAriaKeyShortcuts = "Control+A Meta+A";
+  const clearSelectionAriaKeyShortcuts = "Shift+Control+A Shift+Meta+A";
+  const resetFiltersAriaKeyShortcuts = "Shift+Escape";
+  const openShortcutsAriaKeyShortcuts = "Shift+Slash";
   const moreLabelsTriggerText = t("search.moreLabels", {
     count: overflowLabelFilters.length,
   });
@@ -1971,6 +1975,9 @@ export default function ViewerPage() {
                         handleToggleFilteredSelectionFromMenu();
                       }}
                       disabled={filteredMessageIndices.length === 0}
+                      aria-keyshortcuts={
+                        toggleFilteredSelectionAriaKeyShortcuts
+                      }
                     >
                       {toggleFilteredSelectionLabel}{" "}
                       <span className="text-muted-foreground/80">
@@ -1985,6 +1992,7 @@ export default function ViewerPage() {
                       variant="destructive"
                       onClick={handleClearSelectionFromMenu}
                       disabled={selectedCount === 0}
+                      aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
                     >
                       {t("selection.clear")}
                       <DropdownMenuShortcut>
@@ -1998,6 +2006,7 @@ export default function ViewerPage() {
                     <DropdownMenuItem
                       onClick={handleResetFiltersFromMenu}
                       disabled={!hasActiveFilters}
+                      aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
                     >
                       {t("selection.resetFilters")}
                       <DropdownMenuShortcut>
@@ -2014,7 +2023,10 @@ export default function ViewerPage() {
                     >
                       {t("export.action")}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleOpenShortcutsDialog}>
+                    <DropdownMenuItem
+                      onClick={handleOpenShortcutsDialog}
+                      aria-keyshortcuts={openShortcutsAriaKeyShortcuts}
+                    >
                       {t("selection.shortcuts.openHelp")}
                       <DropdownMenuShortcut>
                         {openShortcutsShortcutLabel}
