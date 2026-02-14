@@ -1177,11 +1177,11 @@ export default function ViewerPage() {
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
   const clearPreviewShortcutLabel = "Esc";
-  const openShortcutsShortcutLabel = "?";
+  const openShortcutsShortcutLabel = "? / F1";
   const toggleFilteredSelectionAriaKeyShortcuts = "Control+A Meta+A";
   const clearSelectionAriaKeyShortcuts = "Shift+Control+A Shift+Meta+A";
   const resetFiltersAriaKeyShortcuts = "Shift+Escape";
-  const openShortcutsAriaKeyShortcuts = "Shift+Slash";
+  const openShortcutsAriaKeyShortcuts = "Shift+Slash F1";
   const overflowMenuItemsCount =
     overflowLabelFilters.length + (selectedLabel !== null ? 1 : 0);
   const moreLabelsTriggerText = t("search.moreLabels", {
@@ -1697,7 +1697,8 @@ export default function ViewerPage() {
         !e.ctrlKey &&
         !e.metaKey &&
         !e.altKey &&
-        (e.key === "?" ||
+        (e.key === "F1" ||
+          e.key === "?" ||
           (e.shiftKey && (e.key === "/" || e.code === "Slash")));
       const isResetFiltersShortcut =
         e.key === "Escape" &&
@@ -3243,7 +3244,8 @@ export default function ViewerPage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
-                <Kbd>{openShortcutsShortcutLabel}</Kbd>
+                <Kbd>?</Kbd>
+                <Kbd>F1</Kbd>
               </KbdGroup>
               <span>{t("selection.shortcuts.openDialog")}</span>
             </div>
