@@ -906,6 +906,9 @@ export default function ViewerPage() {
   const selectedCountLabel = t("selection.selectedCount", {
     count: selectedCount,
   });
+  const selectedMenuLabel = t("selection.selectedMenuLabel", {
+    count: selectedCount,
+  });
   const selectedCountBadgeLabel =
     selectedCount > 99 ? "99+" : selectedCount.toString();
   const toggleFilteredSelectionShortcutLabel = `${shortcutModifierLabel}+A`;
@@ -1600,7 +1603,7 @@ export default function ViewerPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel className="text-xs">
-                        {selectedCountLabel}
+                        {selectedMenuLabel}
                       </DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={handleToggleCurrentPageSelection}

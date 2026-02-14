@@ -73,6 +73,7 @@
     "selection": {
       "actions": "Actions",
       "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
+      "selectedMenuLabel": "{count, plural, =0 {Selected: none} =1 {Selected: #} other {Selected: #}}",
       "selectPage": "Select page",
       "deselectPage": "Deselect page",
       "selectFiltered": "Select filtered",
