@@ -2115,6 +2115,7 @@ export default function ViewerPage() {
                     align="end"
                     loop
                     aria-label={actionsTriggerLabel}
+                    aria-keyshortcuts="Home End"
                     onKeyDown={handleDropdownMenuBoundaryKeyDown}
                     className="w-56"
                   >
@@ -2288,6 +2289,7 @@ export default function ViewerPage() {
                         align="start"
                         loop
                         aria-label={moreLabelsMenuAriaLabel}
+                        aria-keyshortcuts="Home End"
                         onKeyDown={handleDropdownMenuBoundaryKeyDown}
                         className="max-h-72 w-56 overflow-y-auto"
                       >
