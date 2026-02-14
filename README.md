@@ -17,6 +17,14 @@ A modern, fast, and privacy-focused MBOX file viewer that runs directly in your 
 - **PWA Support**: Install the viewer as a Progressive Web App with offline-ready app shell caching.
 - **i18n Support**: Internationalization support with English and Italian locales.
 
+### Viewer Productivity Highlights
+
+- **Search worker progress**: Live search progress percentage and progress bar while scanning large files.
+- **Export progress & cancellation**: Real-time export progress in the export dialog with cancellable long-running exports.
+- **Bulk selection shortcuts**:
+  - `Ctrl/Cmd + A` → toggle filtered selection
+  - `Shift + Ctrl/Cmd + A` → clear selection
+
 ## Tech Stack
 
 - [Next.js](https://nextjs.org/)
