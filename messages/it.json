@@ -68,7 +68,6 @@
       "allEmails": "Tutte le email",
       "labelFilters": "Filtri etichetta",
       "moreLabels": "+{count, plural, =1 {# altra etichetta} other {# altre etichette}}",
-      "moreLabelsWithActive": "Menu altre etichette. Attiva: {label}. {count, plural, =1 {# etichetta aggiuntiva} other {# etichette aggiuntive}}",
       "labelWithCount": "{label}. {count, plural, =1 {# messaggio} other {# messaggi}}",
       "noMessages": "Nessun messaggio",
       "clear": "Cancella ricerca",

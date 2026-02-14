@@ -68,7 +68,6 @@
       "allEmails": "All emails",
       "labelFilters": "Label filters",
       "moreLabels": "+{count, plural, =1 {# more label} other {# more labels}}",
-      "moreLabelsWithActive": "More labels menu. Active: {label}. {count, plural, =1 {# additional label} other {# additional labels}}",
       "labelWithCount": "{label}. {count, plural, =1 {# message} other {# messages}}",
       "noMessages": "No messages",
       "clear": "Clear search",

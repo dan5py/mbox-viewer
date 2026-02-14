@@ -983,30 +983,9 @@ export default function ViewerPage() {
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
   const openShortcutsShortcutLabel = "?";
-  const hasActiveOverflowLabel = overflowLabelFilters.includes(
-    selectedLabel ?? ""
-  );
   const moreLabelsTriggerText = t("search.moreLabels", {
     count: overflowLabelFilters.length,
   });
-  const activeOverflowLabelCount =
-    hasActiveOverflowLabel && selectedLabel !== null
-      ? integerFormatter.format(labelMessageCounts.get(selectedLabel) ?? 0)
-      : null;
-  const overflowLabelsTriggerText =
-    hasActiveOverflowLabel && selectedLabel !== null && activeOverflowLabelCount
-      ? `${selectedLabel} (${activeOverflowLabelCount})`
-      : moreLabelsTriggerText;
-  const overflowLabelsTriggerTitle =
-    hasActiveOverflowLabel && selectedLabel !== null && activeOverflowLabelCount
-      ? `${selectedLabel} (${activeOverflowLabelCount}) · ${moreLabelsTriggerText}`
-      : moreLabelsTriggerText;
-  const overflowLabelsTriggerAriaLabel = hasActiveOverflowLabel
-    ? t("search.moreLabelsWithActive", {
-        label: selectedLabel ?? "",
-        count: overflowLabelFilters.length,
-      })
-    : moreLabelsTriggerText;
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelMessageCounts.get(label) ?? 0);
   const getLabelFilterButtonLabel = (label: string, count: number) =>
@@ -1915,13 +1894,13 @@ export default function ViewerPage() {
                         <button
                           type="button"
                           className={getLabelFilterChipClassName(
-                            hasActiveOverflowLabel
+                            isLabelOverflowMenuOpen
                           )}
-                          aria-label={overflowLabelsTriggerAriaLabel}
-                          title={overflowLabelsTriggerTitle}
+                          aria-label={moreLabelsTriggerText}
+                          title={moreLabelsTriggerText}
                         >
                           <span className="truncate">
-                            {overflowLabelsTriggerText}
+                            {moreLabelsTriggerText}
                           </span>
                         </button>
                       </DropdownMenuTrigger>
