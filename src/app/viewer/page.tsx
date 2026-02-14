@@ -164,6 +164,7 @@ export default function ViewerPage() {
   const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
   const lastNavTimeRef = useRef<number>(0);
   const lastSelectionAnchorRef = useRef<number | null>(null);
+  const previousSearchQueryRef = useRef("");
   const store = useMboxStore();
 
   const {
@@ -1014,6 +1015,16 @@ export default function ViewerPage() {
       setIsLabelOverflowMenuOpen(false);
     }
   }, [overflowLabelFilters.length, isLabelOverflowMenuOpen]);
+
+  useEffect(() => {
+    if (
+      previousSearchQueryRef.current !== searchQuery &&
+      isLabelOverflowMenuOpen
+    ) {
+      setIsLabelOverflowMenuOpen(false);
+    }
+    previousSearchQueryRef.current = searchQuery;
+  }, [isLabelOverflowMenuOpen, searchQuery]);
 
   const filteredMessageIndices = useMemo(() => {
     if (!(files.length > 0 && currentFile)) return [];
