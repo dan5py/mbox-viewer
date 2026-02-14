@@ -247,6 +247,18 @@ function buildHtmlExport(
   `.trim();
 }
 
+function getPerMessageExportFilename(
+  message: EmailMessage,
+  messagePosition: number,
+  extension: "txt" | "html",
+  usedNames: Set<string>
+): string {
+  const baseFilename = `${getAttachmentFolderName(message, messagePosition)}.${extension}`;
+  const fallbackFilename = `message-${String(messagePosition + 1).padStart(4, "0")}.${extension}`;
+
+  return ensureUniqueFilename(baseFilename, usedNames, fallbackFilename);
+}
+
 async function buildMboxExport(
   file: MailFile,
   selectedIndices: number[],
@@ -371,6 +383,9 @@ export async function exportMessages({
     throw new Error("EXPORT_NO_SELECTION");
   }
 
+  const shouldExportPerMessageFiles =
+    format !== "mbox" && (includeAttachments || sortedUniqueIndices.length > 1);
+
   reportProgress(0);
   ensureNotAborted();
 
@@ -407,7 +422,13 @@ export async function exportMessages({
       if (format !== "mbox" || includeAttachments) {
         const stageStart = format === "mbox" ? 60 : 0;
         const stageSpan =
-          format === "mbox" ? 30 : includeAttachments ? 80 : 100;
+          format === "mbox"
+            ? 30
+            : shouldExportPerMessageFiles
+              ? includeAttachments
+                ? 70
+                : 85
+              : 100;
         const progress =
           stageStart +
           Math.round(((i + 1) / sortedUniqueIndices.length) * stageSpan);
@@ -419,12 +440,16 @@ export async function exportMessages({
   ensureNotAborted();
 
   if (format === "txt") {
-    mainContent = buildTextExport(parsedMessages, localization);
+    if (parsedMessages.length === 1) {
+      mainContent = buildTextExport(parsedMessages, localization);
+    }
   } else if (format === "html") {
-    mainContent = buildHtmlExport(parsedMessages, localization);
+    if (parsedMessages.length === 1) {
+      mainContent = buildHtmlExport(parsedMessages, localization);
+    }
   }
 
-  if (!includeAttachments) {
+  if (!shouldExportPerMessageFiles && !includeAttachments) {
     downloadBlob(
       new Blob([mainContent], {
         type: getExportMimeType(format),
@@ -436,37 +461,59 @@ export async function exportMessages({
   }
 
   const zip = new JSZip();
-  zip.file(mainFilename, mainContent);
 
-  for (let i = 0; i < parsedMessages.length; i++) {
-    ensureNotAborted();
-    const { message } = parsedMessages[i];
-    const attachments = message.attachments || [];
-
-    if (attachments.length > 0) {
-      const folderName = getAttachmentFolderName(message, i);
-      const folder = zip.folder(`attachments/${folderName}`);
-      const usedAttachmentNames = new Set<string>();
-
-      for (let j = 0; j < attachments.length; j++) {
-        const att = attachments[j];
-        const sanitizedFilename =
-          sanitizeFilenamePart(att.filename || `attachment-${j + 1}`) ||
-          `attachment-${j + 1}`;
-        const filename = ensureUniqueFilename(
-          sanitizedFilename,
-          usedAttachmentNames,
-          `attachment-${j + 1}`
-        );
-        folder?.file(filename, decodeAttachment(att));
-      }
+  if (format === "mbox") {
+    zip.file(mainFilename, mainContent);
+  } else {
+    const perMessageExtension = format === "html" ? "html" : "txt";
+    const usedFileNames = new Set<string>();
+    for (let i = 0; i < parsedMessages.length; i++) {
+      const entry = parsedMessages[i];
+      const filename = getPerMessageExportFilename(
+        entry.message,
+        i,
+        perMessageExtension,
+        usedFileNames
+      );
+      const content =
+        format === "html"
+          ? buildHtmlExport([entry], localization)
+          : buildTextExport([entry], localization);
+      zip.file(filename, content);
     }
+  }
 
-    const stageStart = format === "mbox" ? 90 : 80;
-    const stageSpan = format === "mbox" ? 5 : 15;
-    const progress =
-      stageStart + Math.round(((i + 1) / parsedMessages.length) * stageSpan);
-    reportProgress(progress);
+  if (includeAttachments) {
+    for (let i = 0; i < parsedMessages.length; i++) {
+      ensureNotAborted();
+      const { message } = parsedMessages[i];
+      const attachments = message.attachments || [];
+
+      if (attachments.length > 0) {
+        const folderName = getAttachmentFolderName(message, i);
+        const folder = zip.folder(`attachments/${folderName}`);
+        const usedAttachmentNames = new Set<string>();
+
+        for (let j = 0; j < attachments.length; j++) {
+          const att = attachments[j];
+          const sanitizedFilename =
+            sanitizeFilenamePart(att.filename || `attachment-${j + 1}`) ||
+            `attachment-${j + 1}`;
+          const filename = ensureUniqueFilename(
+            sanitizedFilename,
+            usedAttachmentNames,
+            `attachment-${j + 1}`
+          );
+          folder?.file(filename, decodeAttachment(att));
+        }
+      }
+
+      const stageStart = format === "mbox" ? 90 : 80;
+      const stageSpan = format === "mbox" ? 5 : 15;
+      const progress =
+        stageStart + Math.round(((i + 1) / parsedMessages.length) * stageSpan);
+      reportProgress(progress);
+    }
   }
 
   ensureNotAborted();
