@@ -2068,6 +2068,7 @@ export default function ViewerPage() {
                     )}
                   </button>
                   {inlineLabelFilters.map((label) => {
+                    const labelCountValue = labelDisplayCounts.get(label) ?? 0;
                     const labelCount = getLabelMessageCount(label);
                     const isLabelActive = selectedLabel === label;
 
@@ -2080,7 +2081,7 @@ export default function ViewerPage() {
                         aria-pressed={isLabelActive}
                         aria-label={getLabelFilterButtonLabel(
                           label,
-                          labelDisplayCounts.get(label) ?? 0
+                          labelCountValue
                         )}
                         title={`${label} (${labelCount})`}
                       >
@@ -2134,25 +2135,31 @@ export default function ViewerPage() {
                             <DropdownMenuSeparator />
                           </>
                         )}
-                        {overflowLabelFilters.map((label) => (
-                          <DropdownMenuCheckboxItem
-                            key={label}
-                            checked={selectedLabel === label}
-                            onCheckedChange={(checked) =>
-                              handleSelectOverflowLabelFilter(label, checked)
-                            }
-                            aria-label={getLabelFilterButtonLabel(
-                              label,
-                              labelDisplayCounts.get(label) ?? 0
-                            )}
-                            title={`${label} (${getLabelMessageCount(label)})`}
-                          >
-                            <span className="truncate">{label}</span>
-                            <DropdownMenuShortcut>
-                              {getLabelMessageCount(label)}
-                            </DropdownMenuShortcut>
-                          </DropdownMenuCheckboxItem>
-                        ))}
+                        {overflowLabelFilters.map((label) => {
+                          const labelCountValue =
+                            labelDisplayCounts.get(label) ?? 0;
+                          const labelCount = getLabelMessageCount(label);
+
+                          return (
+                            <DropdownMenuCheckboxItem
+                              key={label}
+                              checked={selectedLabel === label}
+                              onCheckedChange={(checked) =>
+                                handleSelectOverflowLabelFilter(label, checked)
+                              }
+                              aria-label={getLabelFilterButtonLabel(
+                                label,
+                                labelCountValue
+                              )}
+                              title={`${label} (${labelCount})`}
+                            >
+                              <span className="truncate">{label}</span>
+                              <DropdownMenuShortcut>
+                                {labelCount}
+                              </DropdownMenuShortcut>
+                            </DropdownMenuCheckboxItem>
+                          );
+                        })}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   )}
