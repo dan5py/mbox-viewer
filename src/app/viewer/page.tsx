@@ -982,12 +982,22 @@ export default function ViewerPage() {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't interfere with input fields
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
+      // Don't interfere with editable fields
+      if (e.target instanceof HTMLElement) {
+        const tagName = e.target.tagName;
+        const role = e.target.getAttribute("role");
+
+        if (
+          tagName === "INPUT" ||
+          tagName === "TEXTAREA" ||
+          tagName === "SELECT" ||
+          e.target.isContentEditable ||
+          role === "textbox" ||
+          role === "combobox" ||
+          role === "spinbutton"
+        ) {
+          return;
+        }
       }
 
       const isSelectAllShortcut =
@@ -1001,6 +1011,9 @@ export default function ViewerPage() {
           handleToggleFilteredSelection();
         }
       } else if (e.key === "ArrowDown") {
+        if (visibleMessageIndices.length === 0) {
+          return;
+        }
         e.preventDefault();
         // Use selectedMessageIndex for instant navigation
         const currentPosInList = visibleMessageIndices.findIndex(
@@ -1016,6 +1029,9 @@ export default function ViewerPage() {
           handleSelectMessage(visibleMessageIndices[0]);
         }
       } else if (e.key === "ArrowUp") {
+        if (visibleMessageIndices.length === 0) {
+          return;
+        }
         e.preventDefault();
         const currentPosInList = visibleMessageIndices.findIndex(
           (idx) => idx === selectedMessageIndex
