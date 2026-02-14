@@ -3294,14 +3294,7 @@ export default function ViewerPage() {
                 <Kbd>Home</Kbd>
                 <Kbd>End</Kbd>
               </KbdGroup>
-              <span>{t("selection.shortcuts.jumpLabels")}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <KbdGroup>
-                <Kbd>Home</Kbd>
-                <Kbd>End</Kbd>
-              </KbdGroup>
-              <span>{t("selection.shortcuts.jumpMenuItems")}</span>
+              <span>{t("selection.shortcuts.jumpLabelsAndMenuItems")}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>

@@ -113,6 +113,7 @@
         "navigateLabels": "sposta il focus tra i filtri etichetta visibili",
         "jumpLabels": "vai al primo o all'ultimo filtro etichetta visibile",
         "jumpMenuItems": "nei menu aperti, vai alla prima o all'ultima voce",
+        "jumpLabelsAndMenuItems": "vai al primo o all'ultimo filtro etichetta visibile o alla prima/ultima voce del menu aperto",
         "clickKey": "Clic",
         "range": "seleziona un intervallo"
       }
