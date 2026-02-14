@@ -40,6 +40,7 @@ const EXPORT_FILENAME_DATE_FORMATTER = new Intl.DateTimeFormat("sv-SE", {
 });
 
 const TEXT_ENCODER = new TextEncoder();
+const UTF8_BOM = "\uFEFF";
 
 function escapeHtml(value: string): string {
   return value
@@ -176,16 +177,61 @@ function buildTextExport(
   messages: Array<{ index: number; message: EmailMessage }>,
   localization: ExportLocalization
 ) {
-  void localization;
-  return messages.map(({ message }) => getBodyAsText(message)).join("\n\n");
+  const content = messages
+    .map(({ message }) => {
+      return [
+        `${localization.fromLabel}: ${message.from || ""}`,
+        `${localization.toLabel}: ${message.to || ""}`,
+        `${localization.ccLabel}: ${message.cc || ""}`,
+        `${localization.bccLabel}: ${message.bcc || ""}`,
+        `${localization.dateLabel}: ${message.rawDate || message.date.toISOString()}`,
+        `${localization.subjectLabel}: ${message.subject || ""}`,
+        "",
+        getBodyAsText(message),
+      ].join("\n");
+    })
+    .join("\n\n");
+
+  return `${UTF8_BOM}${content}`;
 }
 
 function buildHtmlExport(
   messages: Array<{ index: number; message: EmailMessage }>,
   localization: ExportLocalization
 ) {
-  void localization;
-  return messages.map(({ message }) => getBodyAsHtml(message)).join("\n\n");
+  const sections = messages
+    .map(({ message }) => {
+      return `
+        <section>
+          <div><strong>${escapeHtml(localization.fromLabel)}:</strong> ${escapeHtml(message.from || "")}</div>
+          <div><strong>${escapeHtml(localization.toLabel)}:</strong> ${escapeHtml(message.to || "")}</div>
+          <div><strong>${escapeHtml(localization.ccLabel)}:</strong> ${escapeHtml(message.cc || "")}</div>
+          <div><strong>${escapeHtml(localization.bccLabel)}:</strong> ${escapeHtml(message.bcc || "")}</div>
+          <div><strong>${escapeHtml(localization.dateLabel)}:</strong> ${escapeHtml(message.rawDate || message.date.toISOString())}</div>
+          <div><strong>${escapeHtml(localization.subjectLabel)}:</strong> ${escapeHtml(message.subject || "")}</div>
+          <hr />
+          ${getBodyAsHtml(message)}
+        </section>
+      `;
+    })
+    .join("\n");
+
+  const fallbackTitle =
+    messages[0]?.message.subject || localization.htmlDocumentTitle;
+
+  return `
+    <!doctype html>
+    <html lang="${localization.locale}">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>${escapeHtml(fallbackTitle)}</title>
+      </head>
+      <body>
+        ${sections}
+      </body>
+    </html>
+  `.trim();
 }
 
 function getPerMessageExportFilename(
