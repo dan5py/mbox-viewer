@@ -707,15 +707,24 @@ export default function ViewerPage() {
             <div className="flex flex-col gap-0.5 flex-1 min-w-0">
               {addr.name ? (
                 <>
-                  <span className="text-sm font-medium text-foreground truncate">
+                  <span
+                    className="text-sm font-medium text-foreground truncate"
+                    title={addr.name}
+                  >
                     {addr.name}
                   </span>
-                  <span className="text-xs text-muted-foreground truncate">
+                  <span
+                    className="text-xs text-muted-foreground truncate"
+                    title={addr.email}
+                  >
                     {addr.email}
                   </span>
                 </>
               ) : (
-                <span className="text-sm text-foreground truncate">
+                <span
+                  className="text-sm text-foreground truncate"
+                  title={addr.email || t("preview.unknown")}
+                >
                   {addr.email || t("preview.unknown")}
                 </span>
               )}
@@ -1851,7 +1860,16 @@ export default function ViewerPage() {
                       {/* Sender name and date */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-semibold text-base text-foreground truncate">
+                          <h3
+                            className="font-semibold text-base text-foreground truncate"
+                            title={
+                              formatEmailAddresses(selectedMessageData.from)[0]
+                                ?.name ||
+                              formatEmailAddresses(selectedMessageData.from)[0]
+                                ?.email ||
+                              t("preview.unknown")
+                            }
+                          >
                             {formatEmailAddresses(selectedMessageData.from)[0]
                               ?.name ||
                               formatEmailAddresses(selectedMessageData.from)[0]
@@ -1868,7 +1886,10 @@ export default function ViewerPage() {
 
                       {/* Recipients and badges */}
                       <div className="flex items-center justify-between gap-2">
-                        <div className="text-sm text-muted-foreground truncate min-w-0">
+                        <div
+                          className="text-sm text-muted-foreground truncate min-w-0"
+                          title={selectedMessageData.to || t("preview.unknown")}
+                        >
                           <span className="font-medium">
                             {t("preview.to")}:{" "}
                           </span>
@@ -2203,7 +2224,10 @@ export default function ViewerPage() {
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium truncate text-sm mb-1">
+                                <p
+                                  className="font-medium truncate text-sm mb-1"
+                                  title={att.filename}
+                                >
                                   {att.filename}
                                 </p>
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -2492,7 +2516,10 @@ export default function ViewerPage() {
         <DialogContent className="max-w-[calc(100dvw-8rem)] max-h-[calc(100dvh-8rem)] w-full h-full sm:max-w-[calc(100dvw-8rem)] flex flex-col gap-0">
           <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
             <DialogTitle className="flex items-center justify-between">
-              <span className="truncate flex-1 mr-4">
+              <span
+                className="truncate flex-1 mr-4"
+                title={previewedAttachment?.filename}
+              >
                 {previewedAttachment?.filename}
               </span>
               <div className="flex items-center gap-2 shrink-0">
