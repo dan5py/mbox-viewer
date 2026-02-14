@@ -452,11 +452,22 @@ export async function exportMessages({
   }
 
   ensureNotAborted();
+  let abortedDuringZipGeneration = false;
   const zipBlob = await zip.generateAsync({ type: "blob" }, (metadata) => {
-    ensureNotAborted();
+    if (signal?.aborted) {
+      abortedDuringZipGeneration = true;
+      return;
+    }
+
     const zipProgress = 95 + Math.round(metadata.percent / 20);
     reportProgress(zipProgress);
   });
+
+  if (abortedDuringZipGeneration) {
+    throw new Error("EXPORT_ABORTED");
+  }
+
+  ensureNotAborted();
   downloadBlob(zipBlob, `${filenameBase}.zip`);
   reportProgress(100);
 }
