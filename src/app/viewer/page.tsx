@@ -3232,6 +3232,13 @@ export default function ViewerPage() {
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <KbdGroup>
+                <Kbd>↑</Kbd>
+                <Kbd>↓</Kbd>
+              </KbdGroup>
+              <span>{t("selection.shortcuts.navigateMessages")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <KbdGroup>
                 <Kbd>←</Kbd>
                 <Kbd>→</Kbd>
               </KbdGroup>

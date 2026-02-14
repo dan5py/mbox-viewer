@@ -109,6 +109,7 @@
         "clear": "pulisce tutte le selezioni",
         "resetFilters": "azzera i filtri attivi",
         "clearPreview": "pulisce il messaggio selezionato nell'anteprima",
+        "navigateMessages": "sposta la selezione dell'anteprima tra i messaggi",
         "navigateLabels": "sposta il focus tra i filtri etichetta visibili",
         "jumpLabels": "vai al primo o all'ultimo filtro etichetta visibile",
         "jumpMenuItems": "nei menu aperti, vai alla prima o all'ultima voce",
