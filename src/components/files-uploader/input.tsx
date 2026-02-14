@@ -30,7 +30,7 @@ function createSampleMboxFiles(): File[] {
 Date: Fri, 1 Jan 2021 09:10:00 +0000
 From: Alice Example <alice@example.com>
 To: Bob Example <bob@example.com>
-Subject: Welcome to MBOX Viewer 😊
+Subject: =?UTF-8?B?V2VsY29tZSB0byBNQk9YIFZpZXdlciDwn5iK?=
 Message-ID: <sample-1@example.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
