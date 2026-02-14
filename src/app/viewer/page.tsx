@@ -1563,11 +1563,73 @@ export default function ViewerPage() {
                   </p>
                 )
               )}
-              {hasSearchQuery && searchResultCount !== null && (
-                <Badge variant="secondary" className="text-xs">
-                  {totalFilteredMessages}
-                </Badge>
-              )}
+              <div className="flex items-center gap-1">
+                {hasSearchQuery && searchResultCount !== null && (
+                  <Badge variant="secondary" className="text-xs">
+                    {totalFilteredMessages}
+                  </Badge>
+                )}
+                {totalMessages > 0 && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                      >
+                        {t("selection.actions")}
+                        <ChevronDown className="size-3 ml-1.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel className="text-xs">
+                        {t("selection.selectedCount", { count: selectedCount })}
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => setIsExportDialogOpen(true)}
+                        disabled={selectedCount === 0}
+                      >
+                        {t("export.action")}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={handleToggleCurrentPageSelection}
+                        disabled={visibleMessageIndices.length === 0}
+                      >
+                        {allVisibleSelected
+                          ? t("selection.deselectPage")
+                          : t("selection.selectPage")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleToggleFilteredSelection}
+                        disabled={filteredMessageIndices.length === 0}
+                      >
+                        {allFilteredSelected
+                          ? hasActiveFilters
+                            ? t("selection.deselectFiltered")
+                            : t("selection.deselectAll")
+                          : hasActiveFilters
+                            ? t("selection.selectFiltered")
+                            : t("selection.selectAll")}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={handleClearSelection}
+                        disabled={selectedCount === 0}
+                      >
+                        {t("selection.clear")}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => setIsShortcutsDialogOpen(true)}
+                      >
+                        {t("selection.shortcuts.openHelp")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
             </div>
 
             {isSearching && (
@@ -1578,69 +1640,6 @@ export default function ViewerPage() {
                   progress: searchProgress,
                 })}
               />
-            )}
-
-            {totalMessages > 0 && (
-              <div className="flex items-center justify-end gap-1">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 px-2 text-xs"
-                    >
-                      {t("selection.actions")}
-                      <ChevronDown className="size-3 ml-1.5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel className="text-xs">
-                      {t("selection.selectedCount", { count: selectedCount })}
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => setIsExportDialogOpen(true)}
-                      disabled={selectedCount === 0}
-                    >
-                      {t("export.action")}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={handleToggleCurrentPageSelection}
-                      disabled={visibleMessageIndices.length === 0}
-                    >
-                      {allVisibleSelected
-                        ? t("selection.deselectPage")
-                        : t("selection.selectPage")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={handleToggleFilteredSelection}
-                      disabled={filteredMessageIndices.length === 0}
-                    >
-                      {allFilteredSelected
-                        ? hasActiveFilters
-                          ? t("selection.deselectFiltered")
-                          : t("selection.deselectAll")
-                        : hasActiveFilters
-                          ? t("selection.selectFiltered")
-                          : t("selection.selectAll")}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={handleClearSelection}
-                      disabled={selectedCount === 0}
-                    >
-                      {t("selection.clear")}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => setIsShortcutsDialogOpen(true)}
-                    >
-                      {t("selection.shortcuts.openHelp")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
             )}
           </div>
 
