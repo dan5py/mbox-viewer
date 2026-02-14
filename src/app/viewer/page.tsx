@@ -1170,8 +1170,13 @@ export default function ViewerPage() {
 
       const isSelectAllShortcut =
         (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a";
+      const isOpenShortcutsHelpShortcut =
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        (e.key === "?" || (e.shiftKey && e.key === "/"));
 
-      if (e.key === "?") {
+      if (isOpenShortcutsHelpShortcut) {
         e.preventDefault();
         setIsShortcutsDialogOpen(true);
       } else if (isSelectAllShortcut) {
