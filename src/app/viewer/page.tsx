@@ -1081,7 +1081,8 @@ export default function ViewerPage() {
   const allEmailsFilterCount = integerFormatter.format(
     allEmailsFilterCountValue
   );
-  const labelFilterOptionsCount = labelFiltersForLayout.length + 1;
+  const labelFilterOptionsCount =
+    1 + inlineLabelFilters.length + (overflowLabelFilters.length > 0 ? 1 : 0);
   const labelFiltersGroupLabel = t("search.labelFiltersWithCount", {
     count: labelFilterOptionsCount,
   });
