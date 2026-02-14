@@ -55,9 +55,23 @@ function sanitizeHtmlBodyForExport(html: string): string {
   const doc = parser.parseFromString(html, "text/html");
 
   const blockedTags = doc.querySelectorAll(
-    "script, iframe, object, embed, link[rel='import']"
+    "script, iframe, object, embed, base, link[rel='import']"
   );
   blockedTags.forEach((node) => node.remove());
+
+  const isUnsafeUrl = (url: string): boolean => {
+    const normalized = url
+      .replace(/[\u0000-\u001F\u007F\s]+/g, "")
+      .toLowerCase();
+
+    return (
+      normalized.startsWith("javascript:") ||
+      normalized.startsWith("vbscript:") ||
+      normalized.startsWith("data:text/html") ||
+      normalized.startsWith("data:text/javascript") ||
+      normalized.startsWith("data:application/javascript")
+    );
+  };
 
   const allElements = doc.querySelectorAll("*");
   for (const element of allElements) {
@@ -78,7 +92,7 @@ function sanitizeHtmlBodyForExport(html: string): string {
         attributeName === "xlink:href" ||
         attributeName === "formaction";
 
-      if (isUrlAttribute && attributeValue.startsWith("javascript:")) {
+      if (isUrlAttribute && isUnsafeUrl(attributeValue)) {
         element.removeAttribute(attribute.name);
       }
     }
