@@ -1035,6 +1035,9 @@ export default function ViewerPage() {
   const moreLabelsTriggerText = t("search.moreLabels", {
     count: overflowLabelFilters.length,
   });
+  const moreLabelsTriggerAriaLabel = t("search.moreLabelsAria", {
+    count: overflowLabelFilters.length,
+  });
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelDisplayCounts.get(label) ?? 0);
   const renderLabelChipContent = (
@@ -1974,8 +1977,8 @@ export default function ViewerPage() {
                           className={getLabelFilterChipClassName(
                             isLabelOverflowMenuOpen
                           )}
-                          aria-label={moreLabelsTriggerText}
-                          title={moreLabelsTriggerText}
+                          aria-label={moreLabelsTriggerAriaLabel}
+                          title={moreLabelsTriggerAriaLabel}
                         >
                           <span className="truncate">
                             {moreLabelsTriggerText}
