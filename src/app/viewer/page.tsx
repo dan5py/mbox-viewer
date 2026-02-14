@@ -1627,7 +1627,7 @@ export default function ViewerPage() {
                     >
                       <MoreHorizontal className="size-3.5" />
                       {selectedCount > 0 && (
-                        <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
+                        <Badge className="absolute -top-1 -right-1 h-4 min-w-5 px-1 text-[10px] leading-none">
                           {selectedCountBadgeLabel}
                         </Badge>
                       )}
