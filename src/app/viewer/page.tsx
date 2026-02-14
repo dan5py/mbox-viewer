@@ -2005,6 +2005,8 @@ export default function ViewerPage() {
                           className={getLabelFilterChipClassName(
                             isLabelOverflowMenuOpen
                           )}
+                          aria-haspopup="menu"
+                          aria-expanded={isLabelOverflowMenuOpen}
                           aria-label={moreLabelsTriggerAriaLabel}
                           title={moreLabelsTriggerAriaLabel}
                         >
