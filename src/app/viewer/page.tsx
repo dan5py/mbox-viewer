@@ -1524,22 +1524,103 @@ export default function ViewerPage() {
         <div className="w-96 border-r border-border/60 bg-background flex flex-col">
           {/* Search */}
           <div className="border-b border-border/60 p-3 space-y-2.5 bg-muted/20">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input
-                placeholder={t("search.placeholder")}
-                value={searchQuery}
-                onChange={(e) => handleSearchInputChange(e.target.value)}
-                className="text-sm pl-9 pr-9"
-              />
-              {searchQuery && (
-                <button
-                  onClick={handleClearSearch}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted transition-colors"
-                  aria-label={t("search.clear")}
-                >
-                  <X className="size-4 text-muted-foreground" />
-                </button>
+            <div className="flex items-center gap-1.5">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input
+                  placeholder={t("search.placeholder")}
+                  value={searchQuery}
+                  onChange={(e) => handleSearchInputChange(e.target.value)}
+                  className="text-sm pl-9 pr-9"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted transition-colors"
+                    aria-label={t("search.clear")}
+                  >
+                    <X className="size-4 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+              {totalMessages > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={cn(
+                        "relative size-7 overflow-visible shrink-0",
+                        selectedCount > 0 && "text-primary"
+                      )}
+                      aria-label={actionsTriggerLabel}
+                      title={actionsTriggerLabel}
+                    >
+                      <MoreHorizontal className="size-3.5" />
+                      {selectedCount > 0 && (
+                        <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
+                          {selectedCountBadgeLabel}
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="text-xs">
+                      {selectedMenuLabel}
+                    </DropdownMenuLabel>
+                    <DropdownMenuCheckboxItem
+                      checked={allVisibleSelected}
+                      onCheckedChange={() => {
+                        handleToggleCurrentPageSelection();
+                      }}
+                      disabled={visibleMessageIndices.length === 0}
+                    >
+                      {allVisibleSelected
+                        ? t("selection.deselectPage")
+                        : t("selection.selectPage")}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={allFilteredSelected}
+                      onCheckedChange={() => {
+                        handleToggleFilteredSelection();
+                      }}
+                      disabled={filteredMessageIndices.length === 0}
+                    >
+                      {allFilteredSelected
+                        ? hasActiveFilters
+                          ? t("selection.deselectFiltered")
+                          : t("selection.deselectAll")
+                        : hasActiveFilters
+                          ? t("selection.selectFiltered")
+                          : t("selection.selectAll")}
+                      <DropdownMenuShortcut>
+                        {toggleFilteredSelectionShortcutLabel}
+                      </DropdownMenuShortcut>
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuItem
+                      onClick={handleClearSelection}
+                      disabled={selectedCount === 0}
+                    >
+                      {t("selection.clear")}
+                      <DropdownMenuShortcut>
+                        {clearSelectionShortcutLabel}
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setIsExportDialogOpen(true)}
+                      disabled={selectedCount === 0}
+                    >
+                      {t("export.action")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => setIsShortcutsDialogOpen(true)}
+                    >
+                      {t("selection.shortcuts.openHelp")}
+                      <DropdownMenuShortcut>?</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
 
@@ -1578,7 +1659,7 @@ export default function ViewerPage() {
             )}
 
             {shouldShowHeaderStatusRow && (
-              <div className="flex items-center justify-between gap-2 min-w-0">
+              <div className="flex items-center min-w-0">
                 <div className="min-w-0 flex-1">
                   {isSearching ? (
                     <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
@@ -1612,87 +1693,6 @@ export default function ViewerPage() {
                         {messageSummaryLabel}
                       </p>
                     )
-                  )}
-                </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  {totalMessages > 0 && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={cn(
-                            "relative size-7 overflow-visible",
-                            selectedCount > 0 && "text-primary"
-                          )}
-                          aria-label={actionsTriggerLabel}
-                          title={actionsTriggerLabel}
-                        >
-                          <MoreHorizontal className="size-3.5" />
-                          {selectedCount > 0 && (
-                            <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
-                              {selectedCountBadgeLabel}
-                            </Badge>
-                          )}
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuLabel className="text-xs">
-                          {selectedMenuLabel}
-                        </DropdownMenuLabel>
-                        <DropdownMenuCheckboxItem
-                          checked={allVisibleSelected}
-                          onCheckedChange={() => {
-                            handleToggleCurrentPageSelection();
-                          }}
-                          disabled={visibleMessageIndices.length === 0}
-                        >
-                          {allVisibleSelected
-                            ? t("selection.deselectPage")
-                            : t("selection.selectPage")}
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem
-                          checked={allFilteredSelected}
-                          onCheckedChange={() => {
-                            handleToggleFilteredSelection();
-                          }}
-                          disabled={filteredMessageIndices.length === 0}
-                        >
-                          {allFilteredSelected
-                            ? hasActiveFilters
-                              ? t("selection.deselectFiltered")
-                              : t("selection.deselectAll")
-                            : hasActiveFilters
-                              ? t("selection.selectFiltered")
-                              : t("selection.selectAll")}
-                          <DropdownMenuShortcut>
-                            {toggleFilteredSelectionShortcutLabel}
-                          </DropdownMenuShortcut>
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuItem
-                          onClick={handleClearSelection}
-                          disabled={selectedCount === 0}
-                        >
-                          {t("selection.clear")}
-                          <DropdownMenuShortcut>
-                            {clearSelectionShortcutLabel}
-                          </DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setIsExportDialogOpen(true)}
-                          disabled={selectedCount === 0}
-                        >
-                          {t("export.action")}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => setIsShortcutsDialogOpen(true)}
-                        >
-                          {t("selection.shortcuts.openHelp")}
-                          <DropdownMenuShortcut>?</DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   )}
                 </div>
               </div>
