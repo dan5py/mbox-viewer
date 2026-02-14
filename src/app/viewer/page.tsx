@@ -1186,7 +1186,7 @@ export default function ViewerPage() {
   const toggleFilteredSelectionAriaKeyShortcuts = "Control+A Meta+A";
   const clearSelectionAriaKeyShortcuts = "Shift+Control+A Shift+Meta+A";
   const resetFiltersAriaKeyShortcuts = "Shift+Escape";
-  const openShortcutsAriaKeyShortcuts = "Shift+Slash F1";
+  const openShortcutsAriaKeyShortcuts = "Shift+Slash F1 Help";
   const overflowMenuItemsCount =
     overflowLabelFilters.length + (selectedLabel !== null ? 1 : 0);
   const moreLabelsTriggerText = t("search.moreLabels", {
@@ -1704,7 +1704,7 @@ export default function ViewerPage() {
         !e.ctrlKey &&
         !e.metaKey &&
         !e.altKey &&
-        ((e.key === "F1" && !e.shiftKey) ||
+        (((e.key === "F1" || e.key === "Help") && !e.shiftKey) ||
           e.key === "?" ||
           (e.shiftKey && (e.key === "/" || e.code === "Slash")));
       const isResetFiltersShortcut =
