@@ -1213,6 +1213,7 @@ export default function ViewerPage() {
                                 onChange={(e) =>
                                   setEditingFileName(e.target.value)
                                 }
+                                onFocus={(e) => e.target.select()}
                                 onBlur={(e) => {
                                   const nextTarget =
                                     e.relatedTarget as HTMLElement | null;
@@ -1240,6 +1241,7 @@ export default function ViewerPage() {
                                   variant="outline"
                                   className="h-7 px-2 text-xs"
                                   data-rename-action="save"
+                                  disabled={!editingFileName.trim()}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleCommitRenameFile();
