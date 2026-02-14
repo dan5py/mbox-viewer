@@ -2136,8 +2136,15 @@ export default function ViewerPage() {
       </div>
 
       {/* Export Dialog */}
-      <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog
+        open={isExportDialogOpen}
+        onOpenChange={(open) => {
+          if (!isExporting) {
+            setIsExportDialogOpen(open);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md" showCloseButton={!isExporting}>
           <DialogHeader>
             <DialogTitle>{t("export.title")}</DialogTitle>
             <DialogDescription>
