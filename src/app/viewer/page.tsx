@@ -1737,7 +1737,9 @@ export default function ViewerPage() {
                             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
                               <div className="flex items-center gap-1 truncate">
                                 <User className="size-3 shrink-0" />
-                                <span className="truncate">{from}</span>
+                                <span className="truncate" title={from}>
+                                  {from}
+                                </span>
                               </div>
                             </div>
 
