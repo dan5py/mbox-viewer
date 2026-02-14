@@ -932,6 +932,15 @@ export default function ViewerPage() {
   const clearSelectionShortcutLabel = `Shift+${shortcutModifierLabel}+A`;
   const resetFiltersShortcutLabel = "Shift+Esc";
   const openShortcutsShortcutLabel = "?";
+  const labelFilterChipBaseClassName =
+    "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors";
+  const getLabelFilterChipClassName = (isActive: boolean) =>
+    cn(
+      labelFilterChipBaseClassName,
+      isActive
+        ? "bg-primary text-primary-foreground"
+        : "bg-muted text-muted-foreground hover:bg-muted/80"
+    );
   const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
@@ -1741,12 +1750,10 @@ export default function ViewerPage() {
                 <div className="flex gap-1.5 pb-1">
                   <button
                     onClick={() => setSelectedLabel(null)}
-                    className={cn(
-                      "px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer",
+                    className={getLabelFilterChipClassName(
                       selectedLabel === null
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
                     )}
+                    aria-pressed={selectedLabel === null}
                   >
                     {t("search.allEmails")}
                   </button>
@@ -1754,14 +1761,13 @@ export default function ViewerPage() {
                     <button
                       key={label}
                       onClick={() => setSelectedLabel(label)}
-                      className={cn(
-                        "px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer",
+                      className={getLabelFilterChipClassName(
                         selectedLabel === label
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:bg-muted/80"
                       )}
+                      aria-pressed={selectedLabel === label}
+                      title={label}
                     >
-                      {label}
+                      <span className="truncate">{label}</span>
                     </button>
                   ))}
                 </div>
