@@ -1578,11 +1578,6 @@ export default function ViewerPage() {
                 )
               )}
               <div className="flex items-center gap-1">
-                {hasSearchQuery && searchResultCount !== null && (
-                  <Badge variant="secondary" className="text-xs">
-                    {totalFilteredMessages}
-                  </Badge>
-                )}
                 {totalMessages > 0 && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
