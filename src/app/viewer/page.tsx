@@ -1276,6 +1276,15 @@ export default function ViewerPage() {
       return "";
     }
 
+    if (
+      selectedCount > 0 &&
+      !hasSearchQuery &&
+      selectedLabel === null &&
+      searchResultCount === null
+    ) {
+      return selectedCountLabel;
+    }
+
     if (searchResultCount !== null) {
       const resultsLabel = t("search.results", {
         count: totalFilteredMessages,
@@ -1297,6 +1306,8 @@ export default function ViewerPage() {
     });
   }, [
     hasSearchQuery,
+    selectedCount,
+    selectedCountLabel,
     searchResultCount,
     selectedLabel,
     t,
