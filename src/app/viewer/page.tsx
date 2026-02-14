@@ -988,6 +988,8 @@ export default function ViewerPage() {
   });
   const getLabelMessageCount = (label: string) =>
     integerFormatter.format(labelMessageCounts.get(label) ?? 0);
+  const formatActiveLabelChipText = (label: string, count: string) =>
+    `${label} (${count})`;
   const getLabelFilterButtonLabel = (label: string, count: number) =>
     t("search.labelWithCount", {
       label,
@@ -1865,7 +1867,12 @@ export default function ViewerPage() {
                     )}
                     title={`${t("search.allEmails")} (${integerFormatter.format(totalMessages)})`}
                   >
-                    {t("search.allEmails")}
+                    {selectedLabel === null
+                      ? formatActiveLabelChipText(
+                          t("search.allEmails"),
+                          integerFormatter.format(totalMessages)
+                        )
+                      : t("search.allEmails")}
                   </button>
                   {inlineLabelFilters.map((label) => (
                     <button
@@ -1882,7 +1889,14 @@ export default function ViewerPage() {
                       )}
                       title={`${label} (${getLabelMessageCount(label)})`}
                     >
-                      <span className="truncate">{label}</span>
+                      <span className="truncate">
+                        {selectedLabel === label
+                          ? formatActiveLabelChipText(
+                              label,
+                              getLabelMessageCount(label)
+                            )
+                          : label}
+                      </span>
                     </button>
                   ))}
                   {overflowLabelFilters.length > 0 && (
