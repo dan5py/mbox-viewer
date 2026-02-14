@@ -19,6 +19,7 @@ import {
   FileText,
   Mail,
   Maximize2,
+  MoreHorizontal,
   Paperclip,
   Pencil,
   ScanText,
@@ -1574,17 +1575,17 @@ export default function ViewerPage() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-xs"
+                        size="icon"
+                        className="relative size-7"
+                        aria-label={t("selection.actions")}
+                        title={t("selection.actions")}
                       >
-                        {t("selection.actions")}
-                        <Badge
-                          variant="secondary"
-                          className="ml-1 h-4 min-w-4 px-1 text-[10px]"
-                        >
-                          {selectedCount}
-                        </Badge>
-                        <ChevronDown className="size-3 ml-1" />
+                        <MoreHorizontal className="size-3.5" />
+                        {selectedCount > 0 && (
+                          <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
+                            {selectedCount}
+                          </Badge>
+                        )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
