@@ -1661,6 +1661,11 @@ export default function ViewerPage() {
         return;
       }
 
+      const hasActiveTextSelection = (() => {
+        const selection = window.getSelection();
+        return selection !== null && !selection.isCollapsed;
+      })();
+
       const isSelectAllShortcut =
         (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === "a";
       const isOpenShortcutsHelpShortcut =
@@ -1701,6 +1706,10 @@ export default function ViewerPage() {
           isClearPreviewSelectionShortcut);
 
       if (shouldIgnoreRepeatShortcut) {
+        return;
+      }
+
+      if (isSelectAllShortcut && hasActiveTextSelection) {
         return;
       }
 
