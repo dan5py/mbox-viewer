@@ -84,6 +84,7 @@
       "toggleMessageWithSubject": "Toggle message selection for {subject}",
       "shortcuts": {
         "title": "Selection shortcuts",
+        "description": "Use these shortcuts to select and clear messages faster.",
         "openHelp": "Show selection shortcuts",
         "select": "toggle filtered selection",
         "clear": "clear all selections",

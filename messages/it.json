@@ -84,6 +84,7 @@
       "toggleMessageWithSubject": "Attiva/disattiva selezione del messaggio {subject}",
       "shortcuts": {
         "title": "Scorciatoie di selezione",
+        "description": "Usa queste scorciatoie per selezionare e pulire i messaggi più velocemente.",
         "openHelp": "Mostra scorciatoie di selezione",
         "select": "attiva/disattiva selezione filtrata",
         "clear": "pulisce tutte le selezioni",
