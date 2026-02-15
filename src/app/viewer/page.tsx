@@ -2814,7 +2814,7 @@ export default function ViewerPage() {
       <div key={index} style={rowWrapperStyle}>
         <div
           className={cn(
-            "w-full p-1.5 md:p-1.5 rounded-lg border transition-all group",
+            "w-full rounded-md border p-1.5 md:p-1.5 transition-all group",
             "hover:border-border hover:shadow-sm",
             isSelected
               ? "border-primary bg-primary/10 shadow-sm"
@@ -2846,7 +2846,7 @@ export default function ViewerPage() {
                 }
               }}
               onClick={() => handleSelectMessage(index)}
-              className="flex-1 min-w-0 text-left p-0 rounded-md cursor-pointer"
+              className="flex-1 min-w-0 rounded-sm p-0 text-left cursor-pointer"
             >
               <div className="flex gap-1.5 md:gap-2">
                 <div
