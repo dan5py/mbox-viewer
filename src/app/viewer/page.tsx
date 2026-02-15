@@ -212,6 +212,7 @@ const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
 const MESSAGE_ROW_HEIGHT_MOBILE = 74;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 78;
 const MESSAGE_ROW_GAP = 0;
+const VIRTUALIZATION_MIN_ITEMS = 120;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid min-w-[8.5rem] sm:min-w-[10rem] grid-cols-[3rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
@@ -1889,6 +1890,8 @@ export default function ViewerPage() {
       startIndex + messagesPerPage
     );
   }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
+  const shouldVirtualizeVisibleMessages =
+    visibleMessageIndices.length >= VIRTUALIZATION_MIN_ITEMS;
 
   const virtualizedMessageList = useMemo(() => {
     const estimatedRowHeight = isMobile
@@ -2772,6 +2775,148 @@ export default function ViewerPage() {
     isThreadViewEnabled,
   ]);
 
+  const renderMessageListRow = (index: number, rowIndex?: number) => {
+    const preview = getMessagePreview(index);
+    const isSelected = selectedMessageIndex === index;
+    const isMessageChecked = selectedMessageIndices.has(index);
+    const threadMessageCount =
+      threadMessageCountByRepresentative.get(index) ?? 1;
+    const messageSubjectLabel = preview?.subject || t("preview.noSubject");
+    const messageSubjectForAria = preview?.subject || t("preview.noSubject");
+    const from = preview?.from || t("preview.unknown");
+    const date = preview?.date ? new Date(preview.date) : new Date();
+    const relativeDate = formatDistanceToNow(date, {
+      addSuffix: true,
+      locale: dateLocale,
+    });
+    const rowWrapperStyle =
+      rowIndex === undefined
+        ? undefined
+        : {
+            position: "absolute" as const,
+            top: `${rowIndex * (virtualizedMessageList.estimatedRowHeight + virtualizedMessageList.rowGap)}px`,
+            left: 0,
+            right: 0,
+          };
+    const cardStyle =
+      rowIndex === undefined
+        ? undefined
+        : { height: `${virtualizedMessageList.estimatedRowHeight}px` };
+
+    return (
+      <div key={index} style={rowWrapperStyle}>
+        <div
+          className={cn(
+            "w-full p-1.5 md:p-2 rounded-lg border transition-all group",
+            "hover:border-border hover:shadow-sm",
+            isSelected
+              ? "border-primary bg-primary/10 shadow-sm"
+              : "border-border/40 hover:bg-muted/50"
+          )}
+          style={cardStyle}
+        >
+          <div className="flex items-start gap-2">
+            <Checkbox
+              data-allow-global-shortcuts="true"
+              checked={isMessageChecked}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleToggleMessageSelection(index, event.shiftKey);
+              }}
+              aria-label={t("selection.toggleMessageWithSubject", {
+                subject: messageSubjectForAria,
+              })}
+              className="mt-2"
+            />
+
+            <button
+              data-allow-global-shortcuts="true"
+              ref={(el) => {
+                if (el) {
+                  messageRefs.current.set(index, el);
+                } else {
+                  messageRefs.current.delete(index);
+                }
+              }}
+              onClick={() => handleSelectMessage(index)}
+              className="flex-1 min-w-0 text-left p-0 md:p-0.5 rounded-md cursor-pointer"
+            >
+              <div className="flex gap-3">
+                <div
+                  className={cn(
+                    "size-9 md:size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
+                    getAvatarColor(from)
+                  )}
+                >
+                  {getInitials(from)}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="mb-0.5 flex items-start justify-between gap-2">
+                    <p
+                      className={cn(
+                        "text-sm font-semibold truncate",
+                        isSelected ? "text-primary" : "text-foreground"
+                      )}
+                      title={messageSubjectLabel}
+                    >
+                      {preview?.subject || (
+                        <span className="italic text-muted-foreground">
+                          {t("preview.noSubject")}
+                        </span>
+                      )}
+                    </p>
+                    {isThreadViewEnabled && threadMessageCount > 1 && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 h-5 shrink-0"
+                      >
+                        {t("selection.threadCount", {
+                          count: threadMessageCount,
+                        })}
+                      </Badge>
+                    )}
+                    {preview?.size && (
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {formatSize(preview.size)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mb-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 truncate">
+                      <User className="size-3 shrink-0" />
+                      <span className="truncate" title={from}>
+                        {from}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="size-3" />
+                      <span>{relativeDate}</span>
+                    </div>
+                    <span className="text-muted-foreground/60">
+                      {date.toLocaleString(locale, {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (files.length === 0) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -3482,164 +3627,23 @@ export default function ViewerPage() {
                     : t("search.noMessages")}
                 </p>
               </div>
-            ) : (
+            ) : shouldVirtualizeVisibleMessages ? (
               <div
                 className="relative"
                 style={{ height: `${virtualizedMessageList.totalHeight}px` }}
               >
-                {virtualizedMessageList.items.map((index, virtualIndex) => {
-                  const rowIndex =
-                    virtualizedMessageList.startRow + virtualIndex;
-                  const preview = getMessagePreview(index);
-                  const isSelected = selectedMessageIndex === index;
-                  const isMessageChecked = selectedMessageIndices.has(index);
-                  const threadMessageCount =
-                    threadMessageCountByRepresentative.get(index) ?? 1;
-                  const messageSubjectLabel =
-                    preview?.subject || t("preview.noSubject");
-                  const messageSubjectForAria =
-                    preview?.subject || t("preview.noSubject");
-                  const from = preview?.from || t("preview.unknown");
-                  const date = preview?.date
-                    ? new Date(preview.date)
-                    : new Date();
-                  const relativeDate = formatDistanceToNow(date, {
-                    addSuffix: true,
-                    locale: dateLocale,
-                  });
-
-                  return (
-                    <div
-                      key={index}
-                      style={{
-                        position: "absolute",
-                        top: `${rowIndex * (virtualizedMessageList.estimatedRowHeight + virtualizedMessageList.rowGap)}px`,
-                        left: 0,
-                        right: 0,
-                      }}
-                    >
-                      <div
-                        className={cn(
-                          "w-full p-1.5 md:p-2 rounded-lg border transition-all group",
-                          "hover:border-border hover:shadow-sm",
-                          isSelected
-                            ? "border-primary bg-primary/10 shadow-sm"
-                            : "border-border/40 hover:bg-muted/50"
-                        )}
-                        style={{
-                          height: `${virtualizedMessageList.estimatedRowHeight}px`,
-                        }}
-                      >
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            data-allow-global-shortcuts="true"
-                            checked={isMessageChecked}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              handleToggleMessageSelection(
-                                index,
-                                event.shiftKey
-                              );
-                            }}
-                            aria-label={t(
-                              "selection.toggleMessageWithSubject",
-                              {
-                                subject: messageSubjectForAria,
-                              }
-                            )}
-                            className="mt-2"
-                          />
-
-                          <button
-                            data-allow-global-shortcuts="true"
-                            ref={(el) => {
-                              if (el) {
-                                messageRefs.current.set(index, el);
-                              } else {
-                                messageRefs.current.delete(index);
-                              }
-                            }}
-                            onClick={() => handleSelectMessage(index)}
-                            className="flex-1 min-w-0 text-left p-0 md:p-0.5 rounded-md cursor-pointer"
-                          >
-                            <div className="flex gap-3">
-                              <div
-                                className={cn(
-                                  "size-9 md:size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
-                                  getAvatarColor(from)
-                                )}
-                              >
-                                {getInitials(from)}
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="mb-0.5 flex items-start justify-between gap-2">
-                                  <p
-                                    className={cn(
-                                      "text-sm font-semibold truncate",
-                                      isSelected
-                                        ? "text-primary"
-                                        : "text-foreground"
-                                    )}
-                                    title={messageSubjectLabel}
-                                  >
-                                    {preview?.subject || (
-                                      <span className="italic text-muted-foreground">
-                                        {t("preview.noSubject")}
-                                      </span>
-                                    )}
-                                  </p>
-                                  {isThreadViewEnabled &&
-                                    threadMessageCount > 1 && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="text-[10px] px-1.5 h-5 shrink-0"
-                                      >
-                                        {t("selection.threadCount", {
-                                          count: threadMessageCount,
-                                        })}
-                                      </Badge>
-                                    )}
-                                  {preview?.size && (
-                                    <span className="text-xs text-muted-foreground shrink-0">
-                                      {formatSize(preview.size)}
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div className="mb-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                                  <div className="flex items-center gap-1 truncate">
-                                    <User className="size-3 shrink-0" />
-                                    <span className="truncate" title={from}>
-                                      {from}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                                  <div className="flex items-center gap-1">
-                                    <Calendar className="size-3" />
-                                    <span>{relativeDate}</span>
-                                  </div>
-                                  <span className="text-muted-foreground/60">
-                                    {date.toLocaleString(locale, {
-                                      year: "numeric",
-                                      month: "2-digit",
-                                      day: "2-digit",
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                      hour12: false,
-                                    })}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                {virtualizedMessageList.items.map((index, virtualIndex) =>
+                  renderMessageListRow(
+                    index,
+                    virtualizedMessageList.startRow + virtualIndex
+                  )
+                )}
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {visibleMessageIndices.map((index) =>
+                  renderMessageListRow(index)
+                )}
               </div>
             )}
           </div>
