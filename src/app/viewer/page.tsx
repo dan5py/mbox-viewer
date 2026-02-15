@@ -217,19 +217,19 @@ const VIRTUALIZATION_MIN_FILTERED_MESSAGES = 150;
 const MESSAGE_ROW_STACK_CLASSNAME = "flex flex-col";
 const MESSAGE_ROW_STACK_STYLE = { rowGap: `${MESSAGE_ROW_GAP}px` } as const;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
-  "ml-auto grid w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
+  "ml-auto grid h-4 w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2";
 const ACTIONS_MENU_SECTION_LABEL_CLASSNAME =
   "h-7 text-[11px] font-normal text-muted-foreground";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
-  "text-right text-muted-foreground/80 tabular-nums font-mono";
+  "text-right leading-none text-muted-foreground/80 tabular-nums font-mono";
 const ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME =
-  "text-right tabular-nums font-mono opacity-0";
+  "text-right leading-none tabular-nums font-mono opacity-0";
 const ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME =
-  "truncate text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal";
+  "truncate text-right leading-none text-muted-foreground text-xs whitespace-nowrap tracking-normal";
 const ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME =
-  "truncate text-right text-xs whitespace-nowrap tracking-normal opacity-0";
+  "truncate text-right leading-none text-xs whitespace-nowrap tracking-normal opacity-0";
 const analyticsPieColors = [
   "#2563eb",
   "#16a34a",
