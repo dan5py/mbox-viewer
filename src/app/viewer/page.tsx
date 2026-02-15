@@ -211,15 +211,15 @@ const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
 const MESSAGE_ROW_HEIGHT_MOBILE = 70;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 74;
-const MESSAGE_ROW_GAP = 0;
+const MESSAGE_ROW_GAP = 1;
 const VIRTUALIZATION_MIN_ITEMS = 45;
 const VIRTUALIZATION_MIN_FILTERED_MESSAGES = 150;
 const MESSAGE_ROW_STACK_CLASSNAME = "flex flex-col";
 const MESSAGE_ROW_STACK_STYLE = { rowGap: `${MESSAGE_ROW_GAP}px` } as const;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid h-4 w-[8.75rem] shrink-0 sm:w-[10.25rem] grid-cols-[3.25rem_4.5rem] sm:grid-cols-[3.5rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
-const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate leading-none";
-const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2 py-0";
+const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 leading-none";
+const ACTIONS_MENU_ROW_CLASSNAME = "gap-2 py-0.5";
 const ACTIONS_MENU_SECTION_LABEL_CLASSNAME =
   "h-7 text-[11px] font-normal text-muted-foreground";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
@@ -313,6 +313,7 @@ export default function ViewerPage() {
   const exportAbortRef = useRef<AbortController | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchProgress, setSearchProgress] = useState(0);
+  const [isSearchProgressVisible, setIsSearchProgressVisible] = useState(false);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
   const [searchFailed, setSearchFailed] = useState(false);
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
@@ -594,6 +595,21 @@ export default function ViewerPage() {
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
   const normalizedSearchQuery = debouncedSearchQuery.trim();
   const hasSearchQuery = searchQuery.trim().length > 0;
+
+  useEffect(() => {
+    if (!isSearching) {
+      setIsSearchProgressVisible(false);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsSearchProgressVisible(true);
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isSearching]);
 
   const currentFile = files.find((f) => f.id === selectedFileId);
   const shortcutModifierLabel =
@@ -2814,11 +2830,11 @@ export default function ViewerPage() {
       <div key={index} style={rowWrapperStyle}>
         <div
           className={cn(
-            "w-full rounded-md border p-1 transition-all group",
+            "w-full rounded-sm border p-1 transition-all group",
             "hover:border-border",
             isSelected
               ? "border-primary bg-primary/10"
-              : "border-border/40 hover:bg-muted/50"
+              : "border-border/30 hover:bg-muted/50"
           )}
           style={cardStyle}
         >
@@ -3264,7 +3280,7 @@ export default function ViewerPage() {
                     aria-label={actionsTriggerLabel}
                     aria-keyshortcuts="Home End"
                     onKeyDown={handleDropdownMenuBoundaryKeyDown}
-                    className="w-72 max-w-[calc(100vw-1rem)]"
+                    className="w-80 max-w-[calc(100vw-1rem)]"
                   >
                     <DropdownMenuLabel className="text-xs">
                       {selectedMenuLabel}
@@ -3629,16 +3645,20 @@ export default function ViewerPage() {
                         label={t("search.searching")}
                       />
                       <span className="truncate">{t("search.searching")}</span>
-                      <Progress
-                        value={searchProgress}
-                        className="h-1.5 w-20 shrink-0"
-                        aria-label={t("search.searchingProgress", {
-                          progress: searchProgress,
-                        })}
-                      />
-                      <span className="font-mono text-[10px] tabular-nums text-muted-foreground/80">
-                        {integerFormatter.format(searchProgress)}%
-                      </span>
+                      {isSearchProgressVisible && (
+                        <>
+                          <Progress
+                            value={searchProgress}
+                            className="h-1.5 w-20 shrink-0"
+                            aria-label={t("search.searchingProgress", {
+                              progress: searchProgress,
+                            })}
+                          />
+                          <span className="font-mono text-[10px] tabular-nums text-muted-foreground/80">
+                            {integerFormatter.format(searchProgress)}%
+                          </span>
+                        </>
+                      )}
                     </div>
                   ) : searchFailed ? (
                     <p className="text-[11px] text-destructive font-medium truncate">
