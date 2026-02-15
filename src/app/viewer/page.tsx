@@ -267,7 +267,6 @@ export default function ViewerPage() {
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [isThreadViewEnabled, setIsThreadViewEnabled] = useState(false);
   const [messageListScrollTop, setMessageListScrollTop] = useState(0);
-  const [virtualizedRowHeight, setVirtualizedRowHeight] = useState(96);
   const [selectedMessageIndices, setSelectedMessageIndices] = useState<
     Set<number>
   >(new Set());
@@ -1848,7 +1847,7 @@ export default function ViewerPage() {
   }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
 
   const virtualizedMessageList = useMemo(() => {
-    const estimatedRowHeight = virtualizedRowHeight;
+    const estimatedRowHeight = isMobile ? 88 : 92;
     const rowGap = 2;
     const rowStep = estimatedRowHeight + rowGap;
     const overscanRows = 6;
@@ -1872,90 +1871,7 @@ export default function ViewerPage() {
       totalHeight: Math.max(0, visibleMessageIndices.length * rowStep - rowGap),
       items: visibleMessageIndices.slice(startRow, endRow),
     };
-  }, [messageListScrollTop, virtualizedRowHeight, visibleMessageIndices]);
-
-  useEffect(() => {
-    setVirtualizedRowHeight(isMobile ? 92 : 96);
-  }, [isMobile]);
-
-  const recalculateVirtualizedRowHeight = useCallback(() => {
-    const container = messageListContainerRef.current;
-    if (!container) {
-      return;
-    }
-
-    const renderedMessageCards = Array.from(
-      container.querySelectorAll<HTMLElement>("[data-message-row-card='true']")
-    ).slice(0, 8);
-    if (renderedMessageCards.length === 0) {
-      return;
-    }
-
-    const measuredHeight = renderedMessageCards.reduce((maxHeight, card) => {
-      const cardHeight = Math.ceil(card.getBoundingClientRect().height);
-      return Math.max(maxHeight, cardHeight);
-    }, 0);
-    const nextRowHeight = Math.min(
-      132,
-      Math.max(isMobile ? 84 : 88, measuredHeight)
-    );
-    setVirtualizedRowHeight((previousRowHeight) =>
-      Math.abs(previousRowHeight - nextRowHeight) > 1
-        ? nextRowHeight
-        : previousRowHeight
-    );
-  }, [isMobile]);
-
-  useEffect(() => {
-    if (visibleMessageIndices.length === 0) {
-      return;
-    }
-
-    const container = messageListContainerRef.current;
-    if (!container) {
-      return;
-    }
-
-    let resizeObserver: ResizeObserver | null = null;
-    let cleanupFallbackResizeListener: (() => void) | null = null;
-    const frameId = window.requestAnimationFrame(() => {
-      recalculateVirtualizedRowHeight();
-
-      if (typeof ResizeObserver !== "undefined") {
-        resizeObserver = new ResizeObserver(() => {
-          recalculateVirtualizedRowHeight();
-        });
-
-        const firstMessageCard = container.querySelector<HTMLElement>(
-          "[data-message-row-card='true']"
-        );
-        if (firstMessageCard) {
-          resizeObserver.observe(firstMessageCard);
-        }
-        resizeObserver.observe(container);
-      } else {
-        const fallbackRecalculate = () => {
-          recalculateVirtualizedRowHeight();
-        };
-        window.addEventListener("resize", fallbackRecalculate);
-        cleanupFallbackResizeListener = () => {
-          window.removeEventListener("resize", fallbackRecalculate);
-        };
-      }
-    });
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      resizeObserver?.disconnect();
-      cleanupFallbackResizeListener?.();
-    };
-  }, [
-    isThreadViewEnabled,
-    locale,
-    recalculateVirtualizedRowHeight,
-    virtualizedMessageList.startRow,
-    visibleMessageIndices,
-  ]);
+  }, [isMobile, messageListScrollTop, visibleMessageIndices]);
 
   const selectedCount = selectedMessageIndices.size;
   const integerFormatter = useMemo(
@@ -3548,9 +3464,8 @@ export default function ViewerPage() {
                       }}
                     >
                       <div
-                        data-message-row-card="true"
                         className={cn(
-                          "w-full p-2 rounded-lg border transition-all group",
+                          "w-full h-[88px] md:h-[92px] p-2 rounded-lg border transition-all group",
                           "hover:border-border hover:shadow-sm",
                           isSelected
                             ? "border-primary bg-primary/10 shadow-sm"
