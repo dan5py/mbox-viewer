@@ -213,7 +213,7 @@ const MESSAGE_ROW_HEIGHT_MOBILE = 82;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 86;
 const MESSAGE_ROW_GAP = 0;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
-  "ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2";
+  "ml-auto flex min-w-[9rem] sm:min-w-[10.5rem] items-center justify-end gap-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "min-w-12 text-right text-muted-foreground/80 tabular-nums";
