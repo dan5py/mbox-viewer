@@ -3667,7 +3667,7 @@ export default function ViewerPage() {
             onScroll={(event) =>
               setMessageListScrollTop(event.currentTarget.scrollTop)
             }
-            className="flex-1 overflow-y-auto p-1"
+            className="flex-1 overflow-y-auto p-0.5 md:p-1"
             role="region"
             aria-label={t("preview.messageListRegion")}
             aria-keyshortcuts="ArrowUp ArrowDown"
