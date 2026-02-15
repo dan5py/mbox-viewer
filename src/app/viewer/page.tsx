@@ -18,6 +18,7 @@ import JSZip from "jszip";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  BarChart3,
   Bookmark,
   BookmarkPlus,
   Calendar,
@@ -41,6 +42,17 @@ import {
   X,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  Pie,
+  PieChart,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { toast } from "sonner";
 
 import { EmailAttachment, EmailMessage } from "~/types/files";
@@ -103,6 +115,7 @@ import {
 } from "~/components/ui/sheet";
 import { Spinner } from "~/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Textarea } from "~/components/ui/textarea";
 import { FileUploadInput } from "~/components/files-uploader/input";
 import { Navbar } from "~/components/navbar";
 import HtmlRenderer from "~/components/viewer/html-renderer";
@@ -196,6 +209,17 @@ const isSelectionWithinElement = (container: HTMLElement | null): boolean => {
 const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
 const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
+const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
+const analyticsPieColors = [
+  "#2563eb",
+  "#16a34a",
+  "#9333ea",
+  "#ea580c",
+  "#0891b2",
+  "#dc2626",
+  "#a16207",
+  "#64748b",
+];
 
 interface SavedSearch {
   id: string;
@@ -210,6 +234,11 @@ interface AttachmentCenterEntry {
   from: string;
   date: string;
   attachment: EmailAttachment;
+}
+
+interface MessageAnnotation {
+  tags: string[];
+  note: string;
 }
 
 function normalizeThreadSubject(subject: string): string {
@@ -257,6 +286,11 @@ export default function ViewerPage() {
   const [selectedAttachmentEntryIds, setSelectedAttachmentEntryIds] = useState<
     Set<string>
   >(new Set());
+  const [messageAnnotations, setMessageAnnotations] = useState<
+    Record<string, MessageAnnotation>
+  >({});
+  const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
+  const [isAnalyticsDialogOpen, setIsAnalyticsDialogOpen] = useState(false);
   const [isLabelOverflowMenuOpen, setIsLabelOverflowMenuOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
@@ -450,6 +484,45 @@ export default function ViewerPage() {
     }
   }, [savedSearches]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const rawAnnotations = localStorage.getItem(
+        MESSAGE_ANNOTATIONS_STORAGE_KEY
+      );
+      if (!rawAnnotations) {
+        return;
+      }
+
+      const parsedAnnotations = JSON.parse(rawAnnotations);
+      if (parsedAnnotations && typeof parsedAnnotations === "object") {
+        setMessageAnnotations(
+          parsedAnnotations as Record<string, MessageAnnotation>
+        );
+      }
+    } catch (error) {
+      console.warn("Failed to restore message annotations:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      localStorage.setItem(
+        MESSAGE_ANNOTATIONS_STORAGE_KEY,
+        JSON.stringify(messageAnnotations)
+      );
+    } catch (error) {
+      console.warn("Failed to persist message annotations:", error);
+    }
+  }, [messageAnnotations]);
+
   // Warn user before reloading/leaving if files are loaded
   useEffect(() => {
     if (files.length === 0) {
@@ -486,6 +559,7 @@ export default function ViewerPage() {
     setIsActionsMenuOpen(false);
     setIsSavedSearchesMenuOpen(false);
     setIsAttachmentCenterOpen(false);
+    setIsAnalyticsDialogOpen(false);
     setIsLabelOverflowMenuOpen(false);
     setIsExportDialogOpen(false);
     setIsShortcutsDialogOpen(false);
@@ -496,6 +570,7 @@ export default function ViewerPage() {
     setAttachmentCenterTypeFilter("all");
     setAttachmentCenterSearch("");
     setSelectedAttachmentEntryIds(new Set());
+    setActiveTagFilter(null);
   }, [selectedFileId]);
 
   useEffect(() => {
@@ -1065,6 +1140,11 @@ export default function ViewerPage() {
     [isMobile, setSelectedFile]
   );
 
+  const getMessageAnnotationKey = useCallback(
+    (fileId: string, messageIndex: number) => `${fileId}:${messageIndex}`,
+    []
+  );
+
   const scanCurrentFileAttachments = useCallback(async () => {
     if (!currentFile?.id || !currentFile.messageBoundaries) {
       setAttachmentCenterEntries([]);
@@ -1308,6 +1388,111 @@ export default function ViewerPage() {
     t,
   ]);
 
+  const currentFileAnnotationTags = useMemo(() => {
+    if (!currentFile?.id) {
+      return [];
+    }
+
+    const tagSet = new Set<string>();
+    const keyPrefix = `${currentFile.id}:`;
+    for (const [annotationKey, annotation] of Object.entries(
+      messageAnnotations
+    )) {
+      if (!annotationKey.startsWith(keyPrefix)) {
+        continue;
+      }
+      for (const tag of annotation.tags || []) {
+        const normalizedTag = tag.trim();
+        if (normalizedTag) {
+          tagSet.add(normalizedTag);
+        }
+      }
+    }
+
+    return Array.from(tagSet).sort((a, b) => a.localeCompare(b, locale));
+  }, [currentFile?.id, locale, messageAnnotations]);
+
+  const selectedMessageAnnotationKey = useMemo(() => {
+    if (!currentFile?.id || selectedMessageIndex === null) {
+      return null;
+    }
+
+    return getMessageAnnotationKey(currentFile.id, selectedMessageIndex);
+  }, [currentFile?.id, getMessageAnnotationKey, selectedMessageIndex]);
+
+  const selectedMessageAnnotation = useMemo(() => {
+    if (!selectedMessageAnnotationKey) {
+      return { tags: [], note: "" };
+    }
+
+    const annotation = messageAnnotations[selectedMessageAnnotationKey];
+    if (!annotation) {
+      return { tags: [], note: "" };
+    }
+
+    return annotation;
+  }, [messageAnnotations, selectedMessageAnnotationKey]);
+
+  useEffect(() => {
+    if (
+      activeTagFilter &&
+      !currentFileAnnotationTags.includes(activeTagFilter)
+    ) {
+      setActiveTagFilter(null);
+    }
+  }, [activeTagFilter, currentFileAnnotationTags]);
+
+  const handleAnnotationTagsChange = useCallback(
+    (rawTagsValue: string) => {
+      if (!selectedMessageAnnotationKey) {
+        return;
+      }
+
+      const nextTags = rawTagsValue
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .slice(0, 20);
+      setMessageAnnotations((prev) => {
+        const previousAnnotation = prev[selectedMessageAnnotationKey] ?? {
+          tags: [],
+          note: "",
+        };
+        return {
+          ...prev,
+          [selectedMessageAnnotationKey]: {
+            ...previousAnnotation,
+            tags: nextTags,
+          },
+        };
+      });
+    },
+    [selectedMessageAnnotationKey]
+  );
+
+  const handleAnnotationNoteChange = useCallback(
+    (nextNote: string) => {
+      if (!selectedMessageAnnotationKey) {
+        return;
+      }
+
+      setMessageAnnotations((prev) => {
+        const previousAnnotation = prev[selectedMessageAnnotationKey] ?? {
+          tags: [],
+          note: "",
+        };
+        return {
+          ...prev,
+          [selectedMessageAnnotationKey]: {
+            ...previousAnnotation,
+            note: nextNote,
+          },
+        };
+      });
+    },
+    [selectedMessageAnnotationKey]
+  );
+
   const labelToMessageIndices = useMemo(() => {
     const indicesByLabel = new Map<string, number[]>();
     if (!currentFile?.messageBoundaries) {
@@ -1509,10 +1694,31 @@ export default function ViewerPage() {
       filteredIndices = baseIndices.filter((idx) => searchResultSet.has(idx));
     }
 
+    if (activeTagFilter) {
+      const normalizedTagFilter = activeTagFilter.toLowerCase();
+      filteredIndices = filteredIndices.filter((messageIndex) => {
+        const annotationKey = getMessageAnnotationKey(
+          currentFile.id,
+          messageIndex
+        );
+        const annotation = messageAnnotations[annotationKey];
+        if (!annotation || annotation.tags.length === 0) {
+          return false;
+        }
+
+        return annotation.tags.some(
+          (tag) => tag.toLowerCase() === normalizedTagFilter
+        );
+      });
+    }
+
     return filteredIndices;
   }, [
+    activeTagFilter,
     files.length,
     currentFile,
+    getMessageAnnotationKey,
+    messageAnnotations,
     totalMessages,
     labelFilteredIndices,
     searchResultSet,
@@ -1580,6 +1786,58 @@ export default function ViewerPage() {
     filteredMessageIndices,
     isThreadViewEnabled,
   ]);
+
+  const timelineMonthlyData = useMemo(() => {
+    if (
+      !currentFile?.messageBoundaries ||
+      filteredMessageIndices.length === 0
+    ) {
+      return [];
+    }
+
+    const countsByMonth = new Map<string, number>();
+    for (const messageIndex of filteredMessageIndices) {
+      const rawDate =
+        currentFile.messageBoundaries[messageIndex]?.preview?.date;
+      if (!rawDate) {
+        continue;
+      }
+      const parsedDate = new Date(rawDate);
+      if (Number.isNaN(parsedDate.getTime())) {
+        continue;
+      }
+
+      const monthKey = `${parsedDate.getUTCFullYear()}-${String(parsedDate.getUTCMonth() + 1).padStart(2, "0")}`;
+      countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
+    }
+
+    return Array.from(countsByMonth.entries())
+      .sort(([monthA], [monthB]) => monthA.localeCompare(monthB))
+      .map(([month, count]) => ({ month, count }));
+  }, [currentFile?.messageBoundaries, filteredMessageIndices]);
+
+  const senderDistributionData = useMemo(() => {
+    if (
+      !currentFile?.messageBoundaries ||
+      filteredMessageIndices.length === 0
+    ) {
+      return [];
+    }
+
+    const countsBySender = new Map<string, number>();
+    for (const messageIndex of filteredMessageIndices) {
+      const senderRaw =
+        currentFile.messageBoundaries[messageIndex]?.preview?.from ||
+        t("preview.unknown");
+      const sender = senderRaw.split("<")[0]?.trim() || senderRaw.trim();
+      countsBySender.set(sender, (countsBySender.get(sender) ?? 0) + 1);
+    }
+
+    return Array.from(countsBySender.entries())
+      .sort(([, countA], [, countB]) => countB - countA)
+      .slice(0, 8)
+      .map(([sender, count]) => ({ sender, count }));
+  }, [currentFile?.messageBoundaries, filteredMessageIndices, t]);
 
   const visibleMessageIndices = useMemo(() => {
     const startIndex = (currentPage - 1) * messagesPerPage;
@@ -1858,7 +2116,10 @@ export default function ViewerPage() {
     },
     []
   );
-  const hasActiveFilters = selectedLabel !== null || searchQuery.trim() !== "";
+  const hasActiveFilters =
+    selectedLabel !== null ||
+    searchQuery.trim() !== "" ||
+    activeTagFilter !== null;
   const allVisibleSelected =
     visibleMessageIndices.length > 0 &&
     visibleMessageIndices.every((idx) => selectedMessageIndices.has(idx));
@@ -2007,6 +2268,7 @@ export default function ViewerPage() {
   const handleResetFilters = useCallback(() => {
     handleClearSearch();
     setSelectedLabel(null);
+    setActiveTagFilter(null);
   }, [handleClearSearch, setSelectedLabel]);
 
   const handleSaveCurrentSearch = useCallback(() => {
@@ -2096,6 +2358,11 @@ export default function ViewerPage() {
   const handleOpenAttachmentCenterDialog = useCallback(() => {
     setIsActionsMenuOpen(false);
     setIsAttachmentCenterOpen(true);
+  }, []);
+
+  const handleOpenAnalyticsDialog = useCallback(() => {
+    setIsActionsMenuOpen(false);
+    setIsAnalyticsDialogOpen(true);
   }, []);
 
   const exportLocalization = useMemo(
@@ -2201,6 +2468,7 @@ export default function ViewerPage() {
         isActionsMenuOpen ||
         isSavedSearchesMenuOpen ||
         isAttachmentCenterOpen ||
+        isAnalyticsDialogOpen ||
         isLabelOverflowMenuOpen ||
         isExportDialogOpen ||
         isShortcutsDialogOpen ||
@@ -2349,6 +2617,7 @@ export default function ViewerPage() {
     isActionsMenuOpen,
     isSavedSearchesMenuOpen,
     isAttachmentCenterOpen,
+    isAnalyticsDialogOpen,
     isLabelOverflowMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
@@ -2875,6 +3144,10 @@ export default function ViewerPage() {
                     >
                       {t("attachmentCenter.title")}
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleOpenAnalyticsDialog}>
+                      <BarChart3 className="size-4" />
+                      {t("analytics.title")}
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
@@ -3025,6 +3298,40 @@ export default function ViewerPage() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   )}
+                </div>
+                <ScrollBar orientation="horizontal" hidden />
+              </ScrollArea>
+            )}
+
+            {currentFileAnnotationTags.length > 0 && (
+              <ScrollArea className="w-full">
+                <div className="flex gap-1.5 pb-1" role="group">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTagFilter(null)}
+                    className={getLabelFilterChipClassName(
+                      activeTagFilter === null
+                    )}
+                    aria-pressed={activeTagFilter === null}
+                  >
+                    {t("annotations.allTags")}
+                  </button>
+                  {currentFileAnnotationTags.map((tag) => {
+                    const isActive = activeTagFilter === tag;
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() =>
+                          setActiveTagFilter(isActive ? null : tag)
+                        }
+                        className={getLabelFilterChipClassName(isActive)}
+                        aria-pressed={isActive}
+                      >
+                        #{tag}
+                      </button>
+                    );
+                  })}
                 </div>
                 <ScrollBar orientation="horizontal" hidden />
               </ScrollArea>
@@ -3565,6 +3872,47 @@ export default function ViewerPage() {
                     </div>
                   )}
                 </div>
+              </div>
+
+              <div className="border-b border-border/40 bg-muted/10 px-6 py-4 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("annotations.title")}
+                  </h3>
+                  {(selectedMessageAnnotation.tags.length > 0 ||
+                    selectedMessageAnnotation.note.trim().length > 0) && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() => {
+                        handleAnnotationTagsChange("");
+                        handleAnnotationNoteChange("");
+                      }}
+                    >
+                      {t("annotations.clear")}
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  value={selectedMessageAnnotation.tags.join(", ")}
+                  onChange={(event) =>
+                    handleAnnotationTagsChange(event.currentTarget.value)
+                  }
+                  placeholder={t("annotations.tagsPlaceholder")}
+                  aria-label={t("annotations.tagsPlaceholder")}
+                  className="h-8 text-sm"
+                />
+                <Textarea
+                  value={selectedMessageAnnotation.note}
+                  onChange={(event) =>
+                    handleAnnotationNoteChange(event.currentTarget.value)
+                  }
+                  placeholder={t("annotations.notePlaceholder")}
+                  aria-label={t("annotations.notePlaceholder")}
+                  className="min-h-20 text-sm resize-y"
+                />
               </div>
 
               {/* Message Tabs */}
@@ -4113,6 +4461,89 @@ export default function ViewerPage() {
               })}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isAnalyticsDialogOpen}
+        onOpenChange={setIsAnalyticsDialogOpen}
+      >
+        <DialogContent className="sm:max-w-4xl max-h-[85dvh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>{t("analytics.title")}</DialogTitle>
+            <DialogDescription>
+              {t("analytics.description", {
+                count: filteredMessageIndices.length,
+              })}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 overflow-y-auto pr-1 md:grid-cols-2">
+            <div className="rounded-lg border border-border/50 p-3">
+              <h3 className="mb-3 text-sm font-medium">
+                {t("analytics.messagesOverTime")}
+              </h3>
+              {timelineMonthlyData.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t("analytics.noData")}
+                </p>
+              ) : (
+                <div className="h-56 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={timelineMonthlyData}>
+                      <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                      <RechartsTooltip />
+                      <Bar
+                        dataKey="count"
+                        fill="#2563eb"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-lg border border-border/50 p-3">
+              <h3 className="mb-3 text-sm font-medium">
+                {t("analytics.topSenders")}
+              </h3>
+              {senderDistributionData.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t("analytics.noData")}
+                </p>
+              ) : (
+                <div className="h-56 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={senderDistributionData}
+                        dataKey="count"
+                        nameKey="sender"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={84}
+                        label
+                      >
+                        {senderDistributionData.map((entry, index) => (
+                          <Cell
+                            key={entry.sender}
+                            fill={
+                              analyticsPieColors[
+                                index % analyticsPieColors.length
+                              ]
+                            }
+                          />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

@@ -186,6 +186,20 @@
       "noneSelected": "Select at least one attachment to download",
       "scanFailed": "Failed to scan attachments for this file"
     },
+    "annotations": {
+      "title": "Tags & notes",
+      "clear": "Clear",
+      "allTags": "All tags",
+      "tagsPlaceholder": "Tags (comma separated)",
+      "notePlaceholder": "Private note for this message"
+    },
+    "analytics": {
+      "title": "Timeline analytics",
+      "description": "{count, plural, =0 {No messages in the current view} =1 {Analyzing # message} other {Analyzing # messages}}",
+      "messagesOverTime": "Messages over time",
+      "topSenders": "Top senders",
+      "noData": "Not enough data for analytics yet."
+    },
     "pagination": {
       "previous": "Prev",
       "next": "Next",

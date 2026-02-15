@@ -186,6 +186,20 @@
       "noneSelected": "Seleziona almeno un allegato da scaricare",
       "scanFailed": "Impossibile analizzare gli allegati del file"
     },
+    "annotations": {
+      "title": "Tag e note",
+      "clear": "Pulisci",
+      "allTags": "Tutti i tag",
+      "tagsPlaceholder": "Tag (separati da virgola)",
+      "notePlaceholder": "Nota privata per questo messaggio"
+    },
+    "analytics": {
+      "title": "Analisi timeline",
+      "description": "{count, plural, =0 {Nessun messaggio nella vista corrente} =1 {Analisi di # messaggio} other {Analisi di # messaggi}}",
+      "messagesOverTime": "Messaggi nel tempo",
+      "topSenders": "Mittenti principali",
+      "noData": "Dati insufficienti per le analisi."
+    },
     "pagination": {
       "previous": "Prec",
       "next": "Succ",
