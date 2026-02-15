@@ -214,6 +214,7 @@ const MESSAGE_ROW_HEIGHT_DESKTOP = 86;
 const MESSAGE_ROW_GAP = 0;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2";
+const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "min-w-12 text-right text-muted-foreground/80 tabular-nums";
 const ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME =
@@ -3096,7 +3097,7 @@ export default function ViewerPage() {
                       disabled={visibleMessageIndices.length === 0}
                       className="gap-2"
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {togglePageSelectionLabel}
                       </span>
                       <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
@@ -3122,7 +3123,7 @@ export default function ViewerPage() {
                       }
                       className="gap-2"
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {toggleFilteredSelectionLabel}
                       </span>
                       <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
@@ -3144,7 +3145,7 @@ export default function ViewerPage() {
                       disabled={selectedCount === 0}
                       aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.clear")}
                       </span>
                       <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
@@ -3169,7 +3170,7 @@ export default function ViewerPage() {
                       disabled={!hasActiveFilters}
                       aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.resetFilters")}
                       </span>
                       <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
@@ -3191,7 +3192,7 @@ export default function ViewerPage() {
                       }
                       className="gap-2"
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.threadView")}
                       </span>
                       <span
@@ -3216,7 +3217,7 @@ export default function ViewerPage() {
                       inset
                       onClick={handleOpenAttachmentCenterDialog}
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("attachmentCenter.title")}
                       </span>
                       <span
@@ -3234,7 +3235,7 @@ export default function ViewerPage() {
                       </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem inset onClick={handleOpenAnalyticsDialog}>
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("analytics.title")}
                       </span>
                       <span
@@ -3256,7 +3257,7 @@ export default function ViewerPage() {
                       onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("export.action")}
                       </span>
                       <span
@@ -3278,7 +3279,7 @@ export default function ViewerPage() {
                       onClick={handleOpenShortcutsDialog}
                       aria-keyshortcuts={openShortcutsAriaKeyShortcuts}
                     >
-                      <span className="min-w-0 flex-1">
+                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.shortcuts.openHelp")}
                       </span>
                       <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
