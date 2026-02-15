@@ -3273,7 +3273,10 @@ export default function ViewerPage() {
                       disabled={visibleMessageIndices.length === 0}
                       className="gap-2"
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={togglePageSelectionLabel}
+                      >
                         {togglePageSelectionLabel}
                       </span>
                       {renderActionsMenuMetadataSlot(
@@ -3292,7 +3295,10 @@ export default function ViewerPage() {
                       }
                       className="gap-2"
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={toggleFilteredSelectionLabel}
+                      >
                         {toggleFilteredSelectionLabel}
                       </span>
                       {renderActionsMenuMetadataSlot(
@@ -3308,7 +3314,10 @@ export default function ViewerPage() {
                       disabled={selectedCount === 0}
                       aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={t("selection.clear")}
+                      >
                         {t("selection.clear")}
                       </span>
                       {renderActionsMenuMetadataSlot(
@@ -3326,7 +3335,10 @@ export default function ViewerPage() {
                       disabled={!hasActiveFilters}
                       aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={t("selection.resetFilters")}
+                      >
                         {t("selection.resetFilters")}
                       </span>
                       {renderActionsMenuMetadataSlot(
@@ -3341,7 +3353,10 @@ export default function ViewerPage() {
                       }
                       className="gap-2"
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={t("selection.threadView")}
+                      >
                         {t("selection.threadView")}
                       </span>
                       {renderActionsMenuMetadataSlot(undefined, undefined)}
@@ -3354,13 +3369,19 @@ export default function ViewerPage() {
                       inset
                       onClick={handleOpenAttachmentCenterDialog}
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={t("attachmentCenter.title")}
+                      >
                         {t("attachmentCenter.title")}
                       </span>
                       {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuItem>
                     <DropdownMenuItem inset onClick={handleOpenAnalyticsDialog}>
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={t("analytics.title")}
+                      >
                         {t("analytics.title")}
                       </span>
                       {renderActionsMenuMetadataSlot(undefined, undefined)}
@@ -3370,7 +3391,10 @@ export default function ViewerPage() {
                       onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={t("export.action")}
+                      >
                         {t("export.action")}
                       </span>
                       {renderActionsMenuMetadataSlot(undefined, undefined)}
@@ -3380,7 +3404,10 @@ export default function ViewerPage() {
                       onClick={handleOpenShortcutsDialog}
                       aria-keyshortcuts={openShortcutsAriaKeyShortcuts}
                     >
-                      <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
+                      <span
+                        className={ACTIONS_MENU_LABEL_CLASSNAME}
+                        title={t("selection.shortcuts.openHelp")}
+                      >
                         {t("selection.shortcuts.openHelp")}
                       </span>
                       {renderActionsMenuMetadataSlot(
