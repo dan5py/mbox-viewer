@@ -3121,8 +3121,16 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {togglePageSelectionLabel}
                       </span>
-                      <span className="ml-auto min-w-12 text-right text-muted-foreground/80 tabular-nums">
-                        ({visibleCountLabel})
+                      <span className="ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2">
+                        <span className="min-w-12 text-right text-muted-foreground/80 tabular-nums">
+                          ({visibleCountLabel})
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className="min-w-16 text-right text-xs whitespace-nowrap tracking-normal opacity-0"
+                        >
+                          {toggleFilteredSelectionShortcutLabel}
+                        </span>
                       </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
@@ -3139,7 +3147,7 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {toggleFilteredSelectionLabel}
                       </span>
-                      <span className="ml-auto flex items-center gap-3 pl-2">
+                      <span className="ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2">
                         <span className="min-w-12 text-right text-muted-foreground/80 tabular-nums">
                           ({filteredCountLabel})
                         </span>
