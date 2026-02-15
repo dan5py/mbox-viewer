@@ -1892,7 +1892,7 @@ export default function ViewerPage() {
     );
   }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
   const shouldVirtualizeVisibleMessages =
-    visibleMessageIndices.length >= VIRTUALIZATION_MIN_ITEMS;
+    !isMobile && visibleMessageIndices.length >= VIRTUALIZATION_MIN_ITEMS;
 
   const virtualizedMessageList = useMemo(() => {
     const estimatedRowHeight = isMobile
