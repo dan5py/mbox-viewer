@@ -2805,16 +2805,17 @@ export default function ViewerPage() {
             left: 0,
             right: 0,
           };
+    const rowHeight = virtualizedMessageList.estimatedRowHeight;
     const cardStyle =
       rowIndex === undefined
-        ? undefined
-        : { height: `${virtualizedMessageList.estimatedRowHeight}px` };
+        ? { minHeight: `${rowHeight}px` }
+        : { height: `${rowHeight}px` };
 
     return (
       <div key={index} style={rowWrapperStyle}>
         <div
           className={cn(
-            "w-full min-h-[72px] rounded-md border p-1.5 transition-all group md:min-h-[76px] md:p-1.5",
+            "w-full rounded-md border p-1.5 transition-all group md:p-1.5",
             "hover:border-border hover:shadow-sm",
             isSelected
               ? "border-primary bg-primary/10 shadow-sm"
