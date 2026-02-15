@@ -209,8 +209,8 @@ const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
 const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
-const MESSAGE_ROW_HEIGHT_MOBILE = 74;
-const MESSAGE_ROW_HEIGHT_DESKTOP = 78;
+const MESSAGE_ROW_HEIGHT_MOBILE = 72;
+const MESSAGE_ROW_HEIGHT_DESKTOP = 76;
 const MESSAGE_ROW_GAP = 1;
 const VIRTUALIZATION_MIN_ITEMS = 45;
 const MESSAGE_ROW_STACK_CLASSNAME = "space-y-px";
@@ -2842,7 +2842,7 @@ export default function ViewerPage() {
               onClick={() => handleSelectMessage(index)}
               className="flex-1 min-w-0 text-left p-0 rounded-md cursor-pointer"
             >
-              <div className="flex gap-2 md:gap-3">
+              <div className="flex gap-1.5 md:gap-2">
                 <div
                   className={cn(
                     "size-8 md:size-9 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
