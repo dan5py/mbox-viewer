@@ -1884,17 +1884,21 @@ export default function ViewerPage() {
       return;
     }
 
-    const firstMessageCard = container.querySelector<HTMLElement>(
-      "[data-message-row-card='true']"
-    );
-    if (!firstMessageCard) {
+    const renderedMessageCards = Array.from(
+      container.querySelectorAll<HTMLElement>("[data-message-row-card='true']")
+    ).slice(0, 8);
+    if (renderedMessageCards.length === 0) {
       return;
     }
 
-    const measuredHeight = Math.ceil(
-      firstMessageCard.getBoundingClientRect().height
+    const measuredHeight = renderedMessageCards.reduce((maxHeight, card) => {
+      const cardHeight = Math.ceil(card.getBoundingClientRect().height);
+      return Math.max(maxHeight, cardHeight);
+    }, 0);
+    const nextRowHeight = Math.min(
+      132,
+      Math.max(isMobile ? 84 : 88, measuredHeight)
     );
-    const nextRowHeight = Math.max(isMobile ? 84 : 88, measuredHeight);
     setVirtualizedRowHeight((previousRowHeight) =>
       Math.abs(previousRowHeight - nextRowHeight) > 1
         ? nextRowHeight
@@ -1937,6 +1941,7 @@ export default function ViewerPage() {
     isThreadViewEnabled,
     locale,
     recalculateVirtualizedRowHeight,
+    virtualizedMessageList.startRow,
     visibleMessageIndices,
   ]);
 
