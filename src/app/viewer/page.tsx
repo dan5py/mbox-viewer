@@ -217,7 +217,7 @@ const VIRTUALIZATION_MIN_FILTERED_MESSAGES = 150;
 const MESSAGE_ROW_STACK_CLASSNAME = "flex flex-col";
 const MESSAGE_ROW_STACK_STYLE = { rowGap: `${MESSAGE_ROW_GAP}px` } as const;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
-  "ml-auto grid h-4 w-[9.25rem] shrink-0 sm:w-[10.75rem] grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
+  "ml-auto grid h-4 w-[8.75rem] shrink-0 sm:w-[10.25rem] grid-cols-[3.25rem_4.5rem] sm:grid-cols-[3.5rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2 py-0";
 const ACTIONS_MENU_SECTION_LABEL_CLASSNAME =
