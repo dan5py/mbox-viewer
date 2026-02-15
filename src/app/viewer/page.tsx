@@ -222,10 +222,6 @@ const ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME =
   "min-w-16 text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal";
 const ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME =
   "min-w-16 text-right text-xs whitespace-nowrap tracking-normal opacity-0";
-const ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME =
-  "min-w-[6.5rem] text-right whitespace-nowrap tracking-normal";
-const ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME =
-  "ml-4 min-w-[6.5rem] shrink-0";
 const analyticsPieColors = [
   "#2563eb",
   "#16a34a",
@@ -3148,12 +3144,20 @@ export default function ViewerPage() {
                       disabled={selectedCount === 0}
                       aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
                     >
-                      {t("selection.clear")}
-                      <DropdownMenuShortcut
-                        className={ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME}
-                      >
-                        {clearSelectionShortcutLabel}
-                      </DropdownMenuShortcut>
+                      <span className="min-w-0 flex-1">
+                        {t("selection.clear")}
+                      </span>
+                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
+                        <span
+                          aria-hidden="true"
+                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
+                        />
+                        <span
+                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
+                        >
+                          {clearSelectionShortcutLabel}
+                        </span>
+                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
@@ -3165,12 +3169,20 @@ export default function ViewerPage() {
                       disabled={!hasActiveFilters}
                       aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
                     >
-                      {t("selection.resetFilters")}
-                      <DropdownMenuShortcut
-                        className={ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME}
-                      >
-                        {resetFiltersShortcutLabel}
-                      </DropdownMenuShortcut>
+                      <span className="min-w-0 flex-1">
+                        {t("selection.resetFilters")}
+                      </span>
+                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
+                        <span
+                          aria-hidden="true"
+                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
+                        />
+                        <span
+                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
+                        >
+                          {resetFiltersShortcutLabel}
+                        </span>
+                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuCheckboxItem
                       checked={isThreadViewEnabled}
@@ -3209,8 +3221,17 @@ export default function ViewerPage() {
                       </span>
                       <span
                         aria-hidden="true"
-                        className={ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME}
-                      />
+                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
+                      >
+                        <span
+                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
+                        />
+                        <span
+                          className={
+                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
+                          }
+                        />
+                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem inset onClick={handleOpenAnalyticsDialog}>
                       <span className="min-w-0 flex-1">
@@ -3218,8 +3239,17 @@ export default function ViewerPage() {
                       </span>
                       <span
                         aria-hidden="true"
-                        className={ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME}
-                      />
+                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
+                      >
+                        <span
+                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
+                        />
+                        <span
+                          className={
+                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
+                          }
+                        />
+                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       inset
@@ -3231,8 +3261,17 @@ export default function ViewerPage() {
                       </span>
                       <span
                         aria-hidden="true"
-                        className={ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME}
-                      />
+                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
+                      >
+                        <span
+                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
+                        />
+                        <span
+                          className={
+                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
+                          }
+                        />
+                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       inset
@@ -3242,14 +3281,17 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {t("selection.shortcuts.openHelp")}
                       </span>
-                      <DropdownMenuShortcut
-                        className={cn(
-                          "ml-4 shrink-0",
-                          ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME
-                        )}
-                      >
-                        {openShortcutsShortcutLabel}
-                      </DropdownMenuShortcut>
+                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
+                        <span
+                          aria-hidden="true"
+                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
+                        />
+                        <span
+                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
+                        >
+                          {openShortcutsShortcutLabel}
+                        </span>
+                      </span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
