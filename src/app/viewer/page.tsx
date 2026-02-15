@@ -2808,9 +2808,7 @@ export default function ViewerPage() {
           };
     const rowHeight = virtualizedMessageList.estimatedRowHeight;
     const cardStyle =
-      rowIndex === undefined
-        ? { minHeight: `${rowHeight}px` }
-        : { height: `${rowHeight}px` };
+      rowIndex === undefined ? undefined : { height: `${rowHeight}px` };
 
     return (
       <div key={index} style={rowWrapperStyle}>
