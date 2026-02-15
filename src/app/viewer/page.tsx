@@ -209,8 +209,8 @@ const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
 const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
-const MESSAGE_ROW_HEIGHT_MOBILE = 82;
-const MESSAGE_ROW_HEIGHT_DESKTOP = 86;
+const MESSAGE_ROW_HEIGHT_MOBILE = 80;
+const MESSAGE_ROW_HEIGHT_DESKTOP = 84;
 const MESSAGE_ROW_GAP = 0;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto flex min-w-[9rem] sm:min-w-[10.5rem] items-center justify-end gap-3 pl-2";
@@ -3520,7 +3520,7 @@ export default function ViewerPage() {
                     >
                       <div
                         className={cn(
-                          "w-full p-2 rounded-lg border transition-all group",
+                          "w-full p-1.5 md:p-2 rounded-lg border transition-all group",
                           "hover:border-border hover:shadow-sm",
                           isSelected
                             ? "border-primary bg-primary/10 shadow-sm"
@@ -3560,7 +3560,7 @@ export default function ViewerPage() {
                               }
                             }}
                             onClick={() => handleSelectMessage(index)}
-                            className="flex-1 min-w-0 text-left p-1 rounded-md cursor-pointer"
+                            className="flex-1 min-w-0 text-left p-0.5 md:p-1 rounded-md cursor-pointer"
                           >
                             <div className="flex gap-3">
                               <div
