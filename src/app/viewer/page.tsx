@@ -2808,7 +2808,7 @@ export default function ViewerPage() {
       <div key={index} style={rowWrapperStyle}>
         <div
           className={cn(
-            "w-full p-1.5 md:p-2 rounded-lg border transition-all group",
+            "w-full p-1.5 md:p-1.5 rounded-lg border transition-all group",
             "hover:border-border hover:shadow-sm",
             isSelected
               ? "border-primary bg-primary/10 shadow-sm"
@@ -2840,12 +2840,12 @@ export default function ViewerPage() {
                 }
               }}
               onClick={() => handleSelectMessage(index)}
-              className="flex-1 min-w-0 text-left p-0 md:p-0.5 rounded-md cursor-pointer"
+              className="flex-1 min-w-0 text-left p-0 rounded-md cursor-pointer"
             >
               <div className="flex gap-2 md:gap-3">
                 <div
                   className={cn(
-                    "size-9 md:size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
+                    "size-8 md:size-9 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
                     getAvatarColor(from)
                   )}
                 >
