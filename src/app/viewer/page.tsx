@@ -209,13 +209,15 @@ const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
 const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
-const MESSAGE_ROW_HEIGHT_MOBILE = 88;
-const MESSAGE_ROW_HEIGHT_DESKTOP = 92;
+const MESSAGE_ROW_HEIGHT_MOBILE = 84;
+const MESSAGE_ROW_HEIGHT_DESKTOP = 88;
 const MESSAGE_ROW_GAP = 2;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "min-w-12 text-right text-muted-foreground/80 tabular-nums";
+const ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME =
+  "min-w-12 text-right tabular-nums opacity-0";
 const ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME =
   "min-w-16 text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal";
 const ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME =
@@ -3175,8 +3177,28 @@ export default function ViewerPage() {
                       onCheckedChange={(checked) =>
                         setIsThreadViewEnabled(checked === true)
                       }
+                      className="gap-2"
                     >
-                      {t("selection.threadView")}
+                      <span className="min-w-0 flex-1">
+                        {t("selection.threadView")}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
+                      >
+                        <span
+                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
+                        >
+                          (00)
+                        </span>
+                        <span
+                          className={
+                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
+                          }
+                        >
+                          {toggleFilteredSelectionShortcutLabel}
+                        </span>
+                      </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
