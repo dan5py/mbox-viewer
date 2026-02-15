@@ -219,7 +219,7 @@ const MESSAGE_ROW_STACK_STYLE = { rowGap: `${MESSAGE_ROW_GAP}px` } as const;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid h-4 w-[9.25rem] shrink-0 sm:w-[10.75rem] grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
-const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2";
+const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2 py-0";
 const ACTIONS_MENU_SECTION_LABEL_CLASSNAME =
   "h-7 text-[11px] font-normal text-muted-foreground";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
@@ -2835,7 +2835,7 @@ export default function ViewerPage() {
               aria-label={t("selection.toggleMessageWithSubject", {
                 subject: messageSubjectForAria,
               })}
-              className="mt-1.5"
+              className="mt-1"
             />
 
             <button
