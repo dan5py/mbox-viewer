@@ -217,7 +217,7 @@ const VIRTUALIZATION_MIN_FILTERED_MESSAGES = 150;
 const MESSAGE_ROW_STACK_CLASSNAME = "flex flex-col";
 const MESSAGE_ROW_STACK_STYLE = { rowGap: `${MESSAGE_ROW_GAP}px` } as const;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
-  "ml-auto grid h-4 w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
+  "ml-auto grid h-4 w-[9.25rem] shrink-0 sm:w-[10.75rem] grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2";
 const ACTIONS_MENU_SECTION_LABEL_CLASSNAME =
@@ -2816,7 +2816,7 @@ export default function ViewerPage() {
       <div key={index} style={rowWrapperStyle}>
         <div
           className={cn(
-            "w-full rounded-md border p-1 transition-all group md:p-1.5",
+            "w-full rounded-md border p-1 transition-all group",
             "hover:border-border",
             isSelected
               ? "border-primary bg-primary/10"
