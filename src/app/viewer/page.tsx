@@ -209,6 +209,19 @@ const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
 const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
+const MESSAGE_ROW_HEIGHT_MOBILE = 88;
+const MESSAGE_ROW_HEIGHT_DESKTOP = 92;
+const MESSAGE_ROW_GAP = 2;
+const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
+  "ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2";
+const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
+  "min-w-12 text-right text-muted-foreground/80 tabular-nums";
+const ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME =
+  "min-w-16 text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal";
+const ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME =
+  "min-w-16 text-right text-xs whitespace-nowrap tracking-normal opacity-0";
+const ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME =
+  "min-w-[6.5rem] text-right whitespace-nowrap tracking-normal";
 const analyticsPieColors = [
   "#2563eb",
   "#16a34a",
@@ -1847,8 +1860,10 @@ export default function ViewerPage() {
   }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
 
   const virtualizedMessageList = useMemo(() => {
-    const estimatedRowHeight = isMobile ? 88 : 92;
-    const rowGap = 2;
+    const estimatedRowHeight = isMobile
+      ? MESSAGE_ROW_HEIGHT_MOBILE
+      : MESSAGE_ROW_HEIGHT_DESKTOP;
+    const rowGap = MESSAGE_ROW_GAP;
     const rowStep = estimatedRowHeight + rowGap;
     const overscanRows = 6;
     const viewportHeight = messageListContainerRef.current?.clientHeight ?? 640;
@@ -3084,13 +3099,15 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {togglePageSelectionLabel}
                       </span>
-                      <span className="ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2">
-                        <span className="min-w-12 text-right text-muted-foreground/80 tabular-nums">
+                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
+                        <span className={ACTIONS_MENU_COUNT_COLUMN_CLASSNAME}>
                           ({visibleCountLabel})
                         </span>
                         <span
                           aria-hidden="true"
-                          className="min-w-16 text-right text-xs whitespace-nowrap tracking-normal opacity-0"
+                          className={
+                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
+                          }
                         >
                           {toggleFilteredSelectionShortcutLabel}
                         </span>
@@ -3110,11 +3127,13 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {toggleFilteredSelectionLabel}
                       </span>
-                      <span className="ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2">
-                        <span className="min-w-12 text-right text-muted-foreground/80 tabular-nums">
+                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
+                        <span className={ACTIONS_MENU_COUNT_COLUMN_CLASSNAME}>
                           ({filteredCountLabel})
                         </span>
-                        <span className="min-w-16 text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal">
+                        <span
+                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
+                        >
                           {toggleFilteredSelectionShortcutLabel}
                         </span>
                       </span>
@@ -3128,7 +3147,9 @@ export default function ViewerPage() {
                       aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
                     >
                       {t("selection.clear")}
-                      <DropdownMenuShortcut className="min-w-[6.5rem] text-right whitespace-nowrap tracking-normal">
+                      <DropdownMenuShortcut
+                        className={ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME}
+                      >
                         {clearSelectionShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3143,7 +3164,9 @@ export default function ViewerPage() {
                       aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
                     >
                       {t("selection.resetFilters")}
-                      <DropdownMenuShortcut className="min-w-[6.5rem] text-right whitespace-nowrap tracking-normal">
+                      <DropdownMenuShortcut
+                        className={ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME}
+                      >
                         {resetFiltersShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3183,7 +3206,12 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {t("selection.shortcuts.openHelp")}
                       </span>
-                      <DropdownMenuShortcut className="ml-4 min-w-[6.5rem] shrink-0 text-right whitespace-nowrap tracking-normal">
+                      <DropdownMenuShortcut
+                        className={cn(
+                          "ml-4 shrink-0",
+                          ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME
+                        )}
+                      >
                         {openShortcutsShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3465,12 +3493,15 @@ export default function ViewerPage() {
                     >
                       <div
                         className={cn(
-                          "w-full h-[88px] md:h-[92px] p-2 rounded-lg border transition-all group",
+                          "w-full p-2 rounded-lg border transition-all group",
                           "hover:border-border hover:shadow-sm",
                           isSelected
                             ? "border-primary bg-primary/10 shadow-sm"
                             : "border-border/40 hover:bg-muted/50"
                         )}
+                        style={{
+                          height: `${virtualizedMessageList.estimatedRowHeight}px`,
+                        }}
                       >
                         <div className="flex items-start gap-2">
                           <Checkbox
