@@ -2814,7 +2814,7 @@ export default function ViewerPage() {
       <div key={index} style={rowWrapperStyle}>
         <div
           className={cn(
-            "w-full rounded-md border p-1.5 md:p-1.5 transition-all group",
+            "w-full min-h-[72px] rounded-md border p-1.5 transition-all group md:min-h-[76px] md:p-1.5",
             "hover:border-border hover:shadow-sm",
             isSelected
               ? "border-primary bg-primary/10 shadow-sm"
