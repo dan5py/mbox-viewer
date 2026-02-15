@@ -213,7 +213,7 @@ const MESSAGE_ROW_HEIGHT_MOBILE = 76;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 80;
 const MESSAGE_ROW_GAP = 0;
 const VIRTUALIZATION_MIN_ITEMS = 30;
-const MESSAGE_ROW_STACK_CLASSNAME = "space-y-px";
+const MESSAGE_ROW_STACK_CLASSNAME = "space-y-0";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid min-w-[8.5rem] sm:min-w-[10rem] grid-cols-[3rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
@@ -3262,7 +3262,7 @@ export default function ViewerPage() {
                       {selectedMenuLabel}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
+                    <DropdownMenuLabel className="pl-8 text-[11px] font-normal text-muted-foreground">
                       {t("selection.sections.selection")}
                     </DropdownMenuLabel>
                     <DropdownMenuCheckboxItem
@@ -3317,7 +3317,7 @@ export default function ViewerPage() {
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
+                    <DropdownMenuLabel className="pl-8 text-[11px] font-normal text-muted-foreground">
                       {t("selection.sections.filters")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
@@ -3347,7 +3347,7 @@ export default function ViewerPage() {
                       {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
+                    <DropdownMenuLabel className="pl-8 text-[11px] font-normal text-muted-foreground">
                       {t("selection.sections.tools")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
@@ -3612,7 +3612,7 @@ export default function ViewerPage() {
             onScroll={(event) =>
               setMessageListScrollTop(event.currentTarget.scrollTop)
             }
-            className="flex-1 overflow-y-auto p-1.5 md:p-2"
+            className="flex-1 overflow-y-auto p-1 md:p-1.5"
             role="region"
             aria-label={t("preview.messageListRegion")}
             aria-keyshortcuts="ArrowUp ArrowDown"
