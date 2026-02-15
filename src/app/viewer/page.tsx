@@ -18,7 +18,6 @@ import JSZip from "jszip";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  BarChart3,
   Bookmark,
   BookmarkPlus,
   Calendar,
@@ -1848,7 +1847,7 @@ export default function ViewerPage() {
   }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
 
   const virtualizedMessageList = useMemo(() => {
-    const estimatedRowHeight = 128;
+    const estimatedRowHeight = isMobile ? 92 : 96;
     const overscanRows = 6;
     const viewportHeight = messageListContainerRef.current?.clientHeight ?? 640;
 
@@ -1869,7 +1868,7 @@ export default function ViewerPage() {
       totalHeight: visibleMessageIndices.length * estimatedRowHeight,
       items: visibleMessageIndices.slice(startRow, endRow),
     };
-  }, [messageListScrollTop, visibleMessageIndices]);
+  }, [isMobile, messageListScrollTop, visibleMessageIndices]);
 
   const selectedCount = selectedMessageIndices.size;
   const integerFormatter = useMemo(
@@ -3062,7 +3061,7 @@ export default function ViewerPage() {
                     aria-label={actionsTriggerLabel}
                     aria-keyshortcuts="Home End"
                     onKeyDown={handleDropdownMenuBoundaryKeyDown}
-                    className="w-56"
+                    className="w-64"
                   >
                     <DropdownMenuLabel className="text-xs">
                       {selectedMenuLabel}
@@ -3103,13 +3102,14 @@ export default function ViewerPage() {
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
+                      inset
                       variant="destructive"
                       onClick={handleClearSelectionFromMenu}
                       disabled={selectedCount === 0}
                       aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
                     >
                       {t("selection.clear")}
-                      <DropdownMenuShortcut>
+                      <DropdownMenuShortcut className="whitespace-nowrap tracking-normal">
                         {clearSelectionShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3118,12 +3118,13 @@ export default function ViewerPage() {
                       {t("selection.sections.filters")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
+                      inset
                       onClick={handleResetFiltersFromMenu}
                       disabled={!hasActiveFilters}
                       aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
                     >
                       {t("selection.resetFilters")}
-                      <DropdownMenuShortcut>
+                      <DropdownMenuShortcut className="whitespace-nowrap tracking-normal">
                         {resetFiltersShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3140,26 +3141,31 @@ export default function ViewerPage() {
                       {t("selection.sections.tools")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
+                      inset
                       onClick={handleOpenAttachmentCenterDialog}
                     >
                       {t("attachmentCenter.title")}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleOpenAnalyticsDialog}>
-                      <BarChart3 className="size-4" />
+                    <DropdownMenuItem inset onClick={handleOpenAnalyticsDialog}>
                       {t("analytics.title")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      inset
                       onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
                     >
                       {t("export.action")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      inset
                       onClick={handleOpenShortcutsDialog}
                       aria-keyshortcuts={openShortcutsAriaKeyShortcuts}
+                      className="items-start"
                     >
-                      {t("selection.shortcuts.openHelp")}
-                      <DropdownMenuShortcut>
+                      <span className="min-w-0 flex-1">
+                        {t("selection.shortcuts.openHelp")}
+                      </span>
+                      <DropdownMenuShortcut className="ml-4 shrink-0 whitespace-nowrap tracking-normal">
                         {openShortcutsShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3437,7 +3443,7 @@ export default function ViewerPage() {
                         top: `${rowIndex * virtualizedMessageList.estimatedRowHeight}px`,
                         left: 0,
                         right: 0,
-                        paddingBottom: "0.375rem",
+                        paddingBottom: "0.25rem",
                       }}
                     >
                       <div
