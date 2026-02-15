@@ -2853,10 +2853,10 @@ export default function ViewerPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="mb-px flex items-start justify-between gap-2">
+                  <div className="flex items-start justify-between gap-2">
                     <p
                       className={cn(
-                        "text-sm font-semibold truncate",
+                        "truncate text-sm font-semibold leading-tight",
                         isSelected ? "text-primary" : "text-foreground"
                       )}
                       title={messageSubjectLabel}
@@ -2884,7 +2884,7 @@ export default function ViewerPage() {
                     )}
                   </div>
 
-                  <div className="mb-px flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 text-xs leading-tight text-muted-foreground">
                     <div className="flex items-center gap-1 truncate">
                       <User className="size-3 shrink-0" />
                       <span className="truncate" title={from}>
@@ -2893,7 +2893,7 @@ export default function ViewerPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between gap-3 text-xs leading-tight text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Calendar className="size-3" />
                       <span>{relativeDate}</span>
