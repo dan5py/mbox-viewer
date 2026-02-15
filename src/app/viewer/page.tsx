@@ -234,6 +234,36 @@ const analyticsPieColors = [
   "#64748b",
 ];
 
+function renderActionsMenuMetadataSlot(
+  countText?: string,
+  shortcutText?: string
+) {
+  return (
+    <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
+      <span
+        aria-hidden={countText === undefined}
+        className={
+          countText
+            ? ACTIONS_MENU_COUNT_COLUMN_CLASSNAME
+            : ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME
+        }
+      >
+        {countText}
+      </span>
+      <span
+        aria-hidden={shortcutText === undefined}
+        className={
+          shortcutText
+            ? ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME
+            : ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
+        }
+      >
+        {shortcutText}
+      </span>
+    </span>
+  );
+}
+
 interface SavedSearch {
   id: string;
   name: string;
@@ -3100,17 +3130,10 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {togglePageSelectionLabel}
                       </span>
-                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
-                        <span className={ACTIONS_MENU_COUNT_COLUMN_CLASSNAME}>
-                          ({visibleCountLabel})
-                        </span>
-                        <span
-                          aria-hidden="true"
-                          className={
-                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
-                          }
-                        />
-                      </span>
+                      {renderActionsMenuMetadataSlot(
+                        `(${visibleCountLabel})`,
+                        undefined
+                      )}
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
                       checked={allFilteredSelected}
@@ -3126,16 +3149,10 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {toggleFilteredSelectionLabel}
                       </span>
-                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
-                        <span className={ACTIONS_MENU_COUNT_COLUMN_CLASSNAME}>
-                          ({filteredCountLabel})
-                        </span>
-                        <span
-                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
-                        >
-                          {toggleFilteredSelectionShortcutLabel}
-                        </span>
-                      </span>
+                      {renderActionsMenuMetadataSlot(
+                        `(${filteredCountLabel})`,
+                        toggleFilteredSelectionShortcutLabel
+                      )}
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -3148,17 +3165,10 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.clear")}
                       </span>
-                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
-                        <span
-                          aria-hidden="true"
-                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        />
-                        <span
-                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
-                        >
-                          {clearSelectionShortcutLabel}
-                        </span>
-                      </span>
+                      {renderActionsMenuMetadataSlot(
+                        undefined,
+                        clearSelectionShortcutLabel
+                      )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
@@ -3173,17 +3183,10 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.resetFilters")}
                       </span>
-                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
-                        <span
-                          aria-hidden="true"
-                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        />
-                        <span
-                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
-                        >
-                          {resetFiltersShortcutLabel}
-                        </span>
-                      </span>
+                      {renderActionsMenuMetadataSlot(
+                        undefined,
+                        resetFiltersShortcutLabel
+                      )}
                     </DropdownMenuItem>
                     <DropdownMenuCheckboxItem
                       checked={isThreadViewEnabled}
@@ -3195,19 +3198,7 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.threadView")}
                       </span>
-                      <span
-                        aria-hidden="true"
-                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
-                      >
-                        <span
-                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        />
-                        <span
-                          className={
-                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
-                          }
-                        />
-                      </span>
+                      {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
@@ -3220,37 +3211,13 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("attachmentCenter.title")}
                       </span>
-                      <span
-                        aria-hidden="true"
-                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
-                      >
-                        <span
-                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        />
-                        <span
-                          className={
-                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
-                          }
-                        />
-                      </span>
+                      {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuItem>
                     <DropdownMenuItem inset onClick={handleOpenAnalyticsDialog}>
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("analytics.title")}
                       </span>
-                      <span
-                        aria-hidden="true"
-                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
-                      >
-                        <span
-                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        />
-                        <span
-                          className={
-                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
-                          }
-                        />
-                      </span>
+                      {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       inset
@@ -3260,19 +3227,7 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("export.action")}
                       </span>
-                      <span
-                        aria-hidden="true"
-                        className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}
-                      >
-                        <span
-                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        />
-                        <span
-                          className={
-                            ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
-                          }
-                        />
-                      </span>
+                      {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       inset
@@ -3282,17 +3237,10 @@ export default function ViewerPage() {
                       <span className={ACTIONS_MENU_LABEL_CLASSNAME}>
                         {t("selection.shortcuts.openHelp")}
                       </span>
-                      <span className={ACTIONS_MENU_METADATA_SLOT_CLASSNAME}>
-                        <span
-                          aria-hidden="true"
-                          className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        />
-                        <span
-                          className={ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME}
-                        >
-                          {openShortcutsShortcutLabel}
-                        </span>
-                      </span>
+                      {renderActionsMenuMetadataSlot(
+                        undefined,
+                        openShortcutsShortcutLabel
+                      )}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
