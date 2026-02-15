@@ -217,6 +217,7 @@ const MESSAGE_ROW_STACK_CLASSNAME = "space-y-px";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
+const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "text-right text-muted-foreground/80 tabular-nums font-mono";
 const ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME =
@@ -3274,7 +3275,7 @@ export default function ViewerPage() {
                         handleToggleCurrentPageSelectionFromMenu();
                       }}
                       disabled={visibleMessageIndices.length === 0}
-                      className="gap-2"
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
@@ -3296,7 +3297,7 @@ export default function ViewerPage() {
                       aria-keyshortcuts={
                         toggleFilteredSelectionAriaKeyShortcuts
                       }
-                      className="gap-2"
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
@@ -3316,6 +3317,7 @@ export default function ViewerPage() {
                       onClick={handleClearSelectionFromMenu}
                       disabled={selectedCount === 0}
                       aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
@@ -3340,6 +3342,7 @@ export default function ViewerPage() {
                       onClick={handleResetFiltersFromMenu}
                       disabled={!hasActiveFilters}
                       aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
@@ -3357,7 +3360,7 @@ export default function ViewerPage() {
                       onCheckedChange={(checked) =>
                         setIsThreadViewEnabled(checked === true)
                       }
-                      className="gap-2"
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
@@ -3377,6 +3380,7 @@ export default function ViewerPage() {
                     <DropdownMenuItem
                       inset
                       onClick={handleOpenAttachmentCenterDialog}
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
@@ -3386,7 +3390,11 @@ export default function ViewerPage() {
                       </span>
                       {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuItem>
-                    <DropdownMenuItem inset onClick={handleOpenAnalyticsDialog}>
+                    <DropdownMenuItem
+                      inset
+                      onClick={handleOpenAnalyticsDialog}
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
+                    >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
                         title={t("analytics.title")}
@@ -3399,6 +3407,7 @@ export default function ViewerPage() {
                       inset
                       onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
@@ -3412,6 +3421,7 @@ export default function ViewerPage() {
                       inset
                       onClick={handleOpenShortcutsDialog}
                       aria-keyshortcuts={openShortcutsAriaKeyShortcuts}
+                      className={ACTIONS_MENU_ROW_CLASSNAME}
                     >
                       <span
                         className={ACTIONS_MENU_LABEL_CLASSNAME}
