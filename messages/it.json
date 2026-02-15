@@ -115,6 +115,8 @@
       "deselectFiltered": "Deseleziona filtrati",
       "selectAll": "Seleziona tutto",
       "deselectAll": "Deseleziona tutto",
+      "threadView": "Vista per conversazione",
+      "threadCount": "{count, plural, =1 {# messaggio} other {# messaggi}}",
       "resetFilters": "Azzera filtri",
       "clear": "Pulisci",
       "toggleMessage": "Attiva/disattiva selezione messaggio",

@@ -202,6 +202,13 @@ interface SavedSearch {
   query: string;
 }
 
+function normalizeThreadSubject(subject: string): string {
+  return subject
+    .trim()
+    .replace(/^((re|fw|fwd|aw|sv)\s*:\s*)+/gi, "")
+    .toLowerCase();
+}
+
 export default function ViewerPage() {
   const t = useTranslations("Viewer");
   const locale = useLocale();
@@ -220,6 +227,8 @@ export default function ViewerPage() {
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
   const [searchFailed, setSearchFailed] = useState(false);
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
+  const [isThreadViewEnabled, setIsThreadViewEnabled] = useState(false);
+  const [messageListScrollTop, setMessageListScrollTop] = useState(0);
   const [selectedMessageIndices, setSelectedMessageIndices] = useState<
     Set<number>
   >(new Set());
@@ -275,6 +284,7 @@ export default function ViewerPage() {
   const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
   const searchWorker = useRef<Worker | null>(null);
   const viewerPageRootRef = useRef<HTMLDivElement | null>(null);
+  const messageListContainerRef = useRef<HTMLDivElement | null>(null);
   const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
   const labelFiltersGroupRef = useRef<HTMLDivElement | null>(null);
   const lastNavTimeRef = useRef<number>(0);
@@ -1235,13 +1245,100 @@ export default function ViewerPage() {
     searchResultSet,
   ]);
 
+  const threadMessageCountByRepresentative = useMemo(() => {
+    if (!isThreadViewEnabled || !currentFile?.messageBoundaries) {
+      return new Map<number, number>();
+    }
+
+    const threadGroups = new Map<
+      string,
+      { representativeIndex: number; count: number }
+    >();
+    for (const messageIndex of filteredMessageIndices) {
+      const subject =
+        currentFile.messageBoundaries[messageIndex]?.preview?.subject || "";
+      const normalizedSubject =
+        normalizeThreadSubject(subject) || `(no-subject-${messageIndex})`;
+      const group = threadGroups.get(normalizedSubject);
+      if (group) {
+        group.count += 1;
+      } else {
+        threadGroups.set(normalizedSubject, {
+          representativeIndex: messageIndex,
+          count: 1,
+        });
+      }
+    }
+
+    return new Map(
+      Array.from(threadGroups.values()).map((group) => [
+        group.representativeIndex,
+        group.count,
+      ])
+    );
+  }, [
+    currentFile?.messageBoundaries,
+    filteredMessageIndices,
+    isThreadViewEnabled,
+  ]);
+
+  const listFilteredMessageIndices = useMemo(() => {
+    if (!isThreadViewEnabled || !currentFile?.messageBoundaries) {
+      return filteredMessageIndices;
+    }
+
+    const seenSubjects = new Set<string>();
+    const representativeIndices: number[] = [];
+    for (const messageIndex of filteredMessageIndices) {
+      const subject =
+        currentFile.messageBoundaries[messageIndex]?.preview?.subject || "";
+      const normalizedSubject =
+        normalizeThreadSubject(subject) || `(no-subject-${messageIndex})`;
+      if (seenSubjects.has(normalizedSubject)) {
+        continue;
+      }
+      seenSubjects.add(normalizedSubject);
+      representativeIndices.push(messageIndex);
+    }
+
+    return representativeIndices;
+  }, [
+    currentFile?.messageBoundaries,
+    filteredMessageIndices,
+    isThreadViewEnabled,
+  ]);
+
   const visibleMessageIndices = useMemo(() => {
     const startIndex = (currentPage - 1) * messagesPerPage;
-    return filteredMessageIndices.slice(
+    return listFilteredMessageIndices.slice(
       startIndex,
       startIndex + messagesPerPage
     );
-  }, [currentPage, filteredMessageIndices, messagesPerPage]);
+  }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
+
+  const virtualizedMessageList = useMemo(() => {
+    const estimatedRowHeight = 128;
+    const overscanRows = 6;
+    const viewportHeight = messageListContainerRef.current?.clientHeight ?? 640;
+
+    const startRow = Math.max(
+      0,
+      Math.floor(messageListScrollTop / estimatedRowHeight) - overscanRows
+    );
+    const visibleRows = Math.ceil(viewportHeight / estimatedRowHeight);
+    const endRow = Math.min(
+      visibleMessageIndices.length,
+      startRow + visibleRows + overscanRows * 2
+    );
+
+    return {
+      estimatedRowHeight,
+      startRow,
+      endRow,
+      totalHeight: visibleMessageIndices.length * estimatedRowHeight,
+      items: visibleMessageIndices.slice(startRow, endRow),
+    };
+  }, [messageListScrollTop, visibleMessageIndices]);
 
   const selectedCount = selectedMessageIndices.size;
   const integerFormatter = useMemo(
@@ -1265,7 +1362,7 @@ export default function ViewerPage() {
     visibleMessageIndices.length
   );
   const filteredCountLabel = integerFormatter.format(
-    filteredMessageIndices.length
+    listFilteredMessageIndices.length
   );
   const allEmailsLabel = t("search.allEmails");
   const allEmailsFilterCountValue = searchResultSet
@@ -1488,8 +1585,8 @@ export default function ViewerPage() {
     visibleMessageIndices.length > 0 &&
     visibleMessageIndices.every((idx) => selectedMessageIndices.has(idx));
   const allFilteredSelected =
-    filteredMessageIndices.length > 0 &&
-    filteredMessageIndices.every((idx) => selectedMessageIndices.has(idx));
+    listFilteredMessageIndices.length > 0 &&
+    listFilteredMessageIndices.every((idx) => selectedMessageIndices.has(idx));
   const togglePageSelectionLabel = allVisibleSelected
     ? t("selection.deselectPage")
     : t("selection.selectPage");
@@ -1508,8 +1605,8 @@ export default function ViewerPage() {
         const anchor = lastSelectionAnchorRef.current;
 
         if (extendRange && anchor !== null) {
-          const anchorPos = filteredMessageIndices.indexOf(anchor);
-          const currentPos = filteredMessageIndices.indexOf(index);
+          const anchorPos = listFilteredMessageIndices.indexOf(anchor);
+          const currentPos = listFilteredMessageIndices.indexOf(index);
           const shouldSelectRange = !next.has(index);
 
           if (anchorPos !== -1 && currentPos !== -1) {
@@ -1517,7 +1614,7 @@ export default function ViewerPage() {
             const end = Math.max(anchorPos, currentPos);
 
             for (let i = start; i <= end; i++) {
-              const rangeIndex = filteredMessageIndices[i];
+              const rangeIndex = listFilteredMessageIndices[i];
               if (shouldSelectRange) {
                 next.add(rangeIndex);
               } else {
@@ -1544,7 +1641,7 @@ export default function ViewerPage() {
 
       lastSelectionAnchorRef.current = index;
     },
-    [filteredMessageIndices]
+    [listFilteredMessageIndices]
   );
 
   const handleToggleCurrentPageSelection = useCallback(() => {
@@ -1573,29 +1670,29 @@ export default function ViewerPage() {
   }, [visibleMessageIndices]);
 
   const handleToggleFilteredSelection = useCallback(() => {
-    if (filteredMessageIndices.length === 0) {
+    if (listFilteredMessageIndices.length === 0) {
       return;
     }
 
     setSelectedMessageIndices((prev) => {
       const next = new Set(prev);
-      const everyFilteredSelected = filteredMessageIndices.every((idx) =>
+      const everyFilteredSelected = listFilteredMessageIndices.every((idx) =>
         next.has(idx)
       );
 
       if (everyFilteredSelected) {
-        for (const idx of filteredMessageIndices) {
+        for (const idx of listFilteredMessageIndices) {
           next.delete(idx);
         }
       } else {
-        for (const idx of filteredMessageIndices) {
+        for (const idx of listFilteredMessageIndices) {
           next.add(idx);
         }
       }
 
       return next;
     });
-  }, [filteredMessageIndices]);
+  }, [listFilteredMessageIndices]);
 
   const handleClearSelection = useCallback(() => {
     lastSelectionAnchorRef.current = null;
@@ -1979,7 +2076,7 @@ export default function ViewerPage() {
     files.length,
   ]);
 
-  const totalFilteredMessages = filteredMessageIndices.length;
+  const totalFilteredMessages = listFilteredMessageIndices.length;
   const shouldShowHeaderStatusRow =
     isSearching || searchFailed || hasActiveFilters || selectedCount > 0;
   const searchSummaryBaseCount =
@@ -2061,6 +2158,17 @@ export default function ViewerPage() {
       setCurrentPage(1);
     }
   }, [currentPage, setCurrentPage, totalPages]);
+
+  useEffect(() => {
+    setMessageListScrollTop(0);
+    messageListContainerRef.current?.scrollTo({ top: 0 });
+  }, [
+    currentPage,
+    selectedFileId,
+    selectedLabel,
+    searchQuery,
+    isThreadViewEnabled,
+  ]);
 
   if (files.length === 0) {
     return (
@@ -2426,7 +2534,7 @@ export default function ViewerPage() {
                       onCheckedChange={() => {
                         handleToggleFilteredSelectionFromMenu();
                       }}
-                      disabled={filteredMessageIndices.length === 0}
+                      disabled={listFilteredMessageIndices.length === 0}
                       aria-keyshortcuts={
                         toggleFilteredSelectionAriaKeyShortcuts
                       }
@@ -2465,6 +2573,14 @@ export default function ViewerPage() {
                         {resetFiltersShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
+                    <DropdownMenuCheckboxItem
+                      checked={isThreadViewEnabled}
+                      onCheckedChange={(checked) =>
+                        setIsThreadViewEnabled(checked === true)
+                      }
+                    >
+                      {t("selection.threadView")}
+                    </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
                       {t("selection.sections.tools")}
@@ -2670,7 +2786,11 @@ export default function ViewerPage() {
 
           {/* Message List */}
           <div
-            className="flex-1 overflow-y-auto p-2 space-y-1.5"
+            ref={messageListContainerRef}
+            onScroll={(event) =>
+              setMessageListScrollTop(event.currentTarget.scrollTop)
+            }
+            className="flex-1 overflow-y-auto p-2"
             role="region"
             aria-label={t("preview.messageListRegion")}
             aria-keyshortcuts="ArrowUp ArrowDown"
@@ -2687,129 +2807,162 @@ export default function ViewerPage() {
                 </p>
               </div>
             ) : (
-              visibleMessageIndices.map((index) => {
-                const preview = getMessagePreview(index);
-                // Use index for instant selection highlighting
-                const isSelected = selectedMessageIndex === index;
-                const isMessageChecked = selectedMessageIndices.has(index);
-                const messageSubjectLabel =
-                  preview?.subject || t("preview.noSubject");
-                const messageSubjectForAria =
-                  preview?.subject || t("preview.noSubject");
-                const from = preview?.from || t("preview.unknown");
-                const date = preview?.date
-                  ? new Date(preview.date)
-                  : new Date();
-                const relativeDate = formatDistanceToNow(date, {
-                  addSuffix: true,
-                  locale: dateLocale,
-                });
+              <div
+                className="relative"
+                style={{ height: `${virtualizedMessageList.totalHeight}px` }}
+              >
+                {virtualizedMessageList.items.map((index, virtualIndex) => {
+                  const rowIndex =
+                    virtualizedMessageList.startRow + virtualIndex;
+                  const preview = getMessagePreview(index);
+                  const isSelected = selectedMessageIndex === index;
+                  const isMessageChecked = selectedMessageIndices.has(index);
+                  const threadMessageCount =
+                    threadMessageCountByRepresentative.get(index) ?? 1;
+                  const messageSubjectLabel =
+                    preview?.subject || t("preview.noSubject");
+                  const messageSubjectForAria =
+                    preview?.subject || t("preview.noSubject");
+                  const from = preview?.from || t("preview.unknown");
+                  const date = preview?.date
+                    ? new Date(preview.date)
+                    : new Date();
+                  const relativeDate = formatDistanceToNow(date, {
+                    addSuffix: true,
+                    locale: dateLocale,
+                  });
 
-                return (
-                  <div
-                    key={index}
-                    className={cn(
-                      "w-full p-2 rounded-lg border transition-all group",
-                      "hover:border-border hover:shadow-sm",
-                      isSelected
-                        ? "border-primary bg-primary/10 shadow-sm"
-                        : "border-border/40 hover:bg-muted/50"
-                    )}
-                  >
-                    <div className="flex items-start gap-2">
-                      <Checkbox
-                        data-allow-global-shortcuts="true"
-                        checked={isMessageChecked}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleToggleMessageSelection(index, event.shiftKey);
-                        }}
-                        aria-label={t("selection.toggleMessageWithSubject", {
-                          subject: messageSubjectForAria,
-                        })}
-                        className="mt-2"
-                      />
-
-                      <button
-                        data-allow-global-shortcuts="true"
-                        ref={(el) => {
-                          if (el) {
-                            messageRefs.current.set(index, el);
-                          } else {
-                            messageRefs.current.delete(index);
-                          }
-                        }}
-                        onClick={() => handleSelectMessage(index)}
-                        className="flex-1 min-w-0 text-left p-1 rounded-md cursor-pointer"
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        position: "absolute",
+                        top: `${rowIndex * virtualizedMessageList.estimatedRowHeight}px`,
+                        left: 0,
+                        right: 0,
+                        paddingBottom: "0.375rem",
+                      }}
+                    >
+                      <div
+                        className={cn(
+                          "w-full p-2 rounded-lg border transition-all group",
+                          "hover:border-border hover:shadow-sm",
+                          isSelected
+                            ? "border-primary bg-primary/10 shadow-sm"
+                            : "border-border/40 hover:bg-muted/50"
+                        )}
                       >
-                        <div className="flex gap-3">
-                          {/* Avatar */}
-                          <div
-                            className={cn(
-                              "size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
-                              getAvatarColor(from)
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            data-allow-global-shortcuts="true"
+                            checked={isMessageChecked}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleToggleMessageSelection(
+                                index,
+                                event.shiftKey
+                              );
+                            }}
+                            aria-label={t(
+                              "selection.toggleMessageWithSubject",
+                              {
+                                subject: messageSubjectForAria,
+                              }
                             )}
+                            className="mt-2"
+                          />
+
+                          <button
+                            data-allow-global-shortcuts="true"
+                            ref={(el) => {
+                              if (el) {
+                                messageRefs.current.set(index, el);
+                              } else {
+                                messageRefs.current.delete(index);
+                              }
+                            }}
+                            onClick={() => handleSelectMessage(index)}
+                            className="flex-1 min-w-0 text-left p-1 rounded-md cursor-pointer"
                           >
-                            {getInitials(from)}
-                          </div>
-
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2 mb-1">
-                              <p
+                            <div className="flex gap-3">
+                              <div
                                 className={cn(
-                                  "text-sm font-semibold truncate",
-                                  isSelected
-                                    ? "text-primary"
-                                    : "text-foreground"
+                                  "size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
+                                  getAvatarColor(from)
                                 )}
-                                title={messageSubjectLabel}
                               >
-                                {preview?.subject || (
-                                  <span className="italic text-muted-foreground">
-                                    {t("preview.noSubject")}
+                                {getInitials(from)}
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <p
+                                    className={cn(
+                                      "text-sm font-semibold truncate",
+                                      isSelected
+                                        ? "text-primary"
+                                        : "text-foreground"
+                                    )}
+                                    title={messageSubjectLabel}
+                                  >
+                                    {preview?.subject || (
+                                      <span className="italic text-muted-foreground">
+                                        {t("preview.noSubject")}
+                                      </span>
+                                    )}
+                                  </p>
+                                  {isThreadViewEnabled &&
+                                    threadMessageCount > 1 && (
+                                      <Badge
+                                        variant="secondary"
+                                        className="text-[10px] px-1.5 h-5 shrink-0"
+                                      >
+                                        {t("selection.threadCount", {
+                                          count: threadMessageCount,
+                                        })}
+                                      </Badge>
+                                    )}
+                                  {preview?.size && (
+                                    <span className="text-xs text-muted-foreground shrink-0">
+                                      {formatSize(preview.size)}
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
+                                  <div className="flex items-center gap-1 truncate">
+                                    <User className="size-3 shrink-0" />
+                                    <span className="truncate" title={from}>
+                                      {from}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="size-3" />
+                                    <span>{relativeDate}</span>
+                                  </div>
+                                  <span className="text-muted-foreground/60">
+                                    {date.toLocaleString(locale, {
+                                      year: "numeric",
+                                      month: "2-digit",
+                                      day: "2-digit",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                      hour12: false,
+                                    })}
                                   </span>
-                                )}
-                              </p>
-                              {preview?.size && (
-                                <span className="text-xs text-muted-foreground shrink-0">
-                                  {formatSize(preview.size)}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
-                              <div className="flex items-center gap-1 truncate">
-                                <User className="size-3 shrink-0" />
-                                <span className="truncate" title={from}>
-                                  {from}
-                                </span>
+                                </div>
                               </div>
                             </div>
-
-                            <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <Calendar className="size-3" />
-                                <span>{relativeDate}</span>
-                              </div>
-                              <span className="text-muted-foreground/60">
-                                {date.toLocaleString(locale, {
-                                  year: "numeric",
-                                  month: "2-digit",
-                                  day: "2-digit",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: false,
-                                })}
-                              </span>
-                            </div>
-                          </div>
+                          </button>
                         </div>
-                      </button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+              </div>
             )}
           </div>
 

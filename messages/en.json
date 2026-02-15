@@ -115,6 +115,8 @@
       "deselectFiltered": "Deselect filtered",
       "selectAll": "Select all",
       "deselectAll": "Deselect all",
+      "threadView": "Threaded view",
+      "threadCount": "{count, plural, =1 {# message} other {# messages}}",
       "resetFilters": "Reset filters",
       "clear": "Clear",
       "toggleMessage": "Toggle message selection",
