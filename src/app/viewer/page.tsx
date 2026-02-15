@@ -267,6 +267,7 @@ export default function ViewerPage() {
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [isThreadViewEnabled, setIsThreadViewEnabled] = useState(false);
   const [messageListScrollTop, setMessageListScrollTop] = useState(0);
+  const [virtualizedRowHeight, setVirtualizedRowHeight] = useState(96);
   const [selectedMessageIndices, setSelectedMessageIndices] = useState<
     Set<number>
   >(new Set());
@@ -1847,7 +1848,7 @@ export default function ViewerPage() {
   }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
 
   const virtualizedMessageList = useMemo(() => {
-    const estimatedRowHeight = isMobile ? 92 : 96;
+    const estimatedRowHeight = virtualizedRowHeight;
     const overscanRows = 6;
     const viewportHeight = messageListContainerRef.current?.clientHeight ?? 640;
 
@@ -1868,7 +1869,43 @@ export default function ViewerPage() {
       totalHeight: visibleMessageIndices.length * estimatedRowHeight,
       items: visibleMessageIndices.slice(startRow, endRow),
     };
-  }, [isMobile, messageListScrollTop, visibleMessageIndices]);
+  }, [messageListScrollTop, virtualizedRowHeight, visibleMessageIndices]);
+
+  useEffect(() => {
+    setVirtualizedRowHeight(isMobile ? 92 : 96);
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (visibleMessageIndices.length === 0) {
+      return;
+    }
+
+    const container = messageListContainerRef.current;
+    if (!container) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const firstMessageCard = container.querySelector<HTMLElement>(
+        "[data-message-row-card='true']"
+      );
+      if (!firstMessageCard) {
+        return;
+      }
+
+      const measuredHeight = Math.ceil(
+        firstMessageCard.getBoundingClientRect().height
+      );
+      const nextRowHeight = Math.max(isMobile ? 84 : 88, measuredHeight + 4);
+      setVirtualizedRowHeight((previousRowHeight) =>
+        Math.abs(previousRowHeight - nextRowHeight) > 1
+          ? nextRowHeight
+          : previousRowHeight
+      );
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [isMobile, isThreadViewEnabled, locale, visibleMessageIndices]);
 
   const selectedCount = selectedMessageIndices.size;
   const integerFormatter = useMemo(
@@ -3448,10 +3485,10 @@ export default function ViewerPage() {
                         top: `${rowIndex * virtualizedMessageList.estimatedRowHeight}px`,
                         left: 0,
                         right: 0,
-                        paddingBottom: "0.25rem",
                       }}
                     >
                       <div
+                        data-message-row-card="true"
                         className={cn(
                           "w-full p-2 rounded-lg border transition-all group",
                           "hover:border-border hover:shadow-sm",
