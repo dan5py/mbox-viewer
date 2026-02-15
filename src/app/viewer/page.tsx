@@ -3118,7 +3118,7 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {togglePageSelectionLabel}
                       </span>
-                      <span className="text-muted-foreground/80 tabular-nums">
+                      <span className="ml-auto min-w-12 text-right text-muted-foreground/80 tabular-nums">
                         ({visibleCountLabel})
                       </span>
                     </DropdownMenuCheckboxItem>
@@ -3136,11 +3136,13 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {toggleFilteredSelectionLabel}
                       </span>
-                      <span className="text-muted-foreground/80 tabular-nums">
-                        ({filteredCountLabel})
-                      </span>
-                      <span className="text-muted-foreground text-xs whitespace-nowrap tracking-normal">
-                        {toggleFilteredSelectionShortcutLabel}
+                      <span className="ml-auto flex items-center gap-3 pl-2">
+                        <span className="min-w-12 text-right text-muted-foreground/80 tabular-nums">
+                          ({filteredCountLabel})
+                        </span>
+                        <span className="min-w-16 text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal">
+                          {toggleFilteredSelectionShortcutLabel}
+                        </span>
                       </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
@@ -3152,7 +3154,7 @@ export default function ViewerPage() {
                       aria-keyshortcuts={clearSelectionAriaKeyShortcuts}
                     >
                       {t("selection.clear")}
-                      <DropdownMenuShortcut className="whitespace-nowrap tracking-normal">
+                      <DropdownMenuShortcut className="min-w-[6.5rem] text-right whitespace-nowrap tracking-normal">
                         {clearSelectionShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3167,7 +3169,7 @@ export default function ViewerPage() {
                       aria-keyshortcuts={resetFiltersAriaKeyShortcuts}
                     >
                       {t("selection.resetFilters")}
-                      <DropdownMenuShortcut className="whitespace-nowrap tracking-normal">
+                      <DropdownMenuShortcut className="min-w-[6.5rem] text-right whitespace-nowrap tracking-normal">
                         {resetFiltersShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
@@ -3207,7 +3209,7 @@ export default function ViewerPage() {
                       <span className="min-w-0 flex-1">
                         {t("selection.shortcuts.openHelp")}
                       </span>
-                      <DropdownMenuShortcut className="ml-4 shrink-0 whitespace-nowrap tracking-normal">
+                      <DropdownMenuShortcut className="ml-4 min-w-[6.5rem] shrink-0 text-right whitespace-nowrap tracking-normal">
                         {openShortcutsShortcutLabel}
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
