@@ -1878,6 +1878,30 @@ export default function ViewerPage() {
     setVirtualizedRowHeight(isMobile ? 92 : 96);
   }, [isMobile]);
 
+  const recalculateVirtualizedRowHeight = useCallback(() => {
+    const container = messageListContainerRef.current;
+    if (!container) {
+      return;
+    }
+
+    const firstMessageCard = container.querySelector<HTMLElement>(
+      "[data-message-row-card='true']"
+    );
+    if (!firstMessageCard) {
+      return;
+    }
+
+    const measuredHeight = Math.ceil(
+      firstMessageCard.getBoundingClientRect().height
+    );
+    const nextRowHeight = Math.max(isMobile ? 84 : 88, measuredHeight);
+    setVirtualizedRowHeight((previousRowHeight) =>
+      Math.abs(previousRowHeight - nextRowHeight) > 1
+        ? nextRowHeight
+        : previousRowHeight
+    );
+  }, [isMobile]);
+
   useEffect(() => {
     if (visibleMessageIndices.length === 0) {
       return;
@@ -1889,26 +1913,50 @@ export default function ViewerPage() {
     }
 
     const frameId = window.requestAnimationFrame(() => {
+      recalculateVirtualizedRowHeight();
+
+      const resizeObserver = new ResizeObserver(() => {
+        recalculateVirtualizedRowHeight();
+      });
+
       const firstMessageCard = container.querySelector<HTMLElement>(
         "[data-message-row-card='true']"
       );
-      if (!firstMessageCard) {
-        return;
+      if (firstMessageCard) {
+        resizeObserver.observe(firstMessageCard);
       }
+      resizeObserver.observe(container);
 
-      const measuredHeight = Math.ceil(
-        firstMessageCard.getBoundingClientRect().height
-      );
-      const nextRowHeight = Math.max(isMobile ? 84 : 88, measuredHeight);
-      setVirtualizedRowHeight((previousRowHeight) =>
-        Math.abs(previousRowHeight - nextRowHeight) > 1
-          ? nextRowHeight
-          : previousRowHeight
-      );
+      const cleanupObserver = () => {
+        resizeObserver.disconnect();
+      };
+      container.dataset.virtualizationObserverAttached = "true";
+      const previousCleanup = (
+        container as HTMLElement & { __virtualizationCleanup?: () => void }
+      ).__virtualizationCleanup;
+      previousCleanup?.();
+      (
+        container as HTMLElement & { __virtualizationCleanup?: () => void }
+      ).__virtualizationCleanup = cleanupObserver;
     });
 
-    return () => window.cancelAnimationFrame(frameId);
-  }, [isMobile, isThreadViewEnabled, locale, visibleMessageIndices]);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      const cleanupObserver = (
+        container as HTMLElement & { __virtualizationCleanup?: () => void }
+      ).__virtualizationCleanup;
+      cleanupObserver?.();
+      delete (
+        container as HTMLElement & { __virtualizationCleanup?: () => void }
+      ).__virtualizationCleanup;
+      delete container.dataset.virtualizationObserverAttached;
+    };
+  }, [
+    isThreadViewEnabled,
+    locale,
+    recalculateVirtualizedRowHeight,
+    visibleMessageIndices,
+  ]);
 
   const selectedCount = selectedMessageIndices.size;
   const integerFormatter = useMemo(
