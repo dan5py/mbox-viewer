@@ -209,11 +209,11 @@ const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
 const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
-const MESSAGE_ROW_HEIGHT_MOBILE = 78;
-const MESSAGE_ROW_HEIGHT_DESKTOP = 82;
+const MESSAGE_ROW_HEIGHT_MOBILE = 76;
+const MESSAGE_ROW_HEIGHT_DESKTOP = 80;
 const MESSAGE_ROW_GAP = 0;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
-  "ml-auto flex min-w-[9rem] sm:min-w-[10.5rem] items-center justify-end gap-3 pl-2";
+  "ml-auto flex min-w-[8.5rem] sm:min-w-[10rem] items-center justify-end gap-2 sm:gap-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "min-w-12 text-right text-muted-foreground/80 tabular-nums";
@@ -3560,12 +3560,12 @@ export default function ViewerPage() {
                               }
                             }}
                             onClick={() => handleSelectMessage(index)}
-                            className="flex-1 min-w-0 text-left p-0.5 md:p-1 rounded-md cursor-pointer"
+                            className="flex-1 min-w-0 text-left p-0 md:p-0.5 rounded-md cursor-pointer"
                           >
                             <div className="flex gap-3">
                               <div
                                 className={cn(
-                                  "size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
+                                  "size-9 md:size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
                                   getAvatarColor(from)
                                 )}
                               >
@@ -3573,7 +3573,7 @@ export default function ViewerPage() {
                               </div>
 
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-0.5 md:mb-1">
+                                <div className="mb-0.5 flex items-start justify-between gap-2">
                                   <p
                                     className={cn(
                                       "text-sm font-semibold truncate",
@@ -3607,7 +3607,7 @@ export default function ViewerPage() {
                                   )}
                                 </div>
 
-                                <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+                                <div className="mb-0.5 flex items-center gap-2 text-xs text-muted-foreground">
                                   <div className="flex items-center gap-1 truncate">
                                     <User className="size-3 shrink-0" />
                                     <span className="truncate" title={from}>
