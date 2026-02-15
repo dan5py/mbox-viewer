@@ -3061,7 +3061,7 @@ export default function ViewerPage() {
                     aria-label={actionsTriggerLabel}
                     aria-keyshortcuts="Home End"
                     onKeyDown={handleDropdownMenuBoundaryKeyDown}
-                    className="w-64"
+                    className="w-72"
                   >
                     <DropdownMenuLabel className="text-xs">
                       {selectedMenuLabel}
@@ -3076,9 +3076,12 @@ export default function ViewerPage() {
                         handleToggleCurrentPageSelectionFromMenu();
                       }}
                       disabled={visibleMessageIndices.length === 0}
+                      className="gap-2"
                     >
-                      {togglePageSelectionLabel}{" "}
-                      <span className="text-muted-foreground/80">
+                      <span className="min-w-0 flex-1">
+                        {togglePageSelectionLabel}
+                      </span>
+                      <span className="text-muted-foreground/80 tabular-nums">
                         ({visibleCountLabel})
                       </span>
                     </DropdownMenuCheckboxItem>
@@ -3091,14 +3094,17 @@ export default function ViewerPage() {
                       aria-keyshortcuts={
                         toggleFilteredSelectionAriaKeyShortcuts
                       }
+                      className="gap-2"
                     >
-                      {toggleFilteredSelectionLabel}{" "}
-                      <span className="text-muted-foreground/80">
+                      <span className="min-w-0 flex-1">
+                        {toggleFilteredSelectionLabel}
+                      </span>
+                      <span className="text-muted-foreground/80 tabular-nums">
                         ({filteredCountLabel})
                       </span>
-                      <DropdownMenuShortcut>
+                      <span className="text-muted-foreground text-xs whitespace-nowrap tracking-normal">
                         {toggleFilteredSelectionShortcutLabel}
-                      </DropdownMenuShortcut>
+                      </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -3160,7 +3166,6 @@ export default function ViewerPage() {
                       inset
                       onClick={handleOpenShortcutsDialog}
                       aria-keyshortcuts={openShortcutsAriaKeyShortcuts}
-                      className="items-start"
                     >
                       <span className="min-w-0 flex-1">
                         {t("selection.shortcuts.openHelp")}
