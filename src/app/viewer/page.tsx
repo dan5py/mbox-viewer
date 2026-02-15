@@ -3110,9 +3110,7 @@ export default function ViewerPage() {
                           className={
                             ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
                           }
-                        >
-                          {toggleFilteredSelectionShortcutLabel}
-                        </span>
+                        />
                       </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
@@ -3188,16 +3186,12 @@ export default function ViewerPage() {
                       >
                         <span
                           className={ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME}
-                        >
-                          (00)
-                        </span>
+                        />
                         <span
                           className={
                             ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME
                           }
-                        >
-                          {toggleFilteredSelectionShortcutLabel}
-                        </span>
+                        />
                       </span>
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
