@@ -215,16 +215,16 @@ const MESSAGE_ROW_GAP = 0;
 const VIRTUALIZATION_MIN_ITEMS = 120;
 const MESSAGE_ROW_STACK_CLASSNAME = "space-y-0";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
-  "ml-auto grid min-w-[8.5rem] sm:min-w-[10rem] grid-cols-[3rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
+  "ml-auto grid w-[8.5rem] shrink-0 sm:w-[10rem] grid-cols-[2.75rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "text-right text-muted-foreground/80 tabular-nums";
 const ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME =
   "text-right tabular-nums opacity-0";
 const ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME =
-  "text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal";
+  "truncate text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal";
 const ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME =
-  "text-right text-xs whitespace-nowrap tracking-normal opacity-0";
+  "truncate text-right text-xs whitespace-nowrap tracking-normal opacity-0";
 const analyticsPieColors = [
   "#2563eb",
   "#16a34a",
