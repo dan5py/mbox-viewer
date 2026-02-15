@@ -2899,12 +2899,14 @@ export default function ViewerPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 text-xs leading-tight text-muted-foreground">
-                    <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-between gap-2 text-xs leading-tight text-muted-foreground">
+                    <div className="min-w-0 flex items-center gap-1">
                       <Calendar className="size-3" />
-                      <span className="whitespace-nowrap">{relativeDate}</span>
+                      <span className="truncate whitespace-nowrap">
+                        {relativeDate}
+                      </span>
                     </div>
-                    <span className="whitespace-nowrap text-muted-foreground/60">
+                    <span className="max-w-[8.5rem] truncate whitespace-nowrap text-right text-muted-foreground/60 tabular-nums">
                       {date.toLocaleString(locale, {
                         year: "numeric",
                         month: "2-digit",
