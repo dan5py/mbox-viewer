@@ -2816,10 +2816,10 @@ export default function ViewerPage() {
       <div key={index} style={rowWrapperStyle}>
         <div
           className={cn(
-            "w-full rounded-md border p-1.5 transition-all group md:p-1.5",
-            "hover:border-border hover:shadow-sm",
+            "w-full rounded-md border p-1 transition-all group md:p-1.5",
+            "hover:border-border",
             isSelected
-              ? "border-primary bg-primary/10 shadow-sm"
+              ? "border-primary bg-primary/10"
               : "border-border/40 hover:bg-muted/50"
           )}
           style={cardStyle}
