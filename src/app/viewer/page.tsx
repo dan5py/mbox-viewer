@@ -1912,10 +1912,11 @@ export default function ViewerPage() {
       return;
     }
 
+    let resizeObserver: ResizeObserver | null = null;
     const frameId = window.requestAnimationFrame(() => {
       recalculateVirtualizedRowHeight();
 
-      const resizeObserver = new ResizeObserver(() => {
+      resizeObserver = new ResizeObserver(() => {
         recalculateVirtualizedRowHeight();
       });
 
@@ -1926,30 +1927,11 @@ export default function ViewerPage() {
         resizeObserver.observe(firstMessageCard);
       }
       resizeObserver.observe(container);
-
-      const cleanupObserver = () => {
-        resizeObserver.disconnect();
-      };
-      container.dataset.virtualizationObserverAttached = "true";
-      const previousCleanup = (
-        container as HTMLElement & { __virtualizationCleanup?: () => void }
-      ).__virtualizationCleanup;
-      previousCleanup?.();
-      (
-        container as HTMLElement & { __virtualizationCleanup?: () => void }
-      ).__virtualizationCleanup = cleanupObserver;
     });
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      const cleanupObserver = (
-        container as HTMLElement & { __virtualizationCleanup?: () => void }
-      ).__virtualizationCleanup;
-      cleanupObserver?.();
-      delete (
-        container as HTMLElement & { __virtualizationCleanup?: () => void }
-      ).__virtualizationCleanup;
-      delete container.dataset.virtualizationObserverAttached;
+      resizeObserver?.disconnect();
     };
   }, [
     isThreadViewEnabled,
