@@ -88,6 +88,15 @@
       "labelWithCount": "{label}. {count, plural, =1 {# messaggio} other {# messaggi}}",
       "noMessages": "Nessun messaggio",
       "clear": "Cancella ricerca",
+      "savedSearches": {
+        "title": "Ricerche salvate",
+        "saveCurrent": "Salva ricerca corrente",
+        "emptyList": "Nessuna ricerca salvata",
+        "clearAll": "Cancella ricerche salvate",
+        "saved": "Ricerca salvata",
+        "empty": "Inserisci prima una query di ricerca",
+        "prompt": "Nome per questa ricerca"
+      },
       "error": "Ricerca non riuscita. Riprova."
     },
     "selection": {

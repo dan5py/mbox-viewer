@@ -88,6 +88,15 @@
       "labelWithCount": "{label}. {count, plural, =1 {# message} other {# messages}}",
       "noMessages": "No messages",
       "clear": "Clear search",
+      "savedSearches": {
+        "title": "Saved searches",
+        "saveCurrent": "Save current search",
+        "emptyList": "No saved searches yet",
+        "clearAll": "Clear saved searches",
+        "saved": "Search saved",
+        "empty": "Enter a search query first",
+        "prompt": "Name this saved search"
+      },
       "error": "Search failed. Please try again."
     },
     "selection": {

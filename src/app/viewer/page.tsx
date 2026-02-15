@@ -17,6 +17,8 @@ import { it } from "date-fns/locale/it";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  Bookmark,
+  BookmarkPlus,
   Calendar,
   Check,
   ChevronDown,
@@ -192,6 +194,13 @@ const isSelectionWithinElement = (container: HTMLElement | null): boolean => {
 };
 const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
+const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
+
+interface SavedSearch {
+  id: string;
+  name: string;
+  query: string;
+}
 
 export default function ViewerPage() {
   const t = useTranslations("Viewer");
@@ -210,10 +219,12 @@ export default function ViewerPage() {
   const [searchProgress, setSearchProgress] = useState(0);
   const [searchResults, setSearchResults] = useState<number[] | null>(null);
   const [searchFailed, setSearchFailed] = useState(false);
+  const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [selectedMessageIndices, setSelectedMessageIndices] = useState<
     Set<number>
   >(new Set());
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+  const [isSavedSearchesMenuOpen, setIsSavedSearchesMenuOpen] = useState(false);
   const [isLabelOverflowMenuOpen, setIsLabelOverflowMenuOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
@@ -358,6 +369,51 @@ export default function ViewerPage() {
     }
   }, [isMobile]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const rawSavedSearches = localStorage.getItem(SAVED_SEARCHES_STORAGE_KEY);
+      if (!rawSavedSearches) {
+        return;
+      }
+
+      const parsedSavedSearches = JSON.parse(rawSavedSearches);
+      if (!Array.isArray(parsedSavedSearches)) {
+        return;
+      }
+
+      const normalizedSavedSearches = parsedSavedSearches
+        .filter(
+          (entry): entry is SavedSearch =>
+            typeof entry?.id === "string" &&
+            typeof entry?.name === "string" &&
+            typeof entry?.query === "string"
+        )
+        .slice(0, 50);
+      setSavedSearches(normalizedSavedSearches);
+    } catch (error) {
+      console.warn("Failed to restore saved searches:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      localStorage.setItem(
+        SAVED_SEARCHES_STORAGE_KEY,
+        JSON.stringify(savedSearches)
+      );
+    } catch (error) {
+      console.warn("Failed to persist saved searches:", error);
+    }
+  }, [savedSearches]);
+
   // Warn user before reloading/leaving if files are loaded
   useEffect(() => {
     if (files.length === 0) {
@@ -392,6 +448,7 @@ export default function ViewerPage() {
     setSelectedMessageData(null);
     setSelectedMessageIndices(new Set());
     setIsActionsMenuOpen(false);
+    setIsSavedSearchesMenuOpen(false);
     setIsLabelOverflowMenuOpen(false);
     setIsExportDialogOpen(false);
     setIsShortcutsDialogOpen(false);
@@ -1577,6 +1634,60 @@ export default function ViewerPage() {
     setSelectedLabel(null);
   }, [handleClearSearch, setSelectedLabel]);
 
+  const handleSaveCurrentSearch = useCallback(() => {
+    const normalizedQuery = searchQuery.trim();
+    if (!normalizedQuery) {
+      toast.error(t("search.savedSearches.empty"));
+      return;
+    }
+
+    const name =
+      window.prompt(t("search.savedSearches.prompt"), normalizedQuery) ??
+      normalizedQuery;
+    const normalizedName = name.trim();
+    if (!normalizedName) {
+      return;
+    }
+
+    setSavedSearches((prev) => {
+      const duplicate = prev.find(
+        (savedSearch) =>
+          savedSearch.query.toLowerCase() === normalizedQuery.toLowerCase()
+      );
+      if (duplicate) {
+        return prev.map((savedSearch) =>
+          savedSearch.id === duplicate.id
+            ? { ...savedSearch, name: normalizedName }
+            : savedSearch
+        );
+      }
+
+      const nextSavedSearches = [
+        {
+          id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          name: normalizedName,
+          query: normalizedQuery,
+        },
+        ...prev,
+      ];
+      return nextSavedSearches.slice(0, 50);
+    });
+    toast.success(t("search.savedSearches.saved"));
+  }, [searchQuery, t]);
+
+  const handleApplySavedSearch = useCallback(
+    (savedSearch: SavedSearch) => {
+      setSearchQuery(savedSearch.query);
+      setCurrentPage(1);
+      setIsSavedSearchesMenuOpen(false);
+    },
+    [setCurrentPage, setSearchQuery]
+  );
+
+  const handleClearSavedSearches = useCallback(() => {
+    setSavedSearches([]);
+  }, []);
+
   const handleToggleCurrentPageSelectionFromMenu = useCallback(() => {
     handleToggleCurrentPageSelection();
     setIsActionsMenuOpen(false);
@@ -1708,6 +1819,7 @@ export default function ViewerPage() {
       // Ignore global shortcuts while dialogs are open.
       if (
         isActionsMenuOpen ||
+        isSavedSearchesMenuOpen ||
         isLabelOverflowMenuOpen ||
         isExportDialogOpen ||
         isShortcutsDialogOpen ||
@@ -1854,6 +1966,7 @@ export default function ViewerPage() {
     handleResetFilters,
     handleOpenShortcutsDialog,
     isActionsMenuOpen,
+    isSavedSearchesMenuOpen,
     isLabelOverflowMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
@@ -2198,6 +2311,64 @@ export default function ViewerPage() {
                   </button>
                 )}
               </div>
+              <DropdownMenu
+                open={isSavedSearchesMenuOpen}
+                onOpenChange={setIsSavedSearchesMenuOpen}
+              >
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "size-7 shrink-0",
+                      savedSearches.length > 0 && "text-primary"
+                    )}
+                    aria-label={t("search.savedSearches.title")}
+                    title={t("search.savedSearches.title")}
+                  >
+                    <Bookmark className="size-3.5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" loop className="w-72">
+                  <DropdownMenuLabel className="text-xs">
+                    {t("search.savedSearches.title")}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onClick={handleSaveCurrentSearch}
+                    disabled={searchQuery.trim().length === 0}
+                  >
+                    <BookmarkPlus className="size-4" />
+                    {t("search.savedSearches.saveCurrent")}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {savedSearches.length === 0 ? (
+                    <DropdownMenuItem disabled>
+                      {t("search.savedSearches.emptyList")}
+                    </DropdownMenuItem>
+                  ) : (
+                    savedSearches.map((savedSearch) => (
+                      <DropdownMenuItem
+                        key={savedSearch.id}
+                        onClick={() => handleApplySavedSearch(savedSearch)}
+                        title={savedSearch.query}
+                      >
+                        <span className="truncate">{savedSearch.name}</span>
+                        <DropdownMenuShortcut className="max-w-40 truncate tracking-normal">
+                          {savedSearch.query}
+                        </DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={handleClearSavedSearches}
+                    disabled={savedSearches.length === 0}
+                  >
+                    {t("search.savedSearches.clearAll")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               {totalMessages > 0 && (
                 <DropdownMenu
                   open={isActionsMenuOpen}
