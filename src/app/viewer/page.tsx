@@ -209,9 +209,9 @@ const dropdownMenuFocusableItemSelector =
   '[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"]), [role="menuitemradio"]:not([aria-disabled="true"]):not([data-disabled]):not([hidden]):not([aria-hidden="true"])';
 const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
-const MESSAGE_ROW_HEIGHT_MOBILE = 72;
-const MESSAGE_ROW_HEIGHT_DESKTOP = 76;
-const MESSAGE_ROW_GAP = 1;
+const MESSAGE_ROW_HEIGHT_MOBILE = 70;
+const MESSAGE_ROW_HEIGHT_DESKTOP = 74;
+const MESSAGE_ROW_GAP = 0;
 const VIRTUALIZATION_MIN_ITEMS = 45;
 const VIRTUALIZATION_MIN_FILTERED_MESSAGES = 150;
 const MESSAGE_ROW_STACK_CLASSNAME = "flex flex-col";
