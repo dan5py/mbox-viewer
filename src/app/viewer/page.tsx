@@ -1917,25 +1917,37 @@ export default function ViewerPage() {
     }
 
     let resizeObserver: ResizeObserver | null = null;
+    let cleanupFallbackResizeListener: (() => void) | null = null;
     const frameId = window.requestAnimationFrame(() => {
       recalculateVirtualizedRowHeight();
 
-      resizeObserver = new ResizeObserver(() => {
-        recalculateVirtualizedRowHeight();
-      });
+      if (typeof ResizeObserver !== "undefined") {
+        resizeObserver = new ResizeObserver(() => {
+          recalculateVirtualizedRowHeight();
+        });
 
-      const firstMessageCard = container.querySelector<HTMLElement>(
-        "[data-message-row-card='true']"
-      );
-      if (firstMessageCard) {
-        resizeObserver.observe(firstMessageCard);
+        const firstMessageCard = container.querySelector<HTMLElement>(
+          "[data-message-row-card='true']"
+        );
+        if (firstMessageCard) {
+          resizeObserver.observe(firstMessageCard);
+        }
+        resizeObserver.observe(container);
+      } else {
+        const fallbackRecalculate = () => {
+          recalculateVirtualizedRowHeight();
+        };
+        window.addEventListener("resize", fallbackRecalculate);
+        cleanupFallbackResizeListener = () => {
+          window.removeEventListener("resize", fallbackRecalculate);
+        };
       }
-      resizeObserver.observe(container);
     });
 
     return () => {
       window.cancelAnimationFrame(frameId);
       resizeObserver?.disconnect();
+      cleanupFallbackResizeListener?.();
     };
   }, [
     isThreadViewEnabled,
