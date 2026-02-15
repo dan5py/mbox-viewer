@@ -218,9 +218,9 @@ const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
-  "text-right text-muted-foreground/80 tabular-nums";
+  "text-right text-muted-foreground/80 tabular-nums font-mono";
 const ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME =
-  "text-right tabular-nums opacity-0";
+  "text-right tabular-nums font-mono opacity-0";
 const ACTIONS_MENU_SHORTCUT_COLUMN_CLASSNAME =
   "truncate text-right text-muted-foreground text-xs whitespace-nowrap tracking-normal";
 const ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME =
@@ -3648,7 +3648,7 @@ export default function ViewerPage() {
             onScroll={(event) =>
               setMessageListScrollTop(event.currentTarget.scrollTop)
             }
-            className="flex-1 overflow-y-auto p-1 md:p-1.5"
+            className="flex-1 overflow-y-auto p-1"
             role="region"
             aria-label={t("preview.messageListRegion")}
             aria-keyshortcuts="ArrowUp ArrowDown"
