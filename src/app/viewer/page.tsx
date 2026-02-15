@@ -215,7 +215,7 @@ const MESSAGE_ROW_GAP = 0;
 const VIRTUALIZATION_MIN_ITEMS = 45;
 const MESSAGE_ROW_STACK_CLASSNAME = "space-y-0";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
-  "ml-auto grid w-[8.5rem] shrink-0 sm:w-[10rem] grid-cols-[2.75rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
+  "ml-auto grid w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "text-right text-muted-foreground/80 tabular-nums";
@@ -3280,7 +3280,7 @@ export default function ViewerPage() {
                         {togglePageSelectionLabel}
                       </span>
                       {renderActionsMenuMetadataSlot(
-                        `(${visibleCountLabel})`,
+                        visibleCountLabel,
                         undefined
                       )}
                     </DropdownMenuCheckboxItem>
@@ -3302,7 +3302,7 @@ export default function ViewerPage() {
                         {toggleFilteredSelectionLabel}
                       </span>
                       {renderActionsMenuMetadataSlot(
-                        `(${filteredCountLabel})`,
+                        filteredCountLabel,
                         toggleFilteredSelectionShortcutLabel
                       )}
                     </DropdownMenuCheckboxItem>
