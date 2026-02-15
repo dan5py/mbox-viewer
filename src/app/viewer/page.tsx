@@ -213,7 +213,7 @@ const MESSAGE_ROW_HEIGHT_MOBILE = 76;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 80;
 const MESSAGE_ROW_GAP = 0;
 const VIRTUALIZATION_MIN_ITEMS = 30;
-const MESSAGE_ROW_STACK_CLASSNAME = "space-y-0.5";
+const MESSAGE_ROW_STACK_CLASSNAME = "space-y-px";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid min-w-[8.5rem] sm:min-w-[10rem] grid-cols-[3rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
@@ -2842,7 +2842,7 @@ export default function ViewerPage() {
               onClick={() => handleSelectMessage(index)}
               className="flex-1 min-w-0 text-left p-0 md:p-0.5 rounded-md cursor-pointer"
             >
-              <div className="flex gap-3">
+              <div className="flex gap-2 md:gap-3">
                 <div
                   className={cn(
                     "size-9 md:size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
@@ -3612,7 +3612,7 @@ export default function ViewerPage() {
             onScroll={(event) =>
               setMessageListScrollTop(event.currentTarget.scrollTop)
             }
-            className="flex-1 overflow-y-auto p-2"
+            className="flex-1 overflow-y-auto p-1.5 md:p-2"
             role="region"
             aria-label={t("preview.messageListRegion")}
             aria-keyshortcuts="ArrowUp ArrowDown"
