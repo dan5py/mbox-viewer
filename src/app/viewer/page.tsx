@@ -213,6 +213,7 @@ const MESSAGE_ROW_HEIGHT_MOBILE = 72;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 76;
 const MESSAGE_ROW_GAP = 1;
 const VIRTUALIZATION_MIN_ITEMS = 45;
+const VIRTUALIZATION_MIN_FILTERED_MESSAGES = 150;
 const MESSAGE_ROW_STACK_CLASSNAME = "space-y-px";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
@@ -1893,7 +1894,9 @@ export default function ViewerPage() {
     );
   }, [currentPage, listFilteredMessageIndices, messagesPerPage]);
   const shouldVirtualizeVisibleMessages =
-    !isMobile && visibleMessageIndices.length >= VIRTUALIZATION_MIN_ITEMS;
+    !isMobile &&
+    visibleMessageIndices.length >= VIRTUALIZATION_MIN_ITEMS &&
+    listFilteredMessageIndices.length >= VIRTUALIZATION_MIN_FILTERED_MESSAGES;
 
   const virtualizedMessageList = useMemo(() => {
     const estimatedRowHeight = isMobile
