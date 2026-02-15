@@ -219,6 +219,8 @@ const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid w-[9rem] shrink-0 sm:w-[10.5rem] grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
 const ACTIONS_MENU_ROW_CLASSNAME = "h-8 gap-2";
+const ACTIONS_MENU_SECTION_LABEL_CLASSNAME =
+  "h-7 text-[11px] font-normal text-muted-foreground";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
   "text-right text-muted-foreground/80 tabular-nums font-mono";
 const ACTIONS_MENU_COUNT_PLACEHOLDER_CLASSNAME =
@@ -2831,7 +2833,7 @@ export default function ViewerPage() {
               aria-label={t("selection.toggleMessageWithSubject", {
                 subject: messageSubjectForAria,
               })}
-              className="mt-2"
+              className="mt-1.5"
             />
 
             <button
@@ -3268,7 +3270,7 @@ export default function ViewerPage() {
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel
                       inset
-                      className="text-[11px] font-normal text-muted-foreground"
+                      className={ACTIONS_MENU_SECTION_LABEL_CLASSNAME}
                     >
                       {t("selection.sections.selection")}
                     </DropdownMenuLabel>
@@ -3336,7 +3338,7 @@ export default function ViewerPage() {
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel
                       inset
-                      className="text-[11px] font-normal text-muted-foreground"
+                      className={ACTIONS_MENU_SECTION_LABEL_CLASSNAME}
                     >
                       {t("selection.sections.filters")}
                     </DropdownMenuLabel>
@@ -3376,7 +3378,7 @@ export default function ViewerPage() {
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel
                       inset
-                      className="text-[11px] font-normal text-muted-foreground"
+                      className={ACTIONS_MENU_SECTION_LABEL_CLASSNAME}
                     >
                       {t("selection.sections.tools")}
                     </DropdownMenuLabel>
