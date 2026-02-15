@@ -172,6 +172,20 @@
         "exportedCount": "{count, plural, =1 {Esportato # messaggio} other {Esportati # messaggi}}"
       }
     },
+    "attachmentCenter": {
+      "title": "Centro allegati",
+      "description": "{count, plural, =0 {Nessun allegato trovato} =1 {# allegato trovato} other {# allegati trovati}}",
+      "searchPlaceholder": "Cerca allegati",
+      "allTypes": "Tutti i tipi",
+      "scanning": "Scansione allegati in corso...",
+      "empty": "Nessun allegato corrisponde ai filtri correnti.",
+      "openMessage": "Apri messaggio",
+      "selectFiltered": "Seleziona filtrati",
+      "clearFilteredSelection": "Pulisci selezione",
+      "downloadSelected": "Scarica selezionati ({count})",
+      "noneSelected": "Seleziona almeno un allegato da scaricare",
+      "scanFailed": "Impossibile analizzare gli allegati del file"
+    },
     "pagination": {
       "previous": "Prec",
       "next": "Succ",

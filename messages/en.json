@@ -172,6 +172,20 @@
         "exportedCount": "{count, plural, =1 {Exported # message} other {Exported # messages}}"
       }
     },
+    "attachmentCenter": {
+      "title": "Attachment center",
+      "description": "{count, plural, =0 {No attachments found} =1 {# attachment found} other {# attachments found}}",
+      "searchPlaceholder": "Search attachments",
+      "allTypes": "All types",
+      "scanning": "Scanning attachments...",
+      "empty": "No attachments match the current filters.",
+      "openMessage": "Open message",
+      "selectFiltered": "Select filtered",
+      "clearFilteredSelection": "Clear selection",
+      "downloadSelected": "Download selected ({count})",
+      "noneSelected": "Select at least one attachment to download",
+      "scanFailed": "Failed to scan attachments for this file"
+    },
     "pagination": {
       "previous": "Prev",
       "next": "Next",

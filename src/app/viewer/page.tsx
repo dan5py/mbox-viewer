@@ -14,6 +14,7 @@ import useMboxStore from "~/stores/mbox-store";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
 import { it } from "date-fns/locale/it";
+import JSZip from "jszip";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -202,6 +203,15 @@ interface SavedSearch {
   query: string;
 }
 
+interface AttachmentCenterEntry {
+  id: string;
+  messageIndex: number;
+  messageSubject: string;
+  from: string;
+  date: string;
+  attachment: EmailAttachment;
+}
+
 function normalizeThreadSubject(subject: string): string {
   return subject
     .trim()
@@ -234,6 +244,19 @@ export default function ViewerPage() {
   >(new Set());
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isSavedSearchesMenuOpen, setIsSavedSearchesMenuOpen] = useState(false);
+  const [isAttachmentCenterOpen, setIsAttachmentCenterOpen] = useState(false);
+  const [isAttachmentCenterLoading, setIsAttachmentCenterLoading] =
+    useState(false);
+  const [attachmentCenterProgress, setAttachmentCenterProgress] = useState(0);
+  const [attachmentCenterSearch, setAttachmentCenterSearch] = useState("");
+  const [attachmentCenterTypeFilter, setAttachmentCenterTypeFilter] =
+    useState("all");
+  const [attachmentCenterEntries, setAttachmentCenterEntries] = useState<
+    AttachmentCenterEntry[]
+  >([]);
+  const [selectedAttachmentEntryIds, setSelectedAttachmentEntryIds] = useState<
+    Set<string>
+  >(new Set());
   const [isLabelOverflowMenuOpen, setIsLabelOverflowMenuOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
@@ -285,6 +308,9 @@ export default function ViewerPage() {
   const searchWorker = useRef<Worker | null>(null);
   const viewerPageRootRef = useRef<HTMLDivElement | null>(null);
   const messageListContainerRef = useRef<HTMLDivElement | null>(null);
+  const attachmentCenterCacheRef = useRef<Map<string, AttachmentCenterEntry[]>>(
+    new Map()
+  );
   const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
   const labelFiltersGroupRef = useRef<HTMLDivElement | null>(null);
   const lastNavTimeRef = useRef<number>(0);
@@ -459,6 +485,7 @@ export default function ViewerPage() {
     setSelectedMessageIndices(new Set());
     setIsActionsMenuOpen(false);
     setIsSavedSearchesMenuOpen(false);
+    setIsAttachmentCenterOpen(false);
     setIsLabelOverflowMenuOpen(false);
     setIsExportDialogOpen(false);
     setIsShortcutsDialogOpen(false);
@@ -466,6 +493,9 @@ export default function ViewerPage() {
     setExportProgress(0);
     setEditingFileId(null);
     setEditingFileName("");
+    setAttachmentCenterTypeFilter("all");
+    setAttachmentCenterSearch("");
+    setSelectedAttachmentEntryIds(new Set());
   }, [selectedFileId]);
 
   useEffect(() => {
@@ -1035,6 +1065,249 @@ export default function ViewerPage() {
     [isMobile, setSelectedFile]
   );
 
+  const scanCurrentFileAttachments = useCallback(async () => {
+    if (!currentFile?.id || !currentFile.messageBoundaries) {
+      setAttachmentCenterEntries([]);
+      return;
+    }
+
+    const cachedEntries = attachmentCenterCacheRef.current.get(currentFile.id);
+    if (cachedEntries) {
+      setAttachmentCenterEntries(cachedEntries);
+      return;
+    }
+
+    setIsAttachmentCenterLoading(true);
+    setAttachmentCenterProgress(0);
+    try {
+      const entries: AttachmentCenterEntry[] = [];
+      const totalMessages = currentFile.messageBoundaries.length;
+
+      for (let messageIndex = 0; messageIndex < totalMessages; messageIndex++) {
+        const message = await loadMessage(currentFile.id, messageIndex);
+        const attachments = message.attachments || [];
+
+        for (const attachment of attachments) {
+          entries.push({
+            id: `${currentFile.id}-${messageIndex}-${attachment.id}`,
+            messageIndex,
+            messageSubject: message.subject || t("preview.noSubject"),
+            from: message.from || t("preview.unknown"),
+            date: message.rawDate || message.date.toISOString(),
+            attachment,
+          });
+        }
+
+        if (
+          (messageIndex + 1) % 10 === 0 ||
+          messageIndex + 1 === totalMessages
+        ) {
+          setAttachmentCenterProgress(
+            Math.round(((messageIndex + 1) / totalMessages) * 100)
+          );
+        }
+      }
+
+      attachmentCenterCacheRef.current.set(currentFile.id, entries);
+      setAttachmentCenterEntries(entries);
+    } catch (error) {
+      console.error("Failed to scan attachments:", error);
+      toast.error(t("attachmentCenter.scanFailed"));
+    } finally {
+      setIsAttachmentCenterLoading(false);
+      setAttachmentCenterProgress(0);
+    }
+  }, [currentFile, loadMessage, t]);
+
+  useEffect(() => {
+    if (!isAttachmentCenterOpen) {
+      return;
+    }
+
+    void scanCurrentFileAttachments();
+  }, [isAttachmentCenterOpen, scanCurrentFileAttachments]);
+
+  const filteredAttachmentCenterEntries = useMemo(() => {
+    const normalizedSearch = attachmentCenterSearch.trim().toLowerCase();
+    return attachmentCenterEntries.filter((entry) => {
+      const mimeTypeMatches =
+        attachmentCenterTypeFilter === "all" ||
+        entry.attachment.mimeType
+          .toLowerCase()
+          .startsWith(`${attachmentCenterTypeFilter}/`);
+      if (!mimeTypeMatches) {
+        return false;
+      }
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      const searchableText = [
+        entry.attachment.filename,
+        entry.attachment.mimeType,
+        entry.messageSubject,
+        entry.from,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedSearch);
+    });
+  }, [
+    attachmentCenterEntries,
+    attachmentCenterSearch,
+    attachmentCenterTypeFilter,
+  ]);
+
+  const attachmentCenterTypeOptions = useMemo(() => {
+    const typeSet = new Set<string>();
+    for (const entry of attachmentCenterEntries) {
+      const majorType = entry.attachment.mimeType.split("/")[0];
+      if (majorType) {
+        typeSet.add(majorType);
+      }
+    }
+
+    return Array.from(typeSet).sort();
+  }, [attachmentCenterEntries]);
+
+  useEffect(() => {
+    setSelectedAttachmentEntryIds((prev) => {
+      const validIds = new Set(
+        attachmentCenterEntries.map((entry) => entry.id)
+      );
+      const next = new Set<string>();
+      for (const entryId of prev) {
+        if (validIds.has(entryId)) {
+          next.add(entryId);
+        }
+      }
+      return next;
+    });
+  }, [attachmentCenterEntries]);
+
+  const handleToggleAttachmentCenterSelection = useCallback(
+    (entryId: string) => {
+      setSelectedAttachmentEntryIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(entryId)) {
+          next.delete(entryId);
+        } else {
+          next.add(entryId);
+        }
+        return next;
+      });
+    },
+    []
+  );
+
+  const handleToggleAllFilteredAttachments = useCallback(() => {
+    setSelectedAttachmentEntryIds((prev) => {
+      const next = new Set(prev);
+      const everySelected = filteredAttachmentCenterEntries.every((entry) =>
+        next.has(entry.id)
+      );
+
+      if (everySelected) {
+        for (const entry of filteredAttachmentCenterEntries) {
+          next.delete(entry.id);
+        }
+      } else {
+        for (const entry of filteredAttachmentCenterEntries) {
+          next.add(entry.id);
+        }
+      }
+
+      return next;
+    });
+  }, [filteredAttachmentCenterEntries]);
+
+  const handleOpenAttachmentMessage = useCallback(
+    (entry: AttachmentCenterEntry) => {
+      handleSelectMessage(entry.messageIndex);
+      setIsAttachmentCenterOpen(false);
+      if (isMobile) {
+        setMobileActivePane("preview");
+      }
+    },
+    [handleSelectMessage, isMobile]
+  );
+
+  const getAttachmentBytes = useCallback((attachment: EmailAttachment) => {
+    if (attachment.encoding === "base64") {
+      const binaryData = atob(attachment.data.replace(/\s/g, ""));
+      const bytes = new Uint8Array(binaryData.length);
+      for (let i = 0; i < binaryData.length; i++) {
+        bytes[i] = binaryData.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    return new TextEncoder().encode(attachment.data);
+  }, []);
+
+  const sanitizeAttachmentFolderPart = useCallback((value: string) => {
+    return value
+      .trim()
+      .replace(/[/\\?%*:|"<>]/g, "-")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 60);
+  }, []);
+
+  const handleDownloadSelectedAttachments = useCallback(async () => {
+    const entriesToDownload = filteredAttachmentCenterEntries.filter((entry) =>
+      selectedAttachmentEntryIds.has(entry.id)
+    );
+
+    if (entriesToDownload.length === 0) {
+      toast.error(t("attachmentCenter.noneSelected"));
+      return;
+    }
+
+    const zip = new JSZip();
+    const usedFilenames = new Set<string>();
+
+    for (let i = 0; i < entriesToDownload.length; i++) {
+      const entry = entriesToDownload[i];
+      const folderName =
+        sanitizeAttachmentFolderPart(entry.messageSubject) ||
+        `message-${entry.messageIndex + 1}`;
+      const baseFilename = entry.attachment.filename || `attachment-${i + 1}`;
+      let candidateFilename = `${folderName}/${baseFilename}`;
+      let dedupeCounter = 2;
+      while (usedFilenames.has(candidateFilename.toLowerCase())) {
+        const dotIndex = baseFilename.lastIndexOf(".");
+        const hasExtension = dotIndex > 0 && dotIndex < baseFilename.length - 1;
+        const stem = hasExtension
+          ? baseFilename.slice(0, dotIndex)
+          : baseFilename;
+        const ext = hasExtension ? baseFilename.slice(dotIndex) : "";
+        candidateFilename = `${folderName}/${stem}-${dedupeCounter}${ext}`;
+        dedupeCounter += 1;
+      }
+
+      usedFilenames.add(candidateFilename.toLowerCase());
+      zip.file(candidateFilename, getAttachmentBytes(entry.attachment));
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `attachments-${Date.now()}.zip`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, [
+    filteredAttachmentCenterEntries,
+    getAttachmentBytes,
+    sanitizeAttachmentFolderPart,
+    selectedAttachmentEntryIds,
+    t,
+  ]);
+
   const labelToMessageIndices = useMemo(() => {
     const indicesByLabel = new Map<string, number[]>();
     if (!currentFile?.messageBoundaries) {
@@ -1447,6 +1720,11 @@ export default function ViewerPage() {
   const allEmailsFilterTitle = `${allEmailsLabel} (${allEmailsFilterCount})`;
   const labelFilterChipBaseClassName =
     "inline-flex max-w-44 items-center rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1";
+  const allFilteredAttachmentsSelected =
+    filteredAttachmentCenterEntries.length > 0 &&
+    filteredAttachmentCenterEntries.every((entry) =>
+      selectedAttachmentEntryIds.has(entry.id)
+    );
   const getLabelFilterChipClassName = (isActive: boolean) =>
     cn(
       labelFilterChipBaseClassName,
@@ -1815,6 +2093,11 @@ export default function ViewerPage() {
     setIsShortcutsDialogOpen(true);
   }, []);
 
+  const handleOpenAttachmentCenterDialog = useCallback(() => {
+    setIsActionsMenuOpen(false);
+    setIsAttachmentCenterOpen(true);
+  }, []);
+
   const exportLocalization = useMemo(
     () => ({
       locale,
@@ -1917,6 +2200,7 @@ export default function ViewerPage() {
       if (
         isActionsMenuOpen ||
         isSavedSearchesMenuOpen ||
+        isAttachmentCenterOpen ||
         isLabelOverflowMenuOpen ||
         isExportDialogOpen ||
         isShortcutsDialogOpen ||
@@ -2064,6 +2348,7 @@ export default function ViewerPage() {
     handleOpenShortcutsDialog,
     isActionsMenuOpen,
     isSavedSearchesMenuOpen,
+    isAttachmentCenterOpen,
     isLabelOverflowMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
@@ -2585,6 +2870,11 @@ export default function ViewerPage() {
                     <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">
                       {t("selection.sections.tools")}
                     </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={handleOpenAttachmentCenterDialog}
+                    >
+                      {t("attachmentCenter.title")}
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
@@ -3680,6 +3970,151 @@ export default function ViewerPage() {
           </div>
         </SheetContent>
       </Sheet>
+
+      <Dialog
+        open={isAttachmentCenterOpen}
+        onOpenChange={setIsAttachmentCenterOpen}
+      >
+        <DialogContent className="sm:max-w-3xl max-h-[80dvh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>{t("attachmentCenter.title")}</DialogTitle>
+            <DialogDescription>
+              {t("attachmentCenter.description", {
+                count: attachmentCenterEntries.length,
+              })}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 overflow-hidden">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_10rem_auto]">
+              <Input
+                value={attachmentCenterSearch}
+                onChange={(event) =>
+                  setAttachmentCenterSearch(event.currentTarget.value)
+                }
+                placeholder={t("attachmentCenter.searchPlaceholder")}
+              />
+              <select
+                value={attachmentCenterTypeFilter}
+                onChange={(event) =>
+                  setAttachmentCenterTypeFilter(event.currentTarget.value)
+                }
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="all">{t("attachmentCenter.allTypes")}</option>
+                {attachmentCenterTypeOptions.map((typeOption) => (
+                  <option key={typeOption} value={typeOption}>
+                    {typeOption}
+                  </option>
+                ))}
+              </select>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleToggleAllFilteredAttachments}
+                disabled={filteredAttachmentCenterEntries.length === 0}
+              >
+                {allFilteredAttachmentsSelected
+                  ? t("attachmentCenter.clearFilteredSelection")
+                  : t("attachmentCenter.selectFiltered")}
+              </Button>
+            </div>
+
+            {isAttachmentCenterLoading ? (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  {t("attachmentCenter.scanning")}
+                </p>
+                <Progress value={attachmentCenterProgress} className="h-2" />
+              </div>
+            ) : (
+              <div className="max-h-[45dvh] overflow-y-auto space-y-2 pr-1">
+                {filteredAttachmentCenterEntries.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    {t("attachmentCenter.empty")}
+                  </p>
+                ) : (
+                  filteredAttachmentCenterEntries.map((entry) => {
+                    const isEntrySelected = selectedAttachmentEntryIds.has(
+                      entry.id
+                    );
+                    return (
+                      <div
+                        key={entry.id}
+                        className="flex items-start gap-3 rounded-md border border-border/50 p-3"
+                      >
+                        <Checkbox
+                          checked={isEntrySelected}
+                          onCheckedChange={() =>
+                            handleToggleAttachmentCenterSelection(entry.id)
+                          }
+                          aria-label={entry.attachment.filename}
+                          className="mt-1"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className="truncate text-sm font-medium"
+                            title={entry.attachment.filename}
+                          >
+                            {entry.attachment.filename}
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted-foreground">
+                            {entry.attachment.mimeType} •{" "}
+                            {formatSize(entry.attachment.size)}
+                          </p>
+                          <p
+                            className="mt-1 truncate text-xs text-muted-foreground"
+                            title={entry.messageSubject}
+                          >
+                            {entry.messageSubject}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenAttachmentMessage(entry)}
+                          >
+                            {t("attachmentCenter.openMessage")}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => downloadAttachment(entry.attachment)}
+                          >
+                            {t("preview.download")}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsAttachmentCenterOpen(false)}
+            >
+              {t("export.cancel")}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleDownloadSelectedAttachments}
+              disabled={selectedAttachmentEntryIds.size === 0}
+            >
+              {t("attachmentCenter.downloadSelected", {
+                count: selectedAttachmentEntryIds.size,
+              })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Export Dialog */}
       <Dialog
