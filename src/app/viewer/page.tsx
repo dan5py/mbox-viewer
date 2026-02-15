@@ -213,6 +213,7 @@ const MESSAGE_ROW_HEIGHT_MOBILE = 76;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 80;
 const MESSAGE_ROW_GAP = 0;
 const VIRTUALIZATION_MIN_ITEMS = 30;
+const MESSAGE_ROW_STACK_CLASSNAME = "space-y-0.5";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid min-w-[8.5rem] sm:min-w-[10rem] grid-cols-[3rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
 const ACTIONS_MENU_LABEL_CLASSNAME = "min-w-0 flex-1 truncate";
@@ -2852,7 +2853,7 @@ export default function ViewerPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="mb-0.5 flex items-start justify-between gap-2">
+                  <div className="mb-px flex items-start justify-between gap-2">
                     <p
                       className={cn(
                         "text-sm font-semibold truncate",
@@ -2883,7 +2884,7 @@ export default function ViewerPage() {
                     )}
                   </div>
 
-                  <div className="mb-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="mb-px flex items-center gap-2 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1 truncate">
                       <User className="size-3 shrink-0" />
                       <span className="truncate" title={from}>
@@ -3640,7 +3641,7 @@ export default function ViewerPage() {
                 )}
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className={MESSAGE_ROW_STACK_CLASSNAME}>
                 {visibleMessageIndices.map((index) =>
                   renderMessageListRow(index)
                 )}
