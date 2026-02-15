@@ -212,7 +212,7 @@ const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
 const MESSAGE_ROW_HEIGHT_MOBILE = 76;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 80;
 const MESSAGE_ROW_GAP = 0;
-const VIRTUALIZATION_MIN_ITEMS = 30;
+const VIRTUALIZATION_MIN_ITEMS = 120;
 const MESSAGE_ROW_STACK_CLASSNAME = "space-y-0";
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto grid min-w-[8.5rem] sm:min-w-[10rem] grid-cols-[3rem_4.75rem] items-center gap-x-2 sm:gap-x-3 pl-2";
