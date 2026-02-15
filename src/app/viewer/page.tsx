@@ -3262,7 +3262,10 @@ export default function ViewerPage() {
                       {selectedMenuLabel}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="pl-8 text-[11px] font-normal text-muted-foreground">
+                    <DropdownMenuLabel
+                      inset
+                      className="text-[11px] font-normal text-muted-foreground"
+                    >
                       {t("selection.sections.selection")}
                     </DropdownMenuLabel>
                     <DropdownMenuCheckboxItem
@@ -3326,7 +3329,10 @@ export default function ViewerPage() {
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="pl-8 text-[11px] font-normal text-muted-foreground">
+                    <DropdownMenuLabel
+                      inset
+                      className="text-[11px] font-normal text-muted-foreground"
+                    >
                       {t("selection.sections.filters")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
@@ -3362,7 +3368,10 @@ export default function ViewerPage() {
                       {renderActionsMenuMetadataSlot(undefined, undefined)}
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="pl-8 text-[11px] font-normal text-muted-foreground">
+                    <DropdownMenuLabel
+                      inset
+                      className="text-[11px] font-normal text-muted-foreground"
+                    >
                       {t("selection.sections.tools")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
