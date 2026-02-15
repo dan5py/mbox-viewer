@@ -224,6 +224,8 @@ const ACTIONS_MENU_SHORTCUT_PLACEHOLDER_CLASSNAME =
   "min-w-16 text-right text-xs whitespace-nowrap tracking-normal opacity-0";
 const ACTIONS_MENU_SHORTCUT_CELL_CLASSNAME =
   "min-w-[6.5rem] text-right whitespace-nowrap tracking-normal";
+const ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME =
+  "ml-4 min-w-[6.5rem] shrink-0";
 const analyticsPieColors = [
   "#2563eb",
   "#16a34a",
@@ -3202,17 +3204,35 @@ export default function ViewerPage() {
                       inset
                       onClick={handleOpenAttachmentCenterDialog}
                     >
-                      {t("attachmentCenter.title")}
+                      <span className="min-w-0 flex-1">
+                        {t("attachmentCenter.title")}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME}
+                      />
                     </DropdownMenuItem>
                     <DropdownMenuItem inset onClick={handleOpenAnalyticsDialog}>
-                      {t("analytics.title")}
+                      <span className="min-w-0 flex-1">
+                        {t("analytics.title")}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME}
+                      />
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       inset
                       onClick={handleOpenExportDialog}
                       disabled={selectedCount === 0}
                     >
-                      {t("export.action")}
+                      <span className="min-w-0 flex-1">
+                        {t("export.action")}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={ACTIONS_MENU_EMPTY_TRAILING_SLOT_CLASSNAME}
+                      />
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       inset
