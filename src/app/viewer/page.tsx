@@ -211,7 +211,7 @@ const SAVED_SEARCHES_STORAGE_KEY = "mbox-viewer-saved-searches-v1";
 const MESSAGE_ANNOTATIONS_STORAGE_KEY = "mbox-viewer-message-annotations-v1";
 const MESSAGE_ROW_HEIGHT_MOBILE = 84;
 const MESSAGE_ROW_HEIGHT_DESKTOP = 88;
-const MESSAGE_ROW_GAP = 2;
+const MESSAGE_ROW_GAP = 1;
 const ACTIONS_MENU_METADATA_SLOT_CLASSNAME =
   "ml-auto flex min-w-[10.5rem] items-center justify-end gap-3 pl-2";
 const ACTIONS_MENU_COUNT_COLUMN_CLASSNAME =
@@ -3081,7 +3081,7 @@ export default function ViewerPage() {
                     aria-label={actionsTriggerLabel}
                     aria-keyshortcuts="Home End"
                     onKeyDown={handleDropdownMenuBoundaryKeyDown}
-                    className="w-72"
+                    className="w-72 max-w-[calc(100vw-1rem)]"
                   >
                     <DropdownMenuLabel className="text-xs">
                       {selectedMenuLabel}
