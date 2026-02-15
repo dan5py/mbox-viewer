@@ -1849,14 +1849,16 @@ export default function ViewerPage() {
 
   const virtualizedMessageList = useMemo(() => {
     const estimatedRowHeight = virtualizedRowHeight;
+    const rowGap = 2;
+    const rowStep = estimatedRowHeight + rowGap;
     const overscanRows = 6;
     const viewportHeight = messageListContainerRef.current?.clientHeight ?? 640;
 
     const startRow = Math.max(
       0,
-      Math.floor(messageListScrollTop / estimatedRowHeight) - overscanRows
+      Math.floor(messageListScrollTop / rowStep) - overscanRows
     );
-    const visibleRows = Math.ceil(viewportHeight / estimatedRowHeight);
+    const visibleRows = Math.ceil(viewportHeight / rowStep);
     const endRow = Math.min(
       visibleMessageIndices.length,
       startRow + visibleRows + overscanRows * 2
@@ -1864,9 +1866,10 @@ export default function ViewerPage() {
 
     return {
       estimatedRowHeight,
+      rowGap,
       startRow,
       endRow,
-      totalHeight: visibleMessageIndices.length * estimatedRowHeight,
+      totalHeight: Math.max(0, visibleMessageIndices.length * rowStep - rowGap),
       items: visibleMessageIndices.slice(startRow, endRow),
     };
   }, [messageListScrollTop, virtualizedRowHeight, visibleMessageIndices]);
@@ -1896,7 +1899,7 @@ export default function ViewerPage() {
       const measuredHeight = Math.ceil(
         firstMessageCard.getBoundingClientRect().height
       );
-      const nextRowHeight = Math.max(isMobile ? 84 : 88, measuredHeight + 4);
+      const nextRowHeight = Math.max(isMobile ? 84 : 88, measuredHeight);
       setVirtualizedRowHeight((previousRowHeight) =>
         Math.abs(previousRowHeight - nextRowHeight) > 1
           ? nextRowHeight
@@ -3484,7 +3487,7 @@ export default function ViewerPage() {
                       key={index}
                       style={{
                         position: "absolute",
-                        top: `${rowIndex * virtualizedMessageList.estimatedRowHeight}px`,
+                        top: `${rowIndex * (virtualizedMessageList.estimatedRowHeight + virtualizedMessageList.rowGap)}px`,
                         left: 0,
                         right: 0,
                       }}
