@@ -12,6 +12,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Toaster } from "sonner";
 
+import { NuqsProvider } from "~/providers/nuqs-provider";
 import { RegisterServiceWorker } from "~/components/pwa/register-sw";
 
 const geist = Geist({
@@ -92,11 +93,13 @@ export default async function RootLayout({
       </head>
       <body className={geist.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <NextIntlClientProvider>
-            <RegisterServiceWorker />
-            {children}
-            <Toaster />
-          </NextIntlClientProvider>
+          <NuqsProvider>
+            <NextIntlClientProvider>
+              <RegisterServiceWorker />
+              {children}
+              <Toaster />
+            </NextIntlClientProvider>
+          </NuqsProvider>
         </ThemeProvider>
       </body>
     </html>

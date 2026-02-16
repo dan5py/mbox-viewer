@@ -60,7 +60,7 @@ self.addEventListener("fetch", (event) => {
           if (cached) {
             return cached;
           }
-          return (await caches.match("/offline")) || caches.match("/viewer");
+          return (await caches.match("/offline")) || (await caches.match("/viewer"));
         })
     );
     return;

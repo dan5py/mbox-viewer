@@ -33,6 +33,12 @@ const AttachmentPreviewDialog = lazy(
 const MobileFilesSheet = lazy(
   () => import("~/components/viewer/mobile-files-sheet")
 );
+const CommandPalette = lazy(
+  () => import("~/components/viewer/command-palette")
+);
+const AttachmentsCenterDialog = lazy(
+  () => import("~/components/viewer/attachments-center-dialog")
+);
 
 export default function ViewerPage() {
   const {
@@ -45,6 +51,7 @@ export default function ViewerPage() {
     viewerPageRootRef,
     messageRefs,
     labelFiltersGroupRef,
+    searchInputRef,
 
     // Store state
     files,
@@ -69,6 +76,7 @@ export default function ViewerPage() {
     handleClearSearch,
 
     // Labels
+    allLabels,
     inlineLabelFilters,
     overflowLabelFilters,
     labelDisplayCounts,
@@ -105,6 +113,11 @@ export default function ViewerPage() {
     totalMessages,
     totalPages,
     integerFormatter,
+
+    // Thread grouping
+    groupingMode,
+    setGroupingMode,
+    threadGroups,
 
     // Computed labels
     actionsTriggerLabel,
@@ -149,6 +162,12 @@ export default function ViewerPage() {
     handleResetFiltersFromMenu,
     handleOpenExportDialog,
     handleOpenShortcutsDialog,
+    handleOpenAttachmentsCenter,
+    handleFocusSearch,
+
+    // Attachments center
+    isAttachmentsCenterOpen,
+    setIsAttachmentsCenterOpen,
 
     // Export
     isExportDialogOpen,
@@ -253,7 +272,9 @@ export default function ViewerPage() {
         {/* Messages List */}
         <MessageList
           mobileActivePane={mobileActivePane}
+          searchInputRef={searchInputRef}
           searchQuery={searchQuery}
+          allLabels={allLabels}
           hasSearchQuery={hasSearchQuery}
           isSearching={isSearching}
           searchProgress={searchProgress}
@@ -334,6 +355,9 @@ export default function ViewerPage() {
           totalPages={totalPages}
           currentPage={currentPage}
           onSetCurrentPage={setCurrentPage}
+          groupingMode={groupingMode}
+          onSetGroupingMode={setGroupingMode}
+          threadGroups={threadGroups}
         />
 
         {/* Message Preview */}
@@ -443,6 +467,20 @@ export default function ViewerPage() {
         </Suspense>
       )}
 
+      {/* Attachments Center */}
+      {isAttachmentsCenterOpen && (
+        <Suspense fallback={null}>
+          <AttachmentsCenterDialog
+            open={isAttachmentsCenterOpen}
+            onOpenChange={setIsAttachmentsCenterOpen}
+            currentFile={currentFile}
+            loadMessage={store.loadMessage}
+            onSelectMessage={handleSelectMessage}
+            onPreviewAttachment={setPreviewedAttachment}
+          />
+        </Suspense>
+      )}
+
       {!!previewedAttachment && (
         <Suspense fallback={null}>
           <AttachmentPreviewDialog
@@ -452,6 +490,25 @@ export default function ViewerPage() {
           />
         </Suspense>
       )}
+
+      {/* Command Palette */}
+      <Suspense fallback={null}>
+        <CommandPalette
+          hasFiles={files.length > 0}
+          hasActiveFilters={hasActiveFilters}
+          hasSearchQuery={hasSearchQuery}
+          groupingMode={groupingMode}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onClearSearch={handleClearSearch}
+          onResetFilters={handleResetFiltersFromMenu}
+          onSetGroupingMode={setGroupingMode}
+          onSetCurrentPage={setCurrentPage}
+          onOpenShortcutsDialog={handleOpenShortcutsDialog}
+          onOpenAttachmentsCenter={handleOpenAttachmentsCenter}
+          onFocusSearch={handleFocusSearch}
+        />
+      </Suspense>
     </div>
   );
 }

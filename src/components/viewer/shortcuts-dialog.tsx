@@ -39,6 +39,13 @@ export default function ShortcutsDialog({
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <KbdGroup>
+              <Kbd>{shortcutModifierLabel}</Kbd>
+              <Kbd>K</Kbd>
+            </KbdGroup>
+            <span>{t("selection.shortcuts.commandPalette")}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <KbdGroup>
               <Kbd>?</Kbd>
               <Kbd>F1</Kbd>
               <Kbd>Help</Kbd>

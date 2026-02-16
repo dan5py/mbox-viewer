@@ -122,6 +122,7 @@
         "navigateMessages": "move preview selection between messages",
         "navigateLabels": "move between visible label filters",
         "jumpLabelsAndMenuItems": "jump to first or last visible label filter or open menu item",
+        "commandPalette": "open command palette",
         "clickKey": "Click",
         "range": "select a range"
       }
@@ -212,6 +213,68 @@
       "ariaLabel": "Rename file",
       "save": "Save",
       "cancel": "Cancel"
+    },
+    "searchSuggestions": {
+      "ariaLabel": "Search suggestions",
+      "groups": {
+        "operators": "Filters",
+        "values": "Suggestions"
+      },
+      "operators": {
+        "from": "Sender address or name",
+        "to": "Recipient address or name",
+        "subject": "Message subject line",
+        "body": "Message body content",
+        "label": "Email label or category",
+        "hasAttachment": "Messages with attachments",
+        "before": "Messages before a date",
+        "after": "Messages after a date"
+      },
+      "logic": {
+        "and": "Both conditions must match",
+        "or": "Either condition matches",
+        "not": "Exclude matching messages"
+      }
+    },
+    "threads": {
+      "label": "Threads",
+      "toggle": "Toggle thread grouping",
+      "count": "{count, plural, =1 {# message} other {# messages}}"
+    },
+    "commandPalette": {
+      "title": "Command Palette",
+      "description": "Search for a command to run...",
+      "placeholder": "Type a command...",
+      "noResults": "No results found.",
+      "groups": {
+        "navigation": "Navigation",
+        "searchFilters": "Search & Filters",
+        "tools": "Tools"
+      },
+      "commands": {
+        "goHome": "Go to home page",
+        "openSettings": "Open settings",
+        "nextPage": "Next page",
+        "prevPage": "Previous page",
+        "focusSearch": "Focus search",
+        "clearSearch": "Clear search",
+        "resetFilters": "Reset all filters",
+        "enableThreads": "Enable thread grouping",
+        "disableThreads": "Disable thread grouping",
+        "attachmentsCenter": "Open attachments center",
+        "showShortcuts": "Show keyboard shortcuts"
+      }
+    },
+    "attachmentsCenter": {
+      "title": "Attachments Center",
+      "description": "Browse all attachments in the current file.",
+      "searchPlaceholder": "Search attachments...",
+      "indexing": "Indexing attachments...",
+      "indexingProgress": "{progress}% complete",
+      "noAttachments": "No attachments found in this file.",
+      "noSearchResults": "No attachments match your search.",
+      "resultsCount": "{count, plural, =1 {# attachment found} other {# attachments found}}",
+      "jumpToMessage": "Jump to message"
     }
   },
   "Settings": {

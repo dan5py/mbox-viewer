@@ -1,20 +1,21 @@
 "use client";
 
+import { Download, FileText, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Download, FileText } from "lucide-react";
 
 import { EmailAttachment } from "~/types/files";
 import {
+  downloadAttachment,
   formatSize,
   isImageType,
   isPdfType,
   isTextType,
-  downloadAttachment,
 } from "~/lib/email-utils";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -35,29 +36,22 @@ export default function AttachmentPreviewDialog({
   const t = useTranslations("Viewer");
 
   return (
-    <Dialog
-      open={!!attachment}
-      onOpenChange={(open) => !open && onClose()}
-    >
+    <Dialog open={!!attachment} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="h-[calc(100dvh-1rem)] w-[calc(100dvw-1rem)] max-w-none max-h-none gap-0 p-0 sm:h-[calc(100dvh-4rem)] sm:w-[calc(100dvw-4rem)] sm:max-w-[calc(100dvw-4rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col">
         <DialogHeader className="border-b px-4 pt-4 pb-3 shrink-0 sm:px-6 sm:pt-6 sm:pb-4">
           <DialogTitle className="flex items-center justify-between">
-            <span
-              className="truncate flex-1 mr-4"
-              title={attachment?.filename}
-            >
+            <span className="truncate flex-1 mr-4" title={attachment?.filename}>
               {attachment?.filename}
             </span>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 pr-6">
               {attachment && (
                 <>
                   <Badge
                     variant="secondary"
                     className="text-xs h-8 border border-foreground/5"
                   >
-                    {attachment.mimeType
-                      .split("/")[1]
-                      ?.toUpperCase() || attachment.mimeType}
+                    {attachment.mimeType.split("/")[1]?.toUpperCase() ||
+                      attachment.mimeType}
                   </Badge>
 
                   <Button
@@ -154,9 +148,7 @@ export default function AttachmentPreviewDialog({
                       {t("preview.attachmentPreviewNotAvailableDescription")}
                     </p>
                   </div>
-                  <Button
-                    onClick={() => downloadAttachment(attachment)}
-                  >
+                  <Button onClick={() => downloadAttachment(attachment)}>
                     <Download className="size-4 mr-2" />
                     {t("preview.download")}
                   </Button>

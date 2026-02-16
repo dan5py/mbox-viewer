@@ -33,6 +33,9 @@ export interface MailFile {
       date: string;
       size: number;
       labels?: string[];
+      messageId?: string;
+      inReplyTo?: string;
+      references?: string[];
     };
   }>;
   messageCount?: number; // Total message count

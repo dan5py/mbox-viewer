@@ -23,9 +23,14 @@ import {
   shouldIgnoreGlobalShortcutTarget,
 } from "~/lib/keyboard-utils";
 import { ExportFormat, exportMessages } from "~/lib/message-export";
+import { buildThreadGroups, type ThreadGroup } from "~/lib/thread-grouping";
 import { cn } from "~/lib/utils";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useIsMobile } from "~/hooks/use-mobile";
+import {
+  useViewerSearchParams,
+  type GroupingMode,
+} from "~/hooks/use-viewer-searchparams";
 
 export function useViewer() {
   const t = useTranslations("Viewer");
@@ -60,6 +65,7 @@ export function useViewer() {
   const [isLabelOverflowMenuOpen, setIsLabelOverflowMenuOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
+  const [isAttachmentsCenterOpen, setIsAttachmentsCenterOpen] = useState(false);
   const [isMobileFilesSheetOpen, setIsMobileFilesSheetOpen] = useState(false);
   const [mobileActivePane, setMobileActivePane] = useState<
     "messages" | "preview"
@@ -93,6 +99,7 @@ export function useViewer() {
 
   // ── Refs ───────────────────────────────────────────────────────────
   const searchWorker = useRef<Worker | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const viewerPageRootRef = useRef<HTMLDivElement | null>(null);
   const messageRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
   const labelFiltersGroupRef = useRef<HTMLDivElement | null>(null);
@@ -105,19 +112,56 @@ export function useViewer() {
   const {
     files,
     selectedFileId,
-    searchQuery,
-    selectedLabel,
-    currentPage,
     messagesPerPage,
-    setSelectedFile,
+    setSelectedFile: storeSetSelectedFile,
     setSelectedMessage,
-    setSearchQuery,
-    setSelectedLabel,
-    setCurrentPage,
     renameFile,
     removeFile,
     loadMessage,
   } = useMboxStore();
+
+  // ── URL-synced filter/pagination state ────────────────────────────
+  const [urlState, setUrlState] = useViewerSearchParams();
+  const searchQuery = urlState.q;
+  const selectedLabel = urlState.label;
+  const currentPage = urlState.page;
+  const groupingMode: GroupingMode = urlState.group;
+
+  const setSearchQuery = useCallback(
+    (query: string) => {
+      void setUrlState({ q: query, page: 1 });
+    },
+    [setUrlState]
+  );
+
+  const setSelectedLabel = useCallback(
+    (label: string | null) => {
+      void setUrlState({ label, page: 1 });
+    },
+    [setUrlState]
+  );
+
+  const setCurrentPage = useCallback(
+    (page: number) => {
+      void setUrlState({ page });
+    },
+    [setUrlState]
+  );
+
+  const setSelectedFile = useCallback(
+    (fileId: string | null) => {
+      storeSetSelectedFile(fileId);
+      void setUrlState({ q: "", label: null, page: 1 });
+    },
+    [storeSetSelectedFile, setUrlState]
+  );
+
+  const setGroupingMode = useCallback(
+    (mode: GroupingMode) => {
+      void setUrlState({ group: mode, page: 1 });
+    },
+    [setUrlState]
+  );
 
   // ── Derived values ─────────────────────────────────────────────────
   const currentFile = files.find((f) => f.id === selectedFileId);
@@ -248,29 +292,19 @@ export function useViewer() {
       return allLabels;
     }
 
-    return allLabels
-      .filter((label) => {
-        if (selectedLabel === label) {
-          return true;
-        }
-        return (labelDisplayCounts.get(label) ?? 0) > 0;
-      })
-      .sort((a, b) => {
-        if (selectedLabel === a) return -1;
-        if (selectedLabel === b) return 1;
-
-        const countDiff =
-          (labelDisplayCounts.get(b) ?? 0) - (labelDisplayCounts.get(a) ?? 0);
-        if (countDiff !== 0) {
-          return countDiff;
-        }
-
-        return labelSortCollator.compare(a, b);
-      });
+    // When search is active, hide labels with zero matching results
+    // but always keep the selected label visible. Do NOT re-sort based
+    // on selection -- keep alphabetical order so pills don't jump
+    // around when the user clicks them.
+    return allLabels.filter((label) => {
+      if (selectedLabel === label) {
+        return true;
+      }
+      return (labelDisplayCounts.get(label) ?? 0) > 0;
+    });
   }, [
     allLabels,
     labelDisplayCounts,
-    labelSortCollator,
     searchResultSet,
     selectedLabel,
   ]);
@@ -333,6 +367,27 @@ export function useViewer() {
     labelFilteredIndices,
     searchResultSet,
   ]);
+
+  // ── Thread grouping ──────────────────────────────────────────────
+  const threadGroups = useMemo((): ThreadGroup[] | null => {
+    if (groupingMode !== "thread" || !currentFile?.messageBoundaries) {
+      return null;
+    }
+
+    const filteredSet = new Set(filteredMessageIndices);
+    const threadableMessages = currentFile.messageBoundaries
+      .filter((b) => filteredSet.has(b.index))
+      .map((b) => ({
+        index: b.index,
+        messageId: b.preview?.messageId,
+        inReplyTo: b.preview?.inReplyTo,
+        references: b.preview?.references,
+        subject: b.preview?.subject || "(No Subject)",
+        date: b.preview?.date || new Date().toISOString(),
+      }));
+
+    return buildThreadGroups(threadableMessages);
+  }, [groupingMode, currentFile, filteredMessageIndices]);
 
   const visibleMessageIndices = useMemo(() => {
     const startIndex = (currentPage - 1) * messagesPerPage;
@@ -904,6 +959,7 @@ export function useViewer() {
         setSelectedMessageIndex(null);
         setSelectedMessageData(null);
         setSelectedMessageIndices(new Set());
+        void setUrlState({ q: "", label: null, page: 1 });
       }
 
       if (editingFileId === fileId) {
@@ -913,7 +969,7 @@ export function useViewer() {
 
       removeFile(fileId);
     },
-    [selectedFileId, editingFileId, removeFile]
+    [selectedFileId, editingFileId, removeFile, setUrlState]
   );
 
   const handleStartRenameFile = useCallback(
@@ -1251,6 +1307,15 @@ export function useViewer() {
     setIsShortcutsDialogOpen(true);
   }, []);
 
+  const handleOpenAttachmentsCenter = useCallback(() => {
+    setIsActionsMenuOpen(false);
+    setIsAttachmentsCenterOpen(true);
+  }, []);
+
+  const handleFocusSearch = useCallback(() => {
+    searchInputRef.current?.focus();
+  }, []);
+
   // Export
   const handleExportSelectedMessages = useCallback(async () => {
     if (!currentFile || selectedCount === 0) {
@@ -1346,6 +1411,7 @@ export function useViewer() {
         isLabelOverflowMenuOpen ||
         isExportDialogOpen ||
         isShortcutsDialogOpen ||
+        isAttachmentsCenterOpen ||
         isMobileFilesSheetOpen ||
         isFullscreenOpen ||
         !!previewedAttachment ||
@@ -1489,6 +1555,7 @@ export function useViewer() {
     isLabelOverflowMenuOpen,
     isExportDialogOpen,
     isShortcutsDialogOpen,
+    isAttachmentsCenterOpen,
     isMobileFilesSheetOpen,
     isFullscreenOpen,
     previewedAttachment,
@@ -1512,6 +1579,7 @@ export function useViewer() {
     viewerPageRootRef,
     messageRefs,
     labelFiltersGroupRef,
+    searchInputRef,
 
     // Store state
     files,
@@ -1580,6 +1648,11 @@ export function useViewer() {
     totalPages,
     integerFormatter,
 
+    // Thread grouping
+    groupingMode,
+    setGroupingMode,
+    threadGroups,
+
     // Computed labels
     selectedCountLabel,
     actionsTriggerLabel,
@@ -1624,6 +1697,12 @@ export function useViewer() {
     handleResetFiltersFromMenu,
     handleOpenExportDialog,
     handleOpenShortcutsDialog,
+    handleOpenAttachmentsCenter,
+    handleFocusSearch,
+
+    // Attachments center
+    isAttachmentsCenterOpen,
+    setIsAttachmentsCenterOpen,
 
     // Export
     isExportDialogOpen,

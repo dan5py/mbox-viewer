@@ -3,6 +3,8 @@
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   type RefObject,
+  useRef,
+  useState,
 } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
@@ -11,7 +13,10 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   Calendar,
+  ChevronDown,
+  ChevronRight,
   Mail,
+  MessageSquare,
   MoreHorizontal,
   Search,
   User,
@@ -21,7 +26,9 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { MailFile } from "~/types/files";
 import { formatSize, getAvatarColor, getInitials } from "~/lib/email-utils";
+import { type ThreadGroup } from "~/lib/thread-grouping";
 import { cn } from "~/lib/utils";
+import { type GroupingMode } from "~/hooks/use-viewer-searchparams";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -39,13 +46,20 @@ import { Input } from "~/components/ui/input";
 import { Progress } from "~/components/ui/progress";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { Spinner } from "~/components/ui/spinner";
+import {
+  FilterChipsBar,
+  SearchSuggestions,
+  SuggestionsPanel,
+} from "~/components/viewer/search-suggestions";
 
 export interface MessageListProps {
   // Pane visibility
   mobileActivePane: "messages" | "preview";
 
   // Search
+  searchInputRef?: RefObject<HTMLInputElement | null>;
   searchQuery: string;
+  allLabels: string[];
   hasSearchQuery: boolean;
   isSearching: boolean;
   searchProgress: number;
@@ -141,11 +155,18 @@ export interface MessageListProps {
   totalPages: number;
   currentPage: number;
   onSetCurrentPage: (page: number) => void;
+
+  // Thread grouping
+  groupingMode: GroupingMode;
+  onSetGroupingMode: (mode: GroupingMode) => void;
+  threadGroups: ThreadGroup[] | null;
 }
 
 export function MessageList({
   mobileActivePane,
+  searchInputRef,
   searchQuery,
+  allLabels,
   hasSearchQuery,
   isSearching,
   searchProgress,
@@ -218,10 +239,37 @@ export function MessageList({
   totalPages,
   currentPage,
   onSetCurrentPage,
+  groupingMode,
+  onSetGroupingMode,
+  threadGroups,
 }: MessageListProps) {
   const t = useTranslations("Viewer");
   const locale = useLocale();
   const dateLocale = locale === "it" ? it : enUS;
+  const [expandedThreads, setExpandedThreads] = useState<Set<number>>(
+    new Set()
+  );
+  const localSearchInputRef = useRef<HTMLInputElement | null>(null);
+  const effectiveSearchInputRef = searchInputRef ?? localSearchInputRef;
+
+  const searchSuggestions = SearchSuggestions({
+    searchQuery,
+    onSearchInputChange: onSearchInputChange,
+    searchInputRef: effectiveSearchInputRef,
+    allLabels,
+  });
+
+  const toggleThread = (threadIndex: number) => {
+    setExpandedThreads((prev) => {
+      const next = new Set(prev);
+      if (next.has(threadIndex)) {
+        next.delete(threadIndex);
+      } else {
+        next.add(threadIndex);
+      }
+      return next;
+    });
+  };
 
   const getMessagePreview = (index: number) => {
     if (!currentFile?.messageBoundaries) return null;
@@ -239,23 +287,41 @@ export function MessageList({
       {/* Search */}
       <div className="border-b border-border/60 p-2.5 space-y-2 bg-muted/20">
         <div className="flex items-center gap-1.5">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <div className="relative flex-1 min-w-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground z-10" />
             <Input
+              ref={effectiveSearchInputRef}
               placeholder={t("search.placeholder")}
               value={searchQuery}
-              onChange={(e) => onSearchInputChange(e.target.value)}
+              onChange={(e) => searchSuggestions.handleInputChange(e.target.value)}
+              onKeyDown={searchSuggestions.handleInputKeyDown}
+              onFocus={searchSuggestions.handleInputFocus}
               className="text-sm pl-9 pr-9"
+              role="combobox"
+              aria-expanded={searchSuggestions.isOpen}
+              aria-autocomplete="list"
+              aria-controls="search-suggestions-listbox"
+              autoComplete="off"
             />
             {searchQuery && (
               <button
                 onClick={onClearSearch}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted transition-colors z-10"
                 aria-label={t("search.clear")}
               >
                 <X className="size-4 text-muted-foreground" />
               </button>
             )}
+            <SuggestionsPanel
+              isOpen={searchSuggestions.isOpen}
+              suggestions={searchSuggestions.suggestions}
+              selectedIndex={searchSuggestions.selectedIndex}
+              suggestionsRef={searchSuggestions.suggestionsRef}
+              itemRefs={searchSuggestions.itemRefs}
+              applySuggestion={searchSuggestions.applySuggestion}
+              setIsOpen={searchSuggestions.setIsOpen}
+              t={searchSuggestions.t}
+            />
           </div>
           {totalMessages > 0 && (
             <DropdownMenu
@@ -368,6 +434,12 @@ export function MessageList({
             </DropdownMenu>
           )}
         </div>
+
+        {/* Active filter chips */}
+        <FilterChipsBar
+          searchQuery={searchQuery}
+          onSearchInputChange={onSearchInputChange}
+        />
 
         {/* Label Filter Pills */}
         {shouldShowLabelFiltersRow && (
@@ -496,8 +568,8 @@ export function MessageList({
           </ScrollArea>
         )}
 
-        {shouldShowHeaderStatusRow && (
-          <div className="flex items-center min-w-0">
+        {(shouldShowHeaderStatusRow || totalMessages > 0) && (
+          <div className="flex items-center min-w-0 gap-1">
             <div
               className="min-w-0 flex-1"
               aria-live={isSearching ? "off" : "polite"}
@@ -522,7 +594,7 @@ export function MessageList({
                 <p className="text-[11px] text-destructive font-medium truncate">
                   {t("search.error")}
                 </p>
-              ) : (
+              ) : shouldShowHeaderStatusRow ? (
                 totalMessages > 0 && (
                   <p
                     className="text-[11px] text-muted-foreground font-medium truncate"
@@ -531,8 +603,25 @@ export function MessageList({
                     {messageSummaryLabel}
                   </p>
                 )
-              )}
+              ) : null}
             </div>
+            {totalMessages > 0 && (
+              <Button
+                variant={groupingMode === "thread" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-6 px-2 text-[11px] shrink-0"
+                onClick={() =>
+                  onSetGroupingMode(
+                    groupingMode === "thread" ? "flat" : "thread"
+                  )
+                }
+                aria-label={t("threads.toggle")}
+                title={t("threads.toggle")}
+              >
+                <MessageSquare className="size-3 mr-1" />
+                {t("threads.label")}
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -544,7 +633,7 @@ export function MessageList({
         aria-label={t("preview.messageListRegion")}
         aria-keyshortcuts="ArrowUp ArrowDown"
       >
-        {visibleMessageIndices.length === 0 ? (
+        {visibleMessageIndices.length === 0 && !threadGroups ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-8">
             <Mail className="size-10 text-muted-foreground mb-3 opacity-50" />
             <p className="text-sm text-muted-foreground">
@@ -555,123 +644,123 @@ export function MessageList({
                 : t("search.noMessages")}
             </p>
           </div>
-        ) : (
-          visibleMessageIndices.map((index) => {
-            const preview = getMessagePreview(index);
-            const isSelected = selectedMessageIndex === index;
-            const isMessageChecked = selectedMessageIndices.has(index);
-            const messageSubjectLabel =
-              preview?.subject || t("preview.noSubject");
-            const messageSubjectForAria =
-              preview?.subject || t("preview.noSubject");
-            const from = preview?.from || t("preview.unknown");
-            const date = preview?.date ? new Date(preview.date) : new Date();
-            const relativeDate = formatDistanceToNow(date, {
-              addSuffix: true,
-              locale: dateLocale,
-            });
+        ) : groupingMode === "thread" && threadGroups ? (
+          /* Thread mode */
+          threadGroups.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center p-8">
+              <Mail className="size-10 text-muted-foreground mb-3 opacity-50" />
+              <p className="text-sm text-muted-foreground">
+                {t("search.noMessages")}
+              </p>
+            </div>
+          ) : (
+            threadGroups.map((thread, threadIdx) => {
+              const isExpanded = expandedThreads.has(threadIdx);
+              const rootIndex = thread.messageIndices[0];
+              const rootPreview = getMessagePreview(rootIndex);
+              const threadDate = rootPreview?.date
+                ? new Date(rootPreview.date)
+                : new Date();
 
-            return (
-              <div
-                key={index}
-                className={cn(
-                  "w-full p-2 rounded-lg border transition-all group",
-                  "hover:border-border hover:shadow-sm",
-                  isSelected
-                    ? "border-primary bg-primary/10 shadow-sm"
-                    : "border-border/40 hover:bg-muted/50"
-                )}
-              >
-                <div className="flex items-start gap-2">
-                  <Checkbox
-                    data-allow-global-shortcuts="true"
-                    checked={isMessageChecked}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onToggleMessageSelection(index, event.shiftKey);
-                    }}
-                    aria-label={t("selection.toggleMessageWithSubject", {
-                      subject: messageSubjectForAria,
-                    })}
-                    className="mt-2"
+              if (thread.count === 1) {
+                return (
+                  <MessageCard
+                    key={`thread-${threadIdx}`}
+                    index={rootIndex}
+                    preview={rootPreview}
+                    isSelected={selectedMessageIndex === rootIndex}
+                    isMessageChecked={selectedMessageIndices.has(rootIndex)}
+                    locale={locale}
+                    dateLocale={dateLocale}
+                    t={t}
+                    messageRefs={messageRefs}
+                    onSelectMessage={onSelectMessage}
+                    onToggleMessageSelection={onToggleMessageSelection}
                   />
+                );
+              }
 
+              return (
+                <div key={`thread-${threadIdx}`} className="space-y-0.5">
                   <button
-                    data-allow-global-shortcuts="true"
-                    ref={(el) => {
-                      if (el) {
-                        messageRefs.current.set(index, el);
-                      } else {
-                        messageRefs.current.delete(index);
-                      }
-                    }}
-                    onClick={() => onSelectMessage(index)}
-                    className="flex-1 min-w-0 text-left p-1 rounded-md cursor-pointer"
+                    onClick={() => toggleThread(threadIdx)}
+                    className={cn(
+                      "w-full p-2 rounded-lg border transition-all text-left",
+                      "hover:border-border hover:shadow-sm",
+                      "border-border/40 hover:bg-muted/50"
+                    )}
                   >
-                    <div className="flex gap-3">
-                      {/* Avatar */}
-                      <div
-                        className={cn(
-                          "size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
-                          getAvatarColor(from)
-                        )}
-                      >
-                        {getInitials(from)}
-                      </div>
-
-                      {/* Content */}
+                    <div className="flex items-center gap-2">
+                      {isExpanded ? (
+                        <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+                      ) : (
+                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                      )}
+                      <MessageSquare className="size-4 shrink-0 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <p
-                            className={cn(
-                              "text-sm font-semibold truncate",
-                              isSelected ? "text-primary" : "text-foreground"
-                            )}
-                            title={messageSubjectLabel}
-                          >
-                            {preview?.subject || (
-                              <span className="italic text-muted-foreground">
-                                {t("preview.noSubject")}
-                              </span>
-                            )}
-                          </p>
-                          {preview?.size && (
-                            <span className="text-xs text-muted-foreground shrink-0">
-                              {formatSize(preview.size)}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
-                          <div className="flex items-center gap-1 truncate">
-                            <User className="size-3 shrink-0" />
-                            <span className="truncate" title={from}>
-                              {from}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="size-3" />
-                            <span>{relativeDate}</span>
-                          </div>
-                          <span className="text-muted-foreground/60">
-                            {date.toLocaleString(locale, {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
+                        <p className="text-sm font-semibold truncate">
+                          {thread.subject}
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                          <Badge variant="secondary" className="text-[10px] h-4">
+                            {t("threads.count", { count: thread.count })}
+                          </Badge>
+                          <span>
+                            {formatDistanceToNow(threadDate, {
+                              addSuffix: true,
+                              locale: dateLocale,
                             })}
                           </span>
                         </div>
                       </div>
                     </div>
                   </button>
+                  {isExpanded &&
+                    thread.messageIndices.map((msgIndex) => {
+                      const preview = getMessagePreview(msgIndex);
+                      return (
+                        <div key={msgIndex} className="ml-6">
+                          <MessageCard
+                            index={msgIndex}
+                            preview={preview}
+                            isSelected={selectedMessageIndex === msgIndex}
+                            isMessageChecked={selectedMessageIndices.has(
+                              msgIndex
+                            )}
+                            locale={locale}
+                            dateLocale={dateLocale}
+                            t={t}
+                            messageRefs={messageRefs}
+                            onSelectMessage={onSelectMessage}
+                            onToggleMessageSelection={
+                              onToggleMessageSelection
+                            }
+                          />
+                        </div>
+                      );
+                    })}
                 </div>
-              </div>
+              );
+            })
+          )
+        ) : (
+          /* Flat mode */
+          visibleMessageIndices.map((index) => {
+            const preview = getMessagePreview(index);
+            return (
+              <MessageCard
+                key={index}
+                index={index}
+                preview={preview}
+                isSelected={selectedMessageIndex === index}
+                isMessageChecked={selectedMessageIndices.has(index)}
+                locale={locale}
+                dateLocale={dateLocale}
+                t={t}
+                messageRefs={messageRefs}
+                onSelectMessage={onSelectMessage}
+                onToggleMessageSelection={onToggleMessageSelection}
+              />
             );
           })
         )}
@@ -714,6 +803,156 @@ export function MessageList({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── MessageCard ─────────────────────────────────────────────────────
+
+interface MessageCardProps {
+  index: number;
+  preview:
+    | {
+        from: string;
+        to: string;
+        subject: string;
+        date: string;
+        size: number;
+        labels?: string[];
+        messageId?: string;
+        inReplyTo?: string;
+        references?: string[];
+      }
+    | null
+    | undefined;
+  isSelected: boolean;
+  isMessageChecked: boolean;
+  locale: string;
+  dateLocale: typeof enUS;
+  t: ReturnType<typeof useTranslations<"Viewer">>;
+  messageRefs: RefObject<Map<number, HTMLButtonElement>>;
+  onSelectMessage: (index: number) => void;
+  onToggleMessageSelection: (index: number, extendRange?: boolean) => void;
+}
+
+function MessageCard({
+  index,
+  preview,
+  isSelected,
+  isMessageChecked,
+  locale,
+  dateLocale,
+  t,
+  messageRefs,
+  onSelectMessage,
+  onToggleMessageSelection,
+}: MessageCardProps) {
+  const messageSubjectLabel = preview?.subject || t("preview.noSubject");
+  const messageSubjectForAria = preview?.subject || t("preview.noSubject");
+  const from = preview?.from || t("preview.unknown");
+  const date = preview?.date ? new Date(preview.date) : new Date();
+  const relativeDate = formatDistanceToNow(date, {
+    addSuffix: true,
+    locale: dateLocale,
+  });
+
+  return (
+    <div
+      className={cn(
+        "w-full p-2 rounded-lg border transition-all group",
+        "hover:border-border hover:shadow-sm",
+        isSelected
+          ? "border-primary bg-primary/10 shadow-sm"
+          : "border-border/40 hover:bg-muted/50"
+      )}
+    >
+      <div className="flex items-start gap-2">
+        <Checkbox
+          data-allow-global-shortcuts="true"
+          checked={isMessageChecked}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleMessageSelection(index, event.shiftKey);
+          }}
+          aria-label={t("selection.toggleMessageWithSubject", {
+            subject: messageSubjectForAria,
+          })}
+          className="mt-2"
+        />
+
+        <button
+          data-allow-global-shortcuts="true"
+          ref={(el) => {
+            if (el) {
+              messageRefs.current.set(index, el);
+            } else {
+              messageRefs.current.delete(index);
+            }
+          }}
+          onClick={() => onSelectMessage(index)}
+          className="flex-1 min-w-0 text-left p-1 rounded-md cursor-pointer"
+        >
+          <div className="flex gap-3">
+            <div
+              className={cn(
+                "size-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0",
+                getAvatarColor(from)
+              )}
+            >
+              {getInitials(from)}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <p
+                  className={cn(
+                    "text-sm font-semibold truncate",
+                    isSelected ? "text-primary" : "text-foreground"
+                  )}
+                  title={messageSubjectLabel}
+                >
+                  {preview?.subject || (
+                    <span className="italic text-muted-foreground">
+                      {t("preview.noSubject")}
+                    </span>
+                  )}
+                </p>
+                {preview?.size && (
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {formatSize(preview.size)}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
+                <div className="flex items-center gap-1 truncate">
+                  <User className="size-3 shrink-0" />
+                  <span className="truncate" title={from}>
+                    {from}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Calendar className="size-3" />
+                  <span>{relativeDate}</span>
+                </div>
+                <span className="text-muted-foreground/60">
+                  {date.toLocaleString(locale, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                </span>
+              </div>
+            </div>
+          </div>
+        </button>
+      </div>
     </div>
   );
 }

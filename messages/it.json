@@ -122,6 +122,7 @@
         "navigateMessages": "sposta la selezione dell'anteprima tra i messaggi",
         "navigateLabels": "sposta il focus tra i filtri etichetta visibili",
         "jumpLabelsAndMenuItems": "vai al primo o all'ultimo filtro etichetta visibile o alla prima/ultima voce del menu aperto",
+        "commandPalette": "apri la palette comandi",
         "clickKey": "Clic",
         "range": "seleziona un intervallo"
       }
@@ -212,6 +213,68 @@
       "ariaLabel": "Rinomina file",
       "save": "Salva",
       "cancel": "Annulla"
+    },
+    "searchSuggestions": {
+      "ariaLabel": "Suggerimenti di ricerca",
+      "groups": {
+        "operators": "Filtri",
+        "values": "Suggerimenti"
+      },
+      "operators": {
+        "from": "Indirizzo o nome del mittente",
+        "to": "Indirizzo o nome del destinatario",
+        "subject": "Oggetto del messaggio",
+        "body": "Contenuto del messaggio",
+        "label": "Etichetta o categoria email",
+        "hasAttachment": "Messaggi con allegati",
+        "before": "Messaggi prima di una data",
+        "after": "Messaggi dopo una data"
+      },
+      "logic": {
+        "and": "Entrambe le condizioni devono corrispondere",
+        "or": "Una delle condizioni corrisponde",
+        "not": "Escludi messaggi corrispondenti"
+      }
+    },
+    "threads": {
+      "label": "Conversazioni",
+      "toggle": "Attiva/disattiva raggruppamento per conversazione",
+      "count": "{count, plural, =1 {# messaggio} other {# messaggi}}"
+    },
+    "commandPalette": {
+      "title": "Palette comandi",
+      "description": "Cerca un comando da eseguire...",
+      "placeholder": "Digita un comando...",
+      "noResults": "Nessun risultato trovato.",
+      "groups": {
+        "navigation": "Navigazione",
+        "searchFilters": "Ricerca e filtri",
+        "tools": "Strumenti"
+      },
+      "commands": {
+        "goHome": "Vai alla pagina iniziale",
+        "openSettings": "Apri impostazioni",
+        "nextPage": "Pagina successiva",
+        "prevPage": "Pagina precedente",
+        "focusSearch": "Vai alla ricerca",
+        "clearSearch": "Cancella ricerca",
+        "resetFilters": "Azzera tutti i filtri",
+        "enableThreads": "Attiva raggruppamento conversazioni",
+        "disableThreads": "Disattiva raggruppamento conversazioni",
+        "attachmentsCenter": "Apri centro allegati",
+        "showShortcuts": "Mostra scorciatoie da tastiera"
+      }
+    },
+    "attachmentsCenter": {
+      "title": "Centro allegati",
+      "description": "Sfoglia tutti gli allegati nel file corrente.",
+      "searchPlaceholder": "Cerca allegati...",
+      "indexing": "Indicizzazione allegati...",
+      "indexingProgress": "{progress}% completato",
+      "noAttachments": "Nessun allegato trovato in questo file.",
+      "noSearchResults": "Nessun allegato corrisponde alla ricerca.",
+      "resultsCount": "{count, plural, =1 {# allegato trovato} other {# allegati trovati}}",
+      "jumpToMessage": "Vai al messaggio"
     }
   },
   "Settings": {

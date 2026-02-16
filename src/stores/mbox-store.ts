@@ -7,9 +7,6 @@ interface MboxState {
   files: MailFile[];
   selectedFileId: string | null;
   selectedMessageId: string | null;
-  searchQuery: string;
-  selectedLabel: string | null; // null means "All emails"
-  currentPage: number;
   messagesPerPage: number;
   isUploading: boolean;
   isParsing: boolean;
@@ -20,13 +17,14 @@ interface MboxState {
   renameFile: (fileId: string, nextName: string) => void;
   setSelectedFile: (fileId: string | null) => void;
   setSelectedMessage: (messageId: string | null) => void;
-  setSearchQuery: (query: string) => void;
-  setSelectedLabel: (label: string | null) => void;
-  setCurrentPage: (page: number) => void;
   setIsUploading: (uploading: boolean) => void;
   setIsParsing: (parsing: boolean) => void;
   // Message loading
-  loadMessage: (fileId: string, messageIndex: number) => Promise<EmailMessage>;
+  loadMessage: (
+    fileId: string,
+    messageIndex: number,
+    options?: { cache?: boolean }
+  ) => Promise<EmailMessage>;
 }
 
 function getUniqueFileName(
@@ -62,9 +60,6 @@ const useMboxStore = create<MboxState>((set, get) => ({
   files: [],
   selectedFileId: null,
   selectedMessageId: null,
-  searchQuery: "",
-  selectedLabel: null,
-  currentPage: 1,
   messagesPerPage: 50,
   isUploading: false,
   isParsing: false,
@@ -111,10 +106,6 @@ const useMboxStore = create<MboxState>((set, get) => ({
         files: remainingFiles,
         selectedFileId: nextSelectedFileId,
         selectedMessageId: isSelectedFile ? null : state.selectedMessageId,
-        // Clear search and reset page if deleting the selected file
-        searchQuery: isSelectedFile ? "" : state.searchQuery,
-        selectedLabel: isSelectedFile ? null : state.selectedLabel,
-        currentPage: isSelectedFile ? 1 : state.currentPage,
       };
     });
   },
@@ -145,26 +136,11 @@ const useMboxStore = create<MboxState>((set, get) => ({
     set({
       selectedFileId: fileId,
       selectedMessageId: null,
-      currentPage: 1,
-      searchQuery: "",
-      selectedLabel: null,
     });
   },
 
   setSelectedMessage: (messageId: string | null) => {
     set({ selectedMessageId: messageId });
-  },
-
-  setSearchQuery: (query: string) => {
-    set({ searchQuery: query, currentPage: 1 });
-  },
-
-  setSelectedLabel: (label: string | null) => {
-    set({ selectedLabel: label, currentPage: 1 });
-  },
-
-  setCurrentPage: (page: number) => {
-    set({ currentPage: page });
   },
 
   setIsUploading: (uploading: boolean) => {
@@ -174,21 +150,31 @@ const useMboxStore = create<MboxState>((set, get) => ({
     set({ isParsing: parsing });
   },
 
-  loadMessage: async (fileId: string, messageIndex: number) => {
+  loadMessage: async (
+    fileId: string,
+    messageIndex: number,
+    options?: { cache?: boolean }
+  ) => {
     const state = get();
     const file = state.files.find((f) => f.id === fileId);
+    const shouldUseCache = options?.cache ?? true;
+    const MAX_CACHED_MESSAGES_PER_FILE = 40;
 
     if (!file || !file.fileReader || !file.messageBoundaries) {
       throw new Error("File not properly initialized");
     }
 
     // Check cache first
-    if (!file.messageCache) {
+    if (shouldUseCache && !file.messageCache) {
       file.messageCache = new Map();
     }
 
-    if (file.messageCache.has(messageIndex)) {
-      return file.messageCache.get(messageIndex)!;
+    if (shouldUseCache && file.messageCache?.has(messageIndex)) {
+      const cachedMessage = file.messageCache.get(messageIndex)!;
+      // Refresh insertion order to approximate LRU behavior.
+      file.messageCache.delete(messageIndex);
+      file.messageCache.set(messageIndex, cachedMessage);
+      return cachedMessage;
     }
 
     // Load from file
@@ -204,8 +190,20 @@ const useMboxStore = create<MboxState>((set, get) => ({
       messageIndex
     );
 
-    // Cache it
-    file.messageCache.set(messageIndex, message);
+    if (shouldUseCache && file.messageCache) {
+      // Cache it
+      file.messageCache.set(messageIndex, message);
+
+      while (file.messageCache.size > MAX_CACHED_MESSAGES_PER_FILE) {
+        const oldestKey = file.messageCache.keys().next().value as
+          | number
+          | undefined;
+        if (oldestKey === undefined) {
+          break;
+        }
+        file.messageCache.delete(oldestKey);
+      }
+    }
 
     return message;
   },
