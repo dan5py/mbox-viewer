@@ -10,12 +10,38 @@ const APP_SHELL_ASSETS = [
   "/icon-512.png",
 ];
 
+function createOfflineResponse() {
+  return new Response(
+    `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline</title>
+  </head>
+  <body>
+    <main>
+      <h1>You are offline</h1>
+      <p>No cached fallback page is available right now.</p>
+    </main>
+  </body>
+</html>`,
+    {
+      status: 503,
+      statusText: "Service Unavailable",
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    }
+  );
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(APP_SHELL_CACHE)
       .then((cache) => cache.addAll(APP_SHELL_ASSETS))
-      .catch(() => undefined)
   );
   self.skipWaiting();
 });
@@ -60,9 +86,15 @@ self.addEventListener("fetch", (event) => {
           if (cached) {
             return cached;
           }
-          return (
-            (await caches.match("/offline")) || (await caches.match("/viewer"))
-          );
+          const offlineFallback = await caches.match("/offline");
+          if (offlineFallback) {
+            return offlineFallback;
+          }
+          const viewerFallback = await caches.match("/viewer");
+          if (viewerFallback) {
+            return viewerFallback;
+          }
+          return createOfflineResponse();
         })
     );
     return;
