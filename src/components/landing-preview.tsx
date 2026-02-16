@@ -12,13 +12,16 @@ export function LandingPreview() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const updateMounted = () => {
+      setMounted(true);
+    };
+    updateMounted();
   }, []);
 
   if (!mounted) {
     return (
       <div
-        className="w-full aspect-video bg-muted/50 animate-pulse"
+        className="w-full aspect-video bg-background animate-pulse"
         aria-hidden="true"
       />
     );
