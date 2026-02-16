@@ -95,7 +95,7 @@ export default async function Home() {
                   rel="noopener noreferrer nofollow"
                 >
                   <Github className="size-4" />
-                  Github
+                  {t("footer.github")}
                 </Link>
               </Button>
             </div>

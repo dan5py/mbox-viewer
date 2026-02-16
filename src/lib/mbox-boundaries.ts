@@ -24,6 +24,9 @@ export interface MessageBoundary {
     date: string;
     size: number;
     labels?: string[]; // Email labels (e.g., from x-gmail-labels header)
+    messageId?: string; // Message-ID header
+    inReplyTo?: string; // In-Reply-To header
+    references?: string[]; // References header (list of message IDs)
   };
 }
 
@@ -78,6 +81,31 @@ async function getMessagePreview(
       }
     }
 
+    // Extract threading headers
+    const messageIdRaw = getHeaderValue(headers, "message-id") || "";
+    const inReplyToRaw = getHeaderValue(headers, "in-reply-to") || "";
+    const referencesRaw = getHeaderValue(headers, "references") || "";
+
+    // Extract angle-bracketed IDs
+    const extractId = (raw: string): string | undefined => {
+      const match = raw.match(/<([^>]+)>/);
+      return match ? match[1] : undefined;
+    };
+
+    const extractIds = (raw: string): string[] => {
+      const ids: string[] = [];
+      const regex = /<([^>]+)>/g;
+      let m;
+      while ((m = regex.exec(raw)) !== null) {
+        ids.push(m[1]);
+      }
+      return ids;
+    };
+
+    const messageId = extractId(messageIdRaw);
+    const inReplyTo = extractId(inReplyToRaw);
+    const references = extractIds(referencesRaw);
+
     return {
       from,
       to,
@@ -85,6 +113,9 @@ async function getMessagePreview(
       date,
       size: 0, // Will be set after we have end position
       labels: labels.length > 0 ? labels : undefined,
+      messageId,
+      inReplyTo,
+      references: references.length > 0 ? references : undefined,
     };
   } catch (e) {
     console.warn("Failed to get message preview at byte", start, ":", e);

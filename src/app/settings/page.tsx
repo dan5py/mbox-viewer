@@ -97,9 +97,7 @@ export default function SettingsPage() {
                 <SettingsIcon className="size-8 text-primary" />
                 <h1 className="text-3xl font-bold">{t("title")}</h1>
               </div>
-              <p className="text-muted-foreground">
-                Manage your application preferences
-              </p>
+              <p className="text-muted-foreground">{t("description")}</p>
             </div>
           </div>
 
@@ -199,7 +197,7 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           className="inline-flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                          aria-label="What data we collect"
+                          aria-label={t("analytics.infoAriaLabel")}
                         >
                           <Info className="size-4 text-muted-foreground hover:text-foreground transition-colors" />
                         </button>
