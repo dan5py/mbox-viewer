@@ -13,24 +13,8 @@ A modern, fast, and privacy-focused MBOX file viewer that runs directly in your 
 - **HTML Email Rendering**: Accurately renders HTML emails, including attachments and inline images.
 - **Bulk Message Export**: Select messages across paginated results and export them as MBOX, TXT, or HTML (with optional attachment bundles).
 - **Multiple File Import**: Import many MBOX files at once with drag-and-drop or file picker multi-select.
-- **File Management**: Rename imported files directly from the Files sidebar.
 - **PWA Support**: Install the viewer as a Progressive Web App with offline-ready app shell caching.
 - **i18n Support**: Internationalization support with English and Italian locales.
-
-### Viewer Productivity Highlights
-
-- **Search worker progress**: Live search progress percentage and progress bar while scanning large files.
-- **Export progress & cancellation**: Real-time export progress in the export dialog with cancellable long-running exports.
-- **Bulk selection shortcuts**:
-  - `Ctrl/Cmd + A` → toggle filtered selection
-  - `Shift + Ctrl/Cmd + A` → clear selection
-  - `Shift + Esc` → reset active search/label filters
-  - `Esc` → clear current previewed message
-  - `?` (`Shift + /`), `F1`, or `Help` → open shortcuts help
-- **Keyboard navigation**:
-  - `↑ / ↓` → move preview selection through visible messages
-  - `← / →` → move focus across visible label-filter chips
-  - `Home / End` → jump to first/last label chip or menu item (when a dropdown menu is open)
 
 ## Tech Stack
 
