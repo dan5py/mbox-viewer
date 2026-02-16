@@ -1,7 +1,7 @@
 # MBOX Viewer
 
 <div style="display: flex; justify-content: center;">
-  <img src="./public/logo.png" alt="logo" width="128" height="128" />
+  <img src="./public/icons/icon-192x192.png" alt="logo" width="128" height="128" style="border-radius: 16px;" />
 </div>
 
 A modern, fast, and privacy-focused MBOX file viewer that runs directly in your browser.
