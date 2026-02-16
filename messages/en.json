@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "settingsAriaLabel": "Settings"
+  },
   "Metadata": {
     "description": "Fast, modern browser-based MBOX file viewer. Upload and view email archives instantly."
   },
@@ -30,7 +33,8 @@
     },
     "footer": {
       "description": "MBOX Viewer. Open source and free to use.",
-      "docs": "Docs"
+      "docs": "Docs",
+      "github": "Github"
     }
   },
   "Viewer": {
@@ -40,19 +44,123 @@
       "uploading": "Uploading...",
       "uploadingDescription": "Please wait for the file to be scanned."
     },
+    "files": {
+      "title": "Files"
+    },
+    "mobileNav": {
+      "openFiles": "Open files sidebar",
+      "files": "Files",
+      "messages": "Messages",
+      "preview": "Preview"
+    },
     "input": {
-      "drop": "Drop an MBOX file here",
-      "click": "or click to select",
+      "drop": "Drop one or more MBOX files here",
+      "click": "or click to select files",
       "noMessages": "No messages found in this file.",
-      "cancel": "Cancel import"
+      "cancel": "Cancel import",
+      "queueProgress": "File {current} of {total}",
+      "partialFailure": "{count, plural, =1 {1 file could not be imported} other {# files could not be imported}}",
+      "importCancelled": "Import cancelled",
+      "scanFailed": "Failed to scan selected files",
+      "invalidType": "{count, plural, =1 {Unsupported file type. Please select an MBOX file.} other {Some files have unsupported types. Please select MBOX files only.}}",
+      "or": "or",
+      "samplesTitle": "Try with sample files",
+      "samplesDescription": "Load two built-in sample MBOX files to test search, preview, and export features instantly.",
+      "useSamples": "Use sample files"
     },
     "messages": "{count, plural, =1 {# message} other {# messages}}",
     "parsing": "Parsing...",
     "search": {
       "placeholder": "Search messages",
       "searching": "Searching...",
+      "searchingProgress": "Searching... {progress}%",
       "results": "{count, plural, =1 {# result} other {# results}}",
-      "allEmails": "All emails"
+      "allEmails": "All emails",
+      "labelFilters": "Label filters",
+      "labelFiltersSummary": "Label filters, {controlsCount, plural, =1 {# control} other {# controls}}. {optionsCount, plural, =1 {# option available} other {# options available}}.",
+      "labelFiltersSummaryActive": "Label filters, {controlsCount, plural, =1 {# control} other {# controls}}. {optionsCount, plural, =1 {# option available} other {# options available}}. Active filter: {label}.",
+      "inLabel": "in “{label}”",
+      "moreLabels": "+{count, plural, =1 {# more label} other {# more labels}}",
+      "moreLabelsAria": "Show {count, plural, =1 {# more label} other {# more labels}}",
+      "moreLabelsAriaActive": "Show {count, plural, =1 {# more label} other {# more labels}}. Active filter: {label}.",
+      "moreLabelsMenuLabel": "Additional labels menu, {count, plural, =1 {# item} other {# items}}",
+      "moreLabelsMenuLabelActive": "Additional labels menu, {count, plural, =1 {# item} other {# items}}. Active filter: {label}.",
+      "labelWithCount": "{label}. {count, plural, =1 {# message} other {# messages}}",
+      "noMessages": "No messages",
+      "clear": "Clear search",
+      "error": "Search failed. Please try again."
+    },
+    "selection": {
+      "actions": "Actions",
+      "actionsAriaLabel": "{count, plural, =0 {Selection actions. No messages selected} =1 {Selection actions. # message selected} other {Selection actions. # messages selected}}",
+      "selectedCount": "{count, plural, =0 {No messages selected} =1 {# message selected} other {# messages selected}}",
+      "selectedMenuLabel": "{count, plural, =0 {Selected: none} =1 {Selected: #} other {Selected: #}}",
+      "sections": {
+        "selection": "Selection",
+        "filters": "Filters",
+        "tools": "Tools"
+      },
+      "selectPage": "Select page",
+      "deselectPage": "Deselect page",
+      "selectFiltered": "Select filtered",
+      "deselectFiltered": "Deselect filtered",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "resetFilters": "Reset filters",
+      "clear": "Clear",
+      "toggleMessage": "Toggle message selection",
+      "toggleMessageWithSubject": "Toggle message selection for {subject}",
+      "shortcuts": {
+        "title": "Selection shortcuts",
+        "description": "Use these shortcuts to select and clear messages faster.",
+        "openHelp": "Show selection shortcuts",
+        "openDialog": "open shortcuts help",
+        "select": "toggle filtered selection",
+        "clear": "clear all selections",
+        "resetFilters": "reset active filters",
+        "clearPreview": "clear selected preview message",
+        "navigateMessages": "move preview selection between messages",
+        "navigateLabels": "move between visible label filters",
+        "jumpLabelsAndMenuItems": "jump to first or last visible label filter or open menu item",
+        "commandPalette": "open command palette",
+        "clickKey": "Click",
+        "range": "select a range"
+      }
+    },
+    "export": {
+      "action": "Export",
+      "title": "Export selected messages",
+      "description": "Export {count, plural, =1 {# selected message} other {# selected messages}}.",
+      "formatLabel": "Format",
+      "formats": {
+        "mbox": "MBOX",
+        "txt": "TXT",
+        "html": "HTML"
+      },
+      "includeAttachments": "Include attachments",
+      "includeAttachmentsHint": "Attachments are packaged in a ZIP archive together with the exported file.",
+      "cancel": "Cancel",
+      "cancelInProgress": "Cancel export",
+      "confirm": "Export",
+      "exporting": "Exporting...",
+      "progress": "Preparing export... {progress}%",
+      "success": "{count, plural, =1 {Export completed for # message} other {Export completed for # messages}}",
+      "error": "Failed to export selected messages",
+      "noSelection": "No messages selected for export",
+      "fileUnavailable": "The selected file is no longer available for export",
+      "cancelled": "Export cancelled",
+      "localization": {
+        "message": "Message",
+        "from": "From",
+        "to": "To",
+        "cc": "Cc",
+        "bcc": "Bcc",
+        "date": "Date",
+        "subject": "Subject",
+        "htmlDocumentTitle": "MBOX Export",
+        "htmlHeading": "MBOX Export",
+        "exportedCount": "{count, plural, =1 {Exported # message} other {Exported # messages}}"
+      }
     },
     "pagination": {
       "previous": "Prev",
@@ -67,6 +175,8 @@
       "bcc": "Bcc",
       "subject": "Subject",
       "date": "Date",
+      "messageListRegion": "Message list",
+      "html": "HTML",
       "plainText": "Plain Text",
       "body": "Body",
       "headers": "Headers",
@@ -89,7 +199,8 @@
       "attachmentPreviewError": "Failed to preview attachment",
       "attachmentPreviewNotAvailable": "Preview not available",
       "attachmentPreviewNotAvailableDescription": "This file type cannot be previewed. Please download the file to view it.",
-      "loadingMessageContent": "Loading message content..."
+      "loadingMessageContent": "Loading message content...",
+      "attachmentCount": "{count, plural, =1 {# attachment} other {# attachments}}"
     },
     "delete": {
       "title": "Delete file",
@@ -97,10 +208,78 @@
       "confirm": "Delete",
       "cancel": "Cancel",
       "ariaLabel": "Delete file"
+    },
+    "rename": {
+      "ariaLabel": "Rename file",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "searchSuggestions": {
+      "ariaLabel": "Search suggestions",
+      "groups": {
+        "operators": "Filters",
+        "values": "Suggestions"
+      },
+      "operators": {
+        "from": "Sender address or name",
+        "to": "Recipient address or name",
+        "subject": "Message subject line",
+        "body": "Message body content",
+        "label": "Email label or category",
+        "hasAttachment": "Messages with attachments",
+        "before": "Messages before a date",
+        "after": "Messages after a date"
+      },
+      "logic": {
+        "and": "Both conditions must match",
+        "or": "Either condition matches",
+        "not": "Exclude matching messages"
+      }
+    },
+    "threads": {
+      "label": "Threads",
+      "toggle": "Toggle thread grouping",
+      "count": "{count, plural, =1 {# message} other {# messages}}"
+    },
+    "commandPalette": {
+      "title": "Command Palette",
+      "description": "Search for a command to run...",
+      "placeholder": "Type a command...",
+      "noResults": "No results found.",
+      "groups": {
+        "navigation": "Navigation",
+        "searchFilters": "Search & Filters",
+        "tools": "Tools"
+      },
+      "commands": {
+        "goHome": "Go to home page",
+        "openSettings": "Open settings",
+        "nextPage": "Next page",
+        "prevPage": "Previous page",
+        "focusSearch": "Focus search",
+        "clearSearch": "Clear search",
+        "resetFilters": "Reset all filters",
+        "enableThreads": "Enable thread grouping",
+        "disableThreads": "Disable thread grouping",
+        "attachmentsCenter": "Open attachments center",
+        "showShortcuts": "Show keyboard shortcuts"
+      }
+    },
+    "attachmentsCenter": {
+      "title": "Attachments Center",
+      "description": "Browse all attachments in the current file.",
+      "searchPlaceholder": "Search attachments...",
+      "indexing": "Indexing attachments...",
+      "indexingProgress": "{progress}% complete",
+      "noAttachments": "No attachments found in this file.",
+      "noSearchResults": "No attachments match your search.",
+      "resultsCount": "{count, plural, =1 {# attachment found} other {# attachments found}}",
+      "jumpToMessage": "Jump to message"
     }
   },
   "Settings": {
     "title": "Settings",
+    "description": "Manage your application preferences",
     "appearance": {
       "title": "Appearance",
       "description": "Customize the appearance of the application",
@@ -121,6 +300,7 @@
       "description": "Help us improve by sharing anonymous usage data",
       "enableTracking": "Enable analytics tracking",
       "enableTrackingDescription": "Allow anonymous usage analytics to help improve the application",
+      "infoAriaLabel": "What data we collect",
       "dataCollected": "We only track the number of files uploaded and the amount of messages they contain. No personal information, file content, or file names are collected."
     },
     "about": {
@@ -129,5 +309,10 @@
       "description": "Information about the application"
     },
     "goBack": "Go back"
+  },
+  "Offline": {
+    "title": "You are offline",
+    "description": "The network is currently unavailable. You can try reopening the viewer once your connection is restored.",
+    "retry": "Retry"
   }
 }

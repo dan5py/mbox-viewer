@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "settingsAriaLabel": "Impostazioni"
+  },
   "Metadata": {
     "description": "Visualizzatore MBOX veloce e moderno per file email. Carica e visualizza archivi email in un attimo."
   },
@@ -30,7 +33,8 @@
     },
     "footer": {
       "description": "MBOX Viewer. Open source e gratuito.",
-      "docs": "Documentazione"
+      "docs": "Documentazione",
+      "github": "Github"
     }
   },
   "Viewer": {
@@ -40,19 +44,123 @@
       "uploading": "Caricamento in corso...",
       "uploadingDescription": "Attendi il completamento della lettura del file."
     },
+    "files": {
+      "title": "File"
+    },
+    "mobileNav": {
+      "openFiles": "Apri barra laterale file",
+      "files": "File",
+      "messages": "Messaggi",
+      "preview": "Anteprima"
+    },
     "input": {
-      "drop": "Trascina un file MBOX qui",
-      "click": "o clicca per selezionare",
+      "drop": "Trascina uno o più file MBOX qui",
+      "click": "o clicca per selezionare i file",
       "noMessages": "Nessun messaggio trovato in questo file.",
-      "cancel": "Annulla importazione"
+      "cancel": "Annulla importazione",
+      "queueProgress": "File {current} di {total}",
+      "partialFailure": "{count, plural, =1 {1 file non è stato importato} other {# file non sono stati importati}}",
+      "importCancelled": "Importazione annullata",
+      "scanFailed": "Impossibile analizzare i file selezionati",
+      "invalidType": "{count, plural, =1 {Tipo di file non supportato. Seleziona un file MBOX.} other {Alcuni file hanno un tipo non supportato. Seleziona solo file MBOX.}}",
+      "or": "o",
+      "samplesTitle": "Prova con file di esempio",
+      "samplesDescription": "Carica due file MBOX di esempio integrati per testare subito ricerca, anteprima ed esportazione.",
+      "useSamples": "Usa file di esempio"
     },
     "messages": "{count, plural, =1 {# messaggio} other {# messaggi}}",
     "parsing": "Estrazione...",
     "search": {
       "placeholder": "Cerca messaggi",
       "searching": "Ricerca in corso...",
+      "searchingProgress": "Ricerca in corso... {progress}%",
       "results": "{count, plural, =1 {# risultato} other {# risultati}}",
-      "allEmails": "Tutte le email"
+      "allEmails": "Tutte le email",
+      "labelFilters": "Filtri etichetta",
+      "labelFiltersSummary": "Filtri etichetta, {controlsCount, plural, =1 {# controllo} other {# controlli}}. {optionsCount, plural, =1 {# opzione disponibile} other {# opzioni disponibili}}.",
+      "labelFiltersSummaryActive": "Filtri etichetta, {controlsCount, plural, =1 {# controllo} other {# controlli}}. {optionsCount, plural, =1 {# opzione disponibile} other {# opzioni disponibili}}. Filtro attivo: {label}.",
+      "inLabel": "in “{label}”",
+      "moreLabels": "+{count, plural, =1 {# altra etichetta} other {# altre etichette}}",
+      "moreLabelsAria": "Mostra {count, plural, =1 {# altra etichetta} other {# altre etichette}}",
+      "moreLabelsAriaActive": "Mostra {count, plural, =1 {# altra etichetta} other {# altre etichette}}. Filtro attivo: {label}.",
+      "moreLabelsMenuLabel": "Menu etichette aggiuntive, {count, plural, =1 {# voce} other {# voci}}",
+      "moreLabelsMenuLabelActive": "Menu etichette aggiuntive, {count, plural, =1 {# voce} other {# voci}}. Filtro attivo: {label}.",
+      "labelWithCount": "{label}. {count, plural, =1 {# messaggio} other {# messaggi}}",
+      "noMessages": "Nessun messaggio",
+      "clear": "Cancella ricerca",
+      "error": "Ricerca non riuscita. Riprova."
+    },
+    "selection": {
+      "actions": "Azioni",
+      "actionsAriaLabel": "{count, plural, =0 {Azioni di selezione. Nessun messaggio selezionato} =1 {Azioni di selezione. # messaggio selezionato} other {Azioni di selezione. # messaggi selezionati}}",
+      "selectedCount": "{count, plural, =0 {Nessun messaggio selezionato} =1 {# messaggio selezionato} other {# messaggi selezionati}}",
+      "selectedMenuLabel": "{count, plural, =0 {Selezionati: nessuno} =1 {Selezionati: #} other {Selezionati: #}}",
+      "sections": {
+        "selection": "Selezione",
+        "filters": "Filtri",
+        "tools": "Strumenti"
+      },
+      "selectPage": "Seleziona pagina",
+      "deselectPage": "Deseleziona pagina",
+      "selectFiltered": "Seleziona filtrati",
+      "deselectFiltered": "Deseleziona filtrati",
+      "selectAll": "Seleziona tutto",
+      "deselectAll": "Deseleziona tutto",
+      "resetFilters": "Azzera filtri",
+      "clear": "Pulisci",
+      "toggleMessage": "Attiva/disattiva selezione messaggio",
+      "toggleMessageWithSubject": "Attiva/disattiva selezione del messaggio {subject}",
+      "shortcuts": {
+        "title": "Scorciatoie di selezione",
+        "description": "Usa queste scorciatoie per selezionare e pulire i messaggi più velocemente.",
+        "openHelp": "Mostra scorciatoie di selezione",
+        "openDialog": "apre la guida scorciatoie",
+        "select": "attiva/disattiva selezione filtrata",
+        "clear": "pulisce tutte le selezioni",
+        "resetFilters": "azzera i filtri attivi",
+        "clearPreview": "pulisce il messaggio selezionato nell'anteprima",
+        "navigateMessages": "sposta la selezione dell'anteprima tra i messaggi",
+        "navigateLabels": "sposta il focus tra i filtri etichetta visibili",
+        "jumpLabelsAndMenuItems": "vai al primo o all'ultimo filtro etichetta visibile o alla prima/ultima voce del menu aperto",
+        "commandPalette": "apri la palette comandi",
+        "clickKey": "Clic",
+        "range": "seleziona un intervallo"
+      }
+    },
+    "export": {
+      "action": "Esporta",
+      "title": "Esporta messaggi selezionati",
+      "description": "Esporta {count, plural, =1 {# messaggio selezionato} other {# messaggi selezionati}}.",
+      "formatLabel": "Formato",
+      "formats": {
+        "mbox": "MBOX",
+        "txt": "TXT",
+        "html": "HTML"
+      },
+      "includeAttachments": "Includi allegati",
+      "includeAttachmentsHint": "Gli allegati vengono inclusi in un archivio ZIP insieme al file esportato.",
+      "cancel": "Annulla",
+      "cancelInProgress": "Annulla esportazione",
+      "confirm": "Esporta",
+      "exporting": "Esportazione...",
+      "progress": "Preparazione esportazione... {progress}%",
+      "success": "{count, plural, =1 {Esportazione completata per # messaggio} other {Esportazione completata per # messaggi}}",
+      "error": "Impossibile esportare i messaggi selezionati",
+      "noSelection": "Nessun messaggio selezionato per l'esportazione",
+      "fileUnavailable": "Il file selezionato non è più disponibile per l'esportazione",
+      "cancelled": "Esportazione annullata",
+      "localization": {
+        "message": "Messaggio",
+        "from": "Da",
+        "to": "A",
+        "cc": "Cc",
+        "bcc": "Bcc",
+        "date": "Data",
+        "subject": "Oggetto",
+        "htmlDocumentTitle": "Esportazione MBOX",
+        "htmlHeading": "Esportazione MBOX",
+        "exportedCount": "{count, plural, =1 {Esportato # messaggio} other {Esportati # messaggi}}"
+      }
     },
     "pagination": {
       "previous": "Prec",
@@ -67,9 +175,11 @@
       "bcc": "Bcc",
       "subject": "Oggetto",
       "date": "Data",
+      "messageListRegion": "Elenco messaggi",
+      "html": "HTML",
       "plainText": "Testo",
       "body": "Corpo",
-      "headers": "Headers",
+      "headers": "Intestazioni",
       "noSubject": "Nessun oggetto",
       "unknown": "Sconosciuto",
       "loading": "Caricamento...",
@@ -89,7 +199,8 @@
       "attachmentPreviewError": "Impossibile visualizzare l'allegato",
       "attachmentPreviewNotAvailable": "Anteprima non disponibile",
       "attachmentPreviewNotAvailableDescription": "Questo tipo di file non può essere visualizzato in anteprima. Scarica il file per visualizzarlo.",
-      "loadingMessageContent": "Caricamento del messaggio..."
+      "loadingMessageContent": "Caricamento del messaggio...",
+      "attachmentCount": "{count, plural, =1 {# allegato} other {# allegati}}"
     },
     "delete": {
       "title": "Elimina file",
@@ -97,10 +208,78 @@
       "confirm": "Elimina",
       "cancel": "Annulla",
       "ariaLabel": "Elimina file"
+    },
+    "rename": {
+      "ariaLabel": "Rinomina file",
+      "save": "Salva",
+      "cancel": "Annulla"
+    },
+    "searchSuggestions": {
+      "ariaLabel": "Suggerimenti di ricerca",
+      "groups": {
+        "operators": "Filtri",
+        "values": "Suggerimenti"
+      },
+      "operators": {
+        "from": "Indirizzo o nome del mittente",
+        "to": "Indirizzo o nome del destinatario",
+        "subject": "Oggetto del messaggio",
+        "body": "Contenuto del messaggio",
+        "label": "Etichetta o categoria email",
+        "hasAttachment": "Messaggi con allegati",
+        "before": "Messaggi prima di una data",
+        "after": "Messaggi dopo una data"
+      },
+      "logic": {
+        "and": "Entrambe le condizioni devono corrispondere",
+        "or": "Una delle condizioni corrisponde",
+        "not": "Escludi messaggi corrispondenti"
+      }
+    },
+    "threads": {
+      "label": "Conversazioni",
+      "toggle": "Attiva/disattiva raggruppamento per conversazione",
+      "count": "{count, plural, =1 {# messaggio} other {# messaggi}}"
+    },
+    "commandPalette": {
+      "title": "Palette comandi",
+      "description": "Cerca un comando da eseguire...",
+      "placeholder": "Digita un comando...",
+      "noResults": "Nessun risultato trovato.",
+      "groups": {
+        "navigation": "Navigazione",
+        "searchFilters": "Ricerca e filtri",
+        "tools": "Strumenti"
+      },
+      "commands": {
+        "goHome": "Vai alla pagina iniziale",
+        "openSettings": "Apri impostazioni",
+        "nextPage": "Pagina successiva",
+        "prevPage": "Pagina precedente",
+        "focusSearch": "Vai alla ricerca",
+        "clearSearch": "Cancella ricerca",
+        "resetFilters": "Azzera tutti i filtri",
+        "enableThreads": "Attiva raggruppamento conversazioni",
+        "disableThreads": "Disattiva raggruppamento conversazioni",
+        "attachmentsCenter": "Apri centro allegati",
+        "showShortcuts": "Mostra scorciatoie da tastiera"
+      }
+    },
+    "attachmentsCenter": {
+      "title": "Centro allegati",
+      "description": "Sfoglia tutti gli allegati nel file corrente.",
+      "searchPlaceholder": "Cerca allegati...",
+      "indexing": "Indicizzazione allegati...",
+      "indexingProgress": "{progress}% completato",
+      "noAttachments": "Nessun allegato trovato in questo file.",
+      "noSearchResults": "Nessun allegato corrisponde alla ricerca.",
+      "resultsCount": "{count, plural, =1 {# allegato trovato} other {# allegati trovati}}",
+      "jumpToMessage": "Vai al messaggio"
     }
   },
   "Settings": {
     "title": "Impostazioni",
+    "description": "Gestisci le preferenze dell'applicazione",
     "appearance": {
       "title": "Aspetto",
       "description": "Personalizza l'aspetto dell'applicazione",
@@ -121,6 +300,7 @@
       "description": "Aiutaci a migliorare condividendo dati di utilizzo anonimi",
       "enableTracking": "Abilita tracciamento analisi",
       "enableTrackingDescription": "Consenti analisi di utilizzo anonime per aiutare a migliorare l'applicazione",
+      "infoAriaLabel": "Quali dati raccogliamo",
       "dataCollected": "Tracciamo solo il numero di file caricati e la quantità di messaggi che contengono. Nessuna informazione personale, contenuto del file o nomi dei file vengono raccolti."
     },
     "about": {
@@ -129,5 +309,10 @@
       "description": "Informazioni sull'applicazione"
     },
     "goBack": "Torna indietro"
+  },
+  "Offline": {
+    "title": "Sei offline",
+    "description": "La rete non è al momento disponibile. Puoi riprovare ad aprire il visualizzatore quando la connessione torna attiva.",
+    "retry": "Riprova"
   }
 }

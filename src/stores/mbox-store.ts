@@ -7,9 +7,6 @@ interface MboxState {
   files: MailFile[];
   selectedFileId: string | null;
   selectedMessageId: string | null;
-  searchQuery: string;
-  selectedLabel: string | null; // null means "All emails"
-  currentPage: number;
   messagesPerPage: number;
   isUploading: boolean;
   isParsing: boolean;
@@ -17,24 +14,52 @@ interface MboxState {
   // Actions
   addFile: (file: MailFile) => void;
   removeFile: (fileId: string) => void;
+  renameFile: (fileId: string, nextName: string) => void;
   setSelectedFile: (fileId: string | null) => void;
   setSelectedMessage: (messageId: string | null) => void;
-  setSearchQuery: (query: string) => void;
-  setSelectedLabel: (label: string | null) => void;
-  setCurrentPage: (page: number) => void;
   setIsUploading: (uploading: boolean) => void;
   setIsParsing: (parsing: boolean) => void;
   // Message loading
-  loadMessage: (fileId: string, messageIndex: number) => Promise<EmailMessage>;
+  loadMessage: (
+    fileId: string,
+    messageIndex: number,
+    options?: { cache?: boolean }
+  ) => Promise<EmailMessage>;
+}
+
+function getUniqueFileName(
+  proposedName: string,
+  existingNames: Set<string>
+): string {
+  const normalizedExistingNames = new Set(
+    Array.from(existingNames).map((name) => name.toLowerCase())
+  );
+  const normalizedProposedName = proposedName.toLowerCase();
+
+  if (!normalizedExistingNames.has(normalizedProposedName)) {
+    return proposedName;
+  }
+
+  const dotIndex = proposedName.lastIndexOf(".");
+  const hasExtension = dotIndex > 0;
+  const stem = hasExtension ? proposedName.slice(0, dotIndex) : proposedName;
+  const extension = hasExtension ? proposedName.slice(dotIndex) : "";
+
+  let counter = 2;
+  let candidate = `${stem} (${counter})${extension}`;
+
+  while (normalizedExistingNames.has(candidate.toLowerCase())) {
+    counter++;
+    candidate = `${stem} (${counter})${extension}`;
+  }
+
+  return candidate;
 }
 
 const useMboxStore = create<MboxState>((set, get) => ({
   files: [],
   selectedFileId: null,
   selectedMessageId: null,
-  searchQuery: "",
-  selectedLabel: null,
-  currentPage: 1,
   messagesPerPage: 50,
   isUploading: false,
   isParsing: false,
@@ -47,25 +72,62 @@ const useMboxStore = create<MboxState>((set, get) => ({
         const dateB = b.preview?.date ? new Date(b.preview.date).getTime() : 0;
         return dateB - dateA;
       });
+
+      // Keep boundary indices aligned with array position after sorting.
+      // Downstream features (search, pagination, export selection) rely on
+      // absolute positions in this ordered list.
+      file.messageBoundaries.forEach((boundary, index) => {
+        boundary.index = index;
+      });
     }
 
-    set((state) => ({
-      files: [...state.files, file],
-      selectedFileId: file.id, // Auto-select new file
-    }));
+    set((state) => {
+      const existingNames = new Set(state.files.map((f) => f.name));
+      const uniqueName = getUniqueFileName(file.name, existingNames);
+      const fileToStore =
+        uniqueName === file.name ? file : { ...file, name: uniqueName };
+
+      return {
+        files: [...state.files, fileToStore],
+        selectedFileId: file.id, // Auto-select new file
+      };
+    });
   },
 
   removeFile: (fileId: string) => {
     set((state) => {
       const isSelectedFile = state.selectedFileId === fileId;
+      const remainingFiles = state.files.filter((f) => f.id !== fileId);
+      const nextSelectedFileId = isSelectedFile
+        ? (remainingFiles[0]?.id ?? null)
+        : state.selectedFileId;
+
       return {
-        files: state.files.filter((f) => f.id !== fileId),
-        selectedFileId: isSelectedFile ? null : state.selectedFileId,
-        selectedMessageId: null,
-        // Clear search and reset page if deleting the selected file
-        searchQuery: isSelectedFile ? "" : state.searchQuery,
-        selectedLabel: isSelectedFile ? null : state.selectedLabel,
-        currentPage: isSelectedFile ? 1 : state.currentPage,
+        files: remainingFiles,
+        selectedFileId: nextSelectedFileId,
+        selectedMessageId: isSelectedFile ? null : state.selectedMessageId,
+      };
+    });
+  },
+
+  renameFile: (fileId: string, nextName: string) => {
+    const trimmedName = nextName.trim();
+    if (!trimmedName) {
+      return;
+    }
+
+    set((state) => {
+      const existingNames = new Set(
+        state.files
+          .filter((file) => file.id !== fileId)
+          .map((file) => file.name)
+      );
+      const uniqueName = getUniqueFileName(trimmedName, existingNames);
+
+      return {
+        files: state.files.map((file) =>
+          file.id === fileId ? { ...file, name: uniqueName } : file
+        ),
       };
     });
   },
@@ -74,26 +136,11 @@ const useMboxStore = create<MboxState>((set, get) => ({
     set({
       selectedFileId: fileId,
       selectedMessageId: null,
-      currentPage: 1,
-      searchQuery: "",
-      selectedLabel: null,
     });
   },
 
   setSelectedMessage: (messageId: string | null) => {
     set({ selectedMessageId: messageId });
-  },
-
-  setSearchQuery: (query: string) => {
-    set({ searchQuery: query, currentPage: 1 });
-  },
-
-  setSelectedLabel: (label: string | null) => {
-    set({ selectedLabel: label, currentPage: 1 });
-  },
-
-  setCurrentPage: (page: number) => {
-    set({ currentPage: page });
   },
 
   setIsUploading: (uploading: boolean) => {
@@ -103,21 +150,31 @@ const useMboxStore = create<MboxState>((set, get) => ({
     set({ isParsing: parsing });
   },
 
-  loadMessage: async (fileId: string, messageIndex: number) => {
+  loadMessage: async (
+    fileId: string,
+    messageIndex: number,
+    options?: { cache?: boolean }
+  ) => {
     const state = get();
     const file = state.files.find((f) => f.id === fileId);
+    const shouldUseCache = options?.cache ?? true;
+    const MAX_CACHED_MESSAGES_PER_FILE = 40;
 
     if (!file || !file.fileReader || !file.messageBoundaries) {
       throw new Error("File not properly initialized");
     }
 
     // Check cache first
-    if (!file.messageCache) {
+    if (shouldUseCache && !file.messageCache) {
       file.messageCache = new Map();
     }
 
-    if (file.messageCache.has(messageIndex)) {
-      return file.messageCache.get(messageIndex)!;
+    if (shouldUseCache && file.messageCache?.has(messageIndex)) {
+      const cachedMessage = file.messageCache.get(messageIndex)!;
+      // Refresh insertion order to approximate LRU behavior.
+      file.messageCache.delete(messageIndex);
+      file.messageCache.set(messageIndex, cachedMessage);
+      return cachedMessage;
     }
 
     // Load from file
@@ -133,8 +190,20 @@ const useMboxStore = create<MboxState>((set, get) => ({
       messageIndex
     );
 
-    // Cache it
-    file.messageCache.set(messageIndex, message);
+    if (shouldUseCache && file.messageCache) {
+      // Cache it
+      file.messageCache.set(messageIndex, message);
+
+      while (file.messageCache.size > MAX_CACHED_MESSAGES_PER_FILE) {
+        const oldestKey = file.messageCache.keys().next().value as
+          | number
+          | undefined;
+        if (oldestKey === undefined) {
+          break;
+        }
+        file.messageCache.delete(oldestKey);
+      }
+    }
 
     return message;
   },

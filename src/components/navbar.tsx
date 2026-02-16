@@ -35,7 +35,11 @@ export function Navbar({
         <div className="flex items-center gap-3">
           {showSettingsButton && pathname !== "/settings" && (
             <Link href="/settings">
-              <Button variant="ghost" size="icon" aria-label="Settings">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("Common.settingsAriaLabel")}
+              >
                 <Settings className="size-5" />
               </Button>
             </Link>

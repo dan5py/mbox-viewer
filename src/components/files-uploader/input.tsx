@@ -21,6 +21,88 @@ interface UploadProgress {
   progress: number;
   messageCount: number;
   speed: number;
+  currentFileNumber: number;
+  totalFiles: number;
+}
+
+function createSampleMboxFiles(): File[] {
+  const sampleInbox = `From alice@example.com Fri Jan 01 09:10:00 2021
+Date: Fri, 1 Jan 2021 09:10:00 +0000
+From: Alice Example <alice@example.com>
+To: Bob Example <bob@example.com>
+Subject: =?UTF-8?B?V2VsY29tZSB0byBNQk9YIFZpZXdlciDwn5iK?=
+Message-ID: <sample-1@example.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Hello Bob,
+
+This is a sample email so you can test search, selection, and export quickly.
+It also includes emoji support: 🚀✨📬
+
+Best,
+Alice
+
+From bob@example.com Fri Jan 01 10:25:00 2021
+Date: Fri, 1 Jan 2021 10:25:00 +0000
+From: Bob Example <bob@example.com>
+To: Alice Example <alice@example.com>
+Subject: Re: Welcome to MBOX Viewer
+Message-ID: <sample-2@example.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Thanks Alice!
+
+I can already test:
+- pagination
+- keyboard shortcuts
+- per-message exports
+`;
+
+  const sampleProject = `From manager@example.com Tue Feb 09 13:30:00 2021
+Date: Tue, 9 Feb 2021 13:30:00 +0000
+From: Project Manager <manager@example.com>
+To: Team <team@example.com>
+Cc: Stakeholders <stakeholders@example.com>
+Subject: Sprint planning notes
+Message-ID: <sample-3@example.com>
+Content-Type: multipart/alternative; boundary="sample-boundary"
+
+--sample-boundary
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Team,
+
+Sprint planning is complete. See the HTML part for highlighted tasks ✅
+
+--sample-boundary
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+<html><body>
+  <p><strong>Team,</strong></p>
+  <p>Sprint planning is complete. Top priorities:</p>
+  <ul>
+    <li>Mobile responsive navigation</li>
+    <li>Export polish</li>
+    <li>Search performance</li>
+  </ul>
+  <p>Thanks! ✅</p>
+</body></html>
+
+--sample-boundary--
+`;
+
+  return [
+    new File([sampleInbox], "sample-inbox.mbox", {
+      type: "application/mbox",
+    }),
+    new File([sampleProject], "sample-project.mbox", {
+      type: "application/mbox",
+    }),
+  ];
 }
 
 export function FileUploadInput({
@@ -34,107 +116,166 @@ export function FileUploadInput({
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const { addFile, setIsUploading, isUploading, setIsParsing, isParsing } =
-    createMboxStore();
+  const {
+    addFile,
+    files,
+    setIsUploading,
+    isUploading,
+    setIsParsing,
+    isParsing,
+  } = createMboxStore();
 
-  const handleFile = useCallback(
-    async (file: File) => {
-      // Create new AbortController for this import
+  const handleFiles = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) {
+        return;
+      }
+
+      // Create new AbortController for this import queue
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
 
       setIsUploading(true);
       setError(null);
 
+      let uploadedCount = 0;
+      const failures: string[] = [];
+
       try {
-        // Create ByteReader for memory-efficient access
-        const reader = new ByteReader(file);
+        for (let i = 0; i < acceptedFiles.length; i++) {
+          if (abortController.signal.aborted) {
+            break;
+          }
 
-        const startTime = Date.now();
-        let lastUpdate = startTime;
+          const file = acceptedFiles[i];
+          const currentFileNumber = i + 1;
+          const totalFiles = acceptedFiles.length;
+          const startTime = Date.now();
+          let lastUpdate = startTime;
 
-        // Scan for message boundaries
-        const boundaries = await scanMessageBoundaries(reader, {
-          signal: abortController.signal,
-          onProgress: (count, progressPercent) => {
-            // Don't update if cancelled
+          setIsParsing(false);
+          setProgress({
+            fileName: file.name,
+            progress: 0,
+            messageCount: 0,
+            speed: 0,
+            currentFileNumber,
+            totalFiles,
+          });
+
+          try {
+            // Create ByteReader for memory-efficient access
+            const reader = new ByteReader(file);
+
+            // Scan for message boundaries
+            const boundaries = await scanMessageBoundaries(reader, {
+              signal: abortController.signal,
+              onProgress: (count, progressPercent) => {
+                // Don't update if cancelled
+                if (abortController.signal.aborted) {
+                  return;
+                }
+
+                const now = Date.now();
+
+                // Update UI every 500ms to avoid excessive re-renders
+                if (now - lastUpdate > 500) {
+                  const elapsed = (now - startTime) / 1000;
+                  const speed = Math.round(count / (elapsed > 0 ? elapsed : 1));
+
+                  setProgress({
+                    fileName: file.name,
+                    progress: progressPercent,
+                    messageCount: count,
+                    speed,
+                    currentFileNumber,
+                    totalFiles,
+                  });
+                  lastUpdate = now;
+                }
+              },
+              onExtractPreview: () => {
+                if (!abortController.signal.aborted) {
+                  setIsParsing(true);
+                }
+              },
+            });
+
+            // Check if cancelled after scanning
             if (abortController.signal.aborted) {
-              return;
+              break;
             }
 
-            const now = Date.now();
-
-            // Update UI every 500ms to avoid excessive re-renders
-            if (now - lastUpdate > 500) {
-              const elapsed = (now - startTime) / 1000;
-              const speed = Math.round(count / (elapsed > 0 ? elapsed : 1));
-
-              setProgress({
-                fileName: file.name,
-                progress: progressPercent,
-                messageCount: count,
-                speed,
-              });
-              lastUpdate = now;
+            if (boundaries.length === 0) {
+              failures.push(file.name);
+              continue;
             }
-          },
-          onExtractPreview: () => {
-            if (!abortController.signal.aborted) {
-              setIsParsing(true);
-            }
-          },
-        });
 
-        // Check if cancelled after scanning
+            // Create mail file object
+            const mailFile: MailFile = {
+              id: `file-${Date.now()}-${Math.random()
+                .toString(36)
+                .substring(2, 9)}`,
+              name: file.name,
+              rawFilename: file.name,
+              typeId: "mbox",
+              createdAt: new Date(),
+              fileReader: reader,
+              messageBoundaries: boundaries,
+              messageCount: boundaries.length,
+            };
+
+            // Add file to store
+            addFile(mailFile);
+            uploadedCount++;
+
+            // Final progress
+            const elapsed = (Date.now() - startTime) / 1000;
+            const speed = Math.round(boundaries.length / elapsed);
+
+            setProgress({
+              fileName: file.name,
+              progress: 100,
+              messageCount: boundaries.length,
+              speed,
+              currentFileNumber,
+              totalFiles,
+            });
+
+            trackEvent("file_uploaded", {
+              message_count: boundaries.length,
+            });
+          } catch (err) {
+            if (err instanceof Error && err.message === "Scan cancelled") {
+              break;
+            }
+            failures.push(file.name);
+          } finally {
+            setIsParsing(false);
+          }
+        }
+
         if (abortController.signal.aborted) {
-          return;
+          // If at least one file was imported before cancellation, don't
+          // surface a destructive error state.
+          if (uploadedCount === 0) {
+            setError(t("Viewer.input.importCancelled"));
+          }
+        } else if (failures.length > 0) {
+          if (uploadedCount === 0) {
+            setError(t("Viewer.input.scanFailed"));
+          } else {
+            setError(
+              t("Viewer.input.partialFailure", {
+                count: failures.length,
+              })
+            );
+          }
         }
 
-        if (boundaries.length === 0) {
-          setError(t("Viewer.input.noMessages"));
-          return;
+        if (uploadedCount > 0) {
+          onUploadCompleteAction?.();
         }
-
-        // Create mail file object
-        const mailFile: MailFile = {
-          id: `file-${Date.now()}-${Math.random()
-            .toString(36)
-            .substring(2, 9)}`,
-          name: file.name,
-          rawFilename: file.name,
-          typeId: "mbox",
-          createdAt: new Date(),
-          fileReader: reader,
-          messageBoundaries: boundaries,
-          messageCount: boundaries.length,
-        };
-
-        // Add file to store
-        addFile(mailFile);
-
-        // Final progress
-        const elapsed = (Date.now() - startTime) / 1000;
-        const speed = Math.round(boundaries.length / elapsed);
-
-        setProgress({
-          fileName: file.name,
-          progress: 100,
-          messageCount: boundaries.length,
-          speed,
-        });
-
-        trackEvent("file_uploaded", {
-          message_count: boundaries.length,
-        });
-        onUploadCompleteAction?.();
-      } catch (err) {
-        if (err instanceof Error && err.message === "Scan cancelled") {
-          // User cancelled, silently clean up
-          return;
-        }
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to scan MBOX file";
-        setError(errorMessage);
       } finally {
         setProgress(null);
         setIsUploading(false);
@@ -142,7 +283,7 @@ export function FileUploadInput({
         abortControllerRef.current = null;
       }
     },
-    [setIsUploading, addFile, onUploadCompleteAction, setIsParsing, t]
+    [setIsUploading, setIsParsing, addFile, onUploadCompleteAction, t]
   );
 
   const handleCancel = useCallback(() => {
@@ -152,10 +293,25 @@ export function FileUploadInput({
     }
   }, []);
 
+  const handleUseSamples = useCallback(() => {
+    setError(null);
+    const sampleFiles = createSampleMboxFiles();
+    void handleFiles(sampleFiles);
+  }, [handleFiles]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
-        handleFile(acceptedFiles[0]);
+        handleFiles(acceptedFiles);
+      }
+    },
+    onDropRejected: (fileRejections) => {
+      if (fileRejections.length > 0) {
+        setError(
+          t("Viewer.input.invalidType", {
+            count: fileRejections.length,
+          })
+        );
       }
     },
     accept: {
@@ -164,7 +320,7 @@ export function FileUploadInput({
       // For iOS Safari
       "application/octet-stream": [".mbox"],
     },
-    multiple: false,
+    multiple: true,
   });
 
   return (
@@ -189,6 +345,33 @@ export function FileUploadInput({
         </div>
       )}
 
+      {!isUploading && files.length === 0 && (
+        <>
+          <div className="my-3 flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border/60" />
+            <span className="font-medium">{t("Viewer.input.or")}</span>
+            <span className="h-px flex-1 bg-border/60" />
+          </div>
+          <div className="rounded-md border border-border/60 bg-muted/20 p-3 text-center">
+            <p className="text-sm font-medium">
+              {t("Viewer.input.samplesTitle")}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("Viewer.input.samplesDescription")}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={handleUseSamples}
+            >
+              {t("Viewer.input.useSamples")}
+            </Button>
+          </div>
+        </>
+      )}
+
       {error && (
         <Alert variant="destructive" className="mt-4">
           <AlertCircle className="h-4 w-4" />
@@ -208,6 +391,12 @@ export function FileUploadInput({
                 )}
               </div>
             </div>
+            <div className="text-center text-xs text-muted-foreground mt-1">
+              {t("Viewer.input.queueProgress", {
+                current: progress?.currentFileNumber ?? 1,
+                total: progress?.totalFiles ?? 1,
+              })}
+            </div>
             <div className="flex justify-center text-xs text-muted-foreground mt-1">
               {t("Viewer.messages", {
                 count: progress?.messageCount ?? 0,
@@ -221,12 +410,7 @@ export function FileUploadInput({
             </div>
           </div>
           <Progress value={progress?.progress ?? 0} className="h-2" />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCancel}
-            disabled={isParsing}
-          >
+          <Button variant="outline" size="sm" onClick={handleCancel}>
             {t("Viewer.input.cancel")}
           </Button>
         </div>
