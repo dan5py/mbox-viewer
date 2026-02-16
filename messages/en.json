@@ -7,7 +7,9 @@
   },
   "Home": {
     "hero": {
-      "title": "View Your MBOX Files with Ease",
+      "badge": "Open Source & Free",
+      "title": "View Your MBOX Files",
+      "titleHighlight": "with Ease",
       "description": "A modern, fast, and intuitive browser-based MBOX file viewer. Open, search, and explore your email archives in seconds."
     },
     "viewer": {
@@ -29,6 +31,7 @@
     ],
     "cta": {
       "title": "Get Started",
+      "github": "View on GitHub",
       "description": "No installation required. Works entirely in your browser."
     },
     "footer": {

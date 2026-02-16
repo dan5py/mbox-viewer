@@ -7,7 +7,9 @@
   },
   "Home": {
     "hero": {
-      "title": "Visualizza i tuoi file MBOX con facilità",
+      "badge": "Open source e gratuito",
+      "title": "Visualizza i tuoi file MBOX",
+      "titleHighlight": "con facilità",
       "description": "Un visualizzatore MBOX veloce e moderno per file email. Carica e visualizza archivi email in un attimo."
     },
     "viewer": {
@@ -29,6 +31,7 @@
     ],
     "cta": {
       "title": "Inizia ora",
+      "github": "Vedi su GitHub",
       "description": "Nessuna installazione richiesta. Funziona interamente nel tuo browser."
     },
     "footer": {

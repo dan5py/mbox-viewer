@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Instrument_Serif } from "next/font/google";
 import { cookies } from "next/headers";
 
 import "./globals.css";
@@ -17,6 +17,13 @@ import { RegisterServiceWorker } from "~/components/pwa/register-sw";
 
 const geist = Geist({
   subsets: ["latin"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
 });
 
 async function getActiveLocale() {
@@ -45,11 +52,20 @@ export async function generateMetadata(): Promise<Metadata> {
     manifest: "/manifest.webmanifest",
     icons: {
       icon: [
-        { url: "/icon-180.png", sizes: "180x180", type: "image/png" },
-        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-        { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+        { url: "/icons/icon-48x48.png", sizes: "48x48", type: "image/png" },
+        { url: "/icons/icon-72x72.png", sizes: "72x72", type: "image/png" },
+        { url: "/icons/icon-96x96.png", sizes: "96x96", type: "image/png" },
+        { url: "/icons/icon-128x128.png", sizes: "128x128", type: "image/png" },
+        { url: "/icons/icon-144x144.png", sizes: "144x144", type: "image/png" },
+        { url: "/icons/icon-152x152.png", sizes: "152x152", type: "image/png" },
+        { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icons/icon-256x256.png", sizes: "256x256", type: "image/png" },
+        { url: "/icons/icon-384x384.png", sizes: "384x384", type: "image/png" },
+        { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
       ],
-      apple: [{ url: "/icon-180.png", sizes: "180x180", type: "image/png" }],
+      apple: [
+        { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+      ],
     },
     appleWebApp: {
       capable: true,
@@ -91,7 +107,7 @@ export default async function RootLayout({
           />
         )}
       </head>
-      <body className={geist.className}>
+      <body className={`${geist.className} ${instrumentSerif.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NuqsProvider>
             <NextIntlClientProvider>
