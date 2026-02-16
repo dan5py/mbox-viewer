@@ -302,12 +302,7 @@ export function useViewer() {
       }
       return (labelDisplayCounts.get(label) ?? 0) > 0;
     });
-  }, [
-    allLabels,
-    labelDisplayCounts,
-    searchResultSet,
-    selectedLabel,
-  ]);
+  }, [allLabels, labelDisplayCounts, searchResultSet, selectedLabel]);
 
   const maxInlineLabelFilters = 8;
   const { inlineLabelFilters, overflowLabelFilters } = useMemo(() => {

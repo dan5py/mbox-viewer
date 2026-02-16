@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Download } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { ExportFormat } from "~/lib/message-export";
 import { Button } from "~/components/ui/button";
@@ -127,9 +127,7 @@ export default function ExportDialog({
         <DialogFooter>
           <Button
             variant="outline"
-            onClick={
-              isExporting ? onCancelExport : () => onOpenChange(false)
-            }
+            onClick={isExporting ? onCancelExport : () => onOpenChange(false)}
           >
             {isExporting ? t("export.cancelInProgress") : t("export.cancel")}
           </Button>

@@ -1,5 +1,5 @@
-import { PREVIEWABLE_MIME_TYPES } from "~/lib/mime-types";
 import { EmailAttachment } from "~/types/files";
+import { PREVIEWABLE_MIME_TYPES } from "~/lib/mime-types";
 
 // Format file size
 export const formatSize = (bytes: number): string => {

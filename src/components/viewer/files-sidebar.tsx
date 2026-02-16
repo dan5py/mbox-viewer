@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Check, FileText, Pencil, Trash } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { MailFile } from "~/types/files";
 import { cn } from "~/lib/utils";
@@ -109,9 +109,7 @@ export function FilesSidebar({
                         >
                           <Input
                             value={editingFileName}
-                            onChange={(e) =>
-                              setEditingFileName(e.target.value)
-                            }
+                            onChange={(e) => setEditingFileName(e.target.value)}
                             onFocus={(e) => e.target.select()}
                             onBlur={(e) => {
                               const nextTarget =

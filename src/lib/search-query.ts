@@ -22,12 +22,7 @@ export type SearchNode =
   | { type: "or"; left: SearchNode; right: SearchNode }
   | { type: "not"; child: SearchNode };
 
-export type SearchField =
-  | "from"
-  | "to"
-  | "subject"
-  | "body"
-  | "label";
+export type SearchField = "from" | "to" | "subject" | "body" | "label";
 
 const FIELD_PREFIXES: Record<string, SearchField> = {
   "from:": "from",
@@ -87,10 +82,7 @@ function tokenize(input: string): Token[] {
 
     // Read a word (until whitespace, paren, or quote)
     let j = i;
-    while (
-      j < input.length &&
-      !/[\s()"']/.test(input[j])
-    ) {
+    while (j < input.length && !/[\s()"']/.test(input[j])) {
       j++;
     }
 
@@ -221,10 +213,7 @@ class Parser {
       }
 
       // Implicit AND: if next token is a primary-starting token (not OR, not RPAREN)
-      if (
-        next.type !== "OR" &&
-        next.type !== "RPAREN"
-      ) {
+      if (next.type !== "OR" && next.type !== "RPAREN") {
         const right = this.parseNot();
         left = { type: "and", left, right };
         continue;
@@ -385,10 +374,7 @@ export function isSimpleQuery(input: string): boolean {
 /**
  * Evaluate a parsed AST against a message context.
  */
-export function evaluateSearch(
-  node: SearchNode,
-  ctx: SearchContext
-): boolean {
+export function evaluateSearch(node: SearchNode, ctx: SearchContext): boolean {
   switch (node.type) {
     case "term": {
       const lower = node.value.toLowerCase();
@@ -430,13 +416,9 @@ export function evaluateSearch(
       }
     }
     case "and":
-      return (
-        evaluateSearch(node.left, ctx) && evaluateSearch(node.right, ctx)
-      );
+      return evaluateSearch(node.left, ctx) && evaluateSearch(node.right, ctx);
     case "or":
-      return (
-        evaluateSearch(node.left, ctx) || evaluateSearch(node.right, ctx)
-      );
+      return evaluateSearch(node.left, ctx) || evaluateSearch(node.right, ctx);
     case "not":
       return !evaluateSearch(node.child, ctx);
   }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { formatDate } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
@@ -19,17 +18,18 @@ import {
   TextInitial,
   User,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { EmailAttachment, EmailMessage } from "~/types/files";
-import { PREVIEWABLE_MIME_TYPES } from "~/lib/mime-types";
-import { cn } from "~/lib/utils";
 import {
-  formatSize,
+  downloadAttachment,
   formatEmailAddresses,
+  formatSize,
   getAvatarColor,
   getInitials,
-  downloadAttachment,
 } from "~/lib/email-utils";
+import { PREVIEWABLE_MIME_TYPES } from "~/lib/mime-types";
+import { cn } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Kbd, KbdGroup } from "~/components/ui/kbd";
@@ -126,12 +126,8 @@ export function MessagePreview({
                       {(() => {
                         const primarySender =
                           formatEmailAddresses(selectedMessageData.from)
-                            .filter(
-                              (address) => address.name || address.email
-                            )
-                            .map(
-                              (address) => address.name || address.email
-                            )
+                            .filter((address) => address.name || address.email)
+                            .map((address) => address.name || address.email)
                             .at(0) || t("preview.unknown");
 
                         return (
@@ -155,20 +151,14 @@ export function MessagePreview({
                   <div className="flex items-center justify-between gap-2">
                     <div
                       className="text-sm text-muted-foreground truncate min-w-0"
-                      title={
-                        selectedMessageData.to || t("preview.unknown")
-                      }
+                      title={selectedMessageData.to || t("preview.unknown")}
                     >
-                      <span className="font-medium">
-                        {t("preview.to")}:{" "}
-                      </span>
+                      <span className="font-medium">{t("preview.to")}: </span>
                       <span>
                         {(() => {
                           const toAddresses = formatEmailAddresses(
                             selectedMessageData.to
-                          ).filter(
-                            (address) => address.name || address.email
-                          );
+                          ).filter((address) => address.name || address.email);
                           const firstRecipient =
                             toAddresses[0]?.name ||
                             toAddresses[0]?.email ||
@@ -192,10 +182,7 @@ export function MessagePreview({
                       {selectedMessageData.cc && (
                         <Badge variant="outline" className="text-xs h-5">
                           {t("preview.cc")}:{" "}
-                          {
-                            formatEmailAddresses(selectedMessageData.cc)
-                              .length
-                          }
+                          {formatEmailAddresses(selectedMessageData.cc).length}
                         </Badge>
                       )}
 
@@ -204,10 +191,7 @@ export function MessagePreview({
                         selectedMessageData.attachments.length > 0 && (
                           <div className="flex items-center gap-1">
                             <Paperclip className="size-3 text-muted-foreground" />
-                            <Badge
-                              variant="secondary"
-                              className="text-xs h-5"
-                            >
+                            <Badge variant="secondary" className="text-xs h-5">
                               {selectedMessageData.attachments.length}
                             </Badge>
                           </div>
@@ -248,41 +232,35 @@ export function MessagePreview({
                           {t("preview.from")}
                         </label>
                         <div className="space-y-1.5">
-                          {formatEmailAddresses(
-                            selectedMessageData.from
-                          ).map((addr, idx) => (
-                            <div
-                              key={idx}
-                              className="flex flex-col gap-0.5"
-                            >
-                              {addr.name ? (
-                                <>
-                                  <span className="text-sm font-medium text-foreground">
-                                    {addr.name}
+                          {formatEmailAddresses(selectedMessageData.from).map(
+                            (addr, idx) => (
+                              <div key={idx} className="flex flex-col gap-0.5">
+                                {addr.name ? (
+                                  <>
+                                    <span className="text-sm font-medium text-foreground">
+                                      {addr.name}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {addr.email}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-sm text-foreground">
+                                    {addr.email || t("preview.unknown")}
                                   </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {addr.email}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-sm text-foreground">
-                                  {addr.email || t("preview.unknown")}
-                                </span>
-                              )}
-                            </div>
-                          ))}
+                                )}
+                              </div>
+                            )
+                          )}
                         </div>
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
                           <Mail className="size-3" />
                           {t("preview.to")}
-                          {formatEmailAddresses(selectedMessageData.to)
-                            .length > 1 && (
-                            <Badge
-                              variant="secondary"
-                              className="text-xs"
-                            >
+                          {formatEmailAddresses(selectedMessageData.to).length >
+                            1 && (
+                            <Badge variant="secondary" className="text-xs">
                               {
                                 formatEmailAddresses(selectedMessageData.to)
                                   .length
@@ -308,14 +286,10 @@ export function MessagePreview({
                             {t("preview.cc")}
                             {formatEmailAddresses(selectedMessageData.cc)
                               .length > 1 && (
-                              <Badge
-                                variant="secondary"
-                                className="text-xs"
-                              >
+                              <Badge variant="secondary" className="text-xs">
                                 {
-                                  formatEmailAddresses(
-                                    selectedMessageData.cc
-                                  ).length
+                                  formatEmailAddresses(selectedMessageData.cc)
+                                    .length
                                 }
                               </Badge>
                             )}
@@ -341,13 +315,9 @@ export function MessagePreview({
                           {t("preview.date")}
                         </label>
                         <p className="text-sm text-foreground">
-                          {formatDate(
-                            selectedMessageData.date,
-                            "PPP p",
-                            {
-                              locale: dateLocale,
-                            }
-                          )}
+                          {formatDate(selectedMessageData.date, "PPP p", {
+                            locale: dateLocale,
+                          })}
                         </p>
                       </div>
                       {selectedMessageData.attachments &&
@@ -359,8 +329,7 @@ export function MessagePreview({
                             </label>
                             <p className="text-sm text-foreground">
                               {t("preview.attachmentCount", {
-                                count:
-                                  selectedMessageData.attachments.length,
+                                count: selectedMessageData.attachments.length,
                               })}
                             </p>
                           </div>
@@ -380,9 +349,7 @@ export function MessagePreview({
           >
             <TabsList className="w-full rounded-none border-b shrink-0">
               {hasBody ? (
-                <TabsTrigger value="body">
-                  {t("preview.body")}
-                </TabsTrigger>
+                <TabsTrigger value="body">{t("preview.body")}</TabsTrigger>
               ) : null}
               {hasAttachments && (
                 <TabsTrigger value="attachments">
@@ -390,9 +357,7 @@ export function MessagePreview({
                   {selectedMessageData.attachments?.length})
                 </TabsTrigger>
               )}
-              <TabsTrigger value="headers">
-                {t("preview.headers")}
-              </TabsTrigger>
+              <TabsTrigger value="headers">{t("preview.headers")}</TabsTrigger>
             </TabsList>
 
             {/* Body Tab */}
@@ -499,9 +464,7 @@ export function MessagePreview({
                         className="flex items-center justify-between p-4 gap-4 rounded-lg border border-border/40 bg-card hover:bg-muted/50 transition-colors group"
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          {PREVIEWABLE_MIME_TYPES.includes(
-                            att.mimeType
-                          ) ? (
+                          {PREVIEWABLE_MIME_TYPES.includes(att.mimeType) ? (
                             <Image
                               src={`data:${att.mimeType};base64,${att.data}`}
                               alt={att.filename}
@@ -524,13 +487,9 @@ export function MessagePreview({
                               {att.filename}
                             </p>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Badge
-                                variant="outline"
-                                className="text-xs"
-                              >
-                                {att.mimeType
-                                  .split("/")[1]
-                                  ?.toUpperCase() || att.mimeType}
+                              <Badge variant="outline" className="text-xs">
+                                {att.mimeType.split("/")[1]?.toUpperCase() ||
+                                  att.mimeType}
                               </Badge>
                               <span>•</span>
                               <span>{formatSize(att.size)}</span>

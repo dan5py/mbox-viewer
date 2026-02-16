@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Eye, FileText, Mail } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";

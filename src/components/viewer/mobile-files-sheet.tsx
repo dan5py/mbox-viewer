@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Check, Pencil, Trash } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { MailFile } from "~/types/files";
 import { cn } from "~/lib/utils";
@@ -147,9 +147,7 @@ export default function MobileFilesSheet({
                           size="icon"
                           variant="ghost"
                           className="size-8"
-                          onClick={() =>
-                            onStartRename(file.id, file.name)
-                          }
+                          onClick={() => onStartRename(file.id, file.name)}
                           aria-label={t("rename.ariaLabel")}
                         >
                           <Pencil className="size-4" />

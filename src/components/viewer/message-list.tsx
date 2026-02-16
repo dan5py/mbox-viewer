@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  type KeyboardEvent as ReactKeyboardEvent,
-  type RefObject,
   useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type RefObject,
 } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
@@ -293,7 +293,9 @@ export function MessageList({
               ref={effectiveSearchInputRef}
               placeholder={t("search.placeholder")}
               value={searchQuery}
-              onChange={(e) => searchSuggestions.handleInputChange(e.target.value)}
+              onChange={(e) =>
+                searchSuggestions.handleInputChange(e.target.value)
+              }
               onKeyDown={searchSuggestions.handleInputKeyDown}
               onFocus={searchSuggestions.handleInputFocus}
               className="text-sm pl-9 pr-9"
@@ -702,7 +704,10 @@ export function MessageList({
                           {thread.subject}
                         </p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                          <Badge variant="secondary" className="text-[10px] h-4">
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] h-4"
+                          >
                             {t("threads.count", { count: thread.count })}
                           </Badge>
                           <span>
@@ -732,9 +737,7 @@ export function MessageList({
                             t={t}
                             messageRefs={messageRefs}
                             onSelectMessage={onSelectMessage}
-                            onToggleMessageSelection={
-                              onToggleMessageSelection
-                            }
+                            onToggleMessageSelection={onToggleMessageSelection}
                           />
                         </div>
                       );

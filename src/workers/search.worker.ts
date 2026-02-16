@@ -51,7 +51,7 @@ function contentHasAttachmentIndicators(rawContent: string): boolean {
   const lower = rawContent.toLowerCase();
   return (
     lower.includes("content-disposition: attachment") ||
-    lower.includes('content-disposition: inline; filename=') ||
+    lower.includes("content-disposition: inline; filename=") ||
     (lower.includes("content-type: multipart/mixed") &&
       lower.includes("boundary="))
   );

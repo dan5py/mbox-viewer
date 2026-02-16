@@ -7,12 +7,12 @@ import "./globals.css";
 import Script from "next/script";
 import { localeCookieName } from "~/i18n/config";
 import { getPreferredLocale, resolveSupportedLocale } from "~/i18n/locale";
+import { NuqsProvider } from "~/providers/nuqs-provider";
 import { ThemeProvider } from "~/providers/theme-provider";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Toaster } from "sonner";
 
-import { NuqsProvider } from "~/providers/nuqs-provider";
 import { RegisterServiceWorker } from "~/components/pwa/register-sw";
 
 const geist = Geist({

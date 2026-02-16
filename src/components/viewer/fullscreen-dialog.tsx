@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { CodeXml, TextInitial } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { EmailMessage } from "~/types/files";
 import {
@@ -41,9 +41,7 @@ export default function FullscreenDialog({
             {messageData?.htmlBody && (
               <Tabs
                 value={bodyTab}
-                onValueChange={(value) =>
-                  setBodyTab(value as "html" | "text")
-                }
+                onValueChange={(value) => setBodyTab(value as "html" | "text")}
                 className="shrink-0"
               >
                 <TabsList className="ml-0 p-0">

@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  type KeyboardEvent as ReactKeyboardEvent,
-  type RefObject,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type RefObject,
 } from "react";
 import {
   AtSign,
@@ -135,10 +135,7 @@ export function parseFilterChips(query: string): FilterChip[] {
 /**
  * Remove a chip from the query string and return the new query.
  */
-export function removeChipFromQuery(
-  query: string,
-  chip: FilterChip
-): string {
+export function removeChipFromQuery(query: string, chip: FilterChip): string {
   const before = query.slice(0, chip.start);
   const after = query.slice(chip.end);
   // Clean up double spaces
@@ -328,10 +325,7 @@ interface CursorContext {
   activeOperator: string | null;
 }
 
-function analyzeCursorContext(
-  query: string,
-  cursorPos: number
-): CursorContext {
+function analyzeCursorContext(query: string, cursorPos: number): CursorContext {
   const textBeforeCursor = query.slice(0, cursorPos);
 
   // Find the start of the current token (last whitespace boundary)
