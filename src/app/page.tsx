@@ -1,87 +1,81 @@
 import Link from "next/link";
-import { FileText, Mail, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Button } from "~/components/ui/button";
 import { Github } from "~/components/icons/Github";
+import { LandingPreview } from "~/components/landing-preview";
 import { Navbar } from "~/components/navbar";
-
-const features = [
-  {
-    icon: Zap,
-    title: "Lightning Fast",
-    description:
-      "Optimized for performance and instant loading of large MBOX files",
-  },
-  {
-    icon: FileText,
-    title: "Easy to Use",
-    description: "Intuitive interface designed for effortless file navigation",
-  },
-  {
-    icon: Mail,
-    title: "Email Archive",
-    description: "Perfect for viewing and managing email export archives",
-  },
-];
 
 export default async function Home() {
   const t = await getTranslations("Home");
 
   return (
-    <div className="flex flex-col min-h-dvh">
-      <Navbar showViewerButton showSettingsButton={false} />
+    <div className="flex flex-col min-h-dvh relative overflow-hidden">
+      <Navbar showViewerButton showSettingsButton={false} borderless />
 
-      {/* Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-20 sm:py-32">
-        <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
+      <main className="flex-1 flex flex-col items-center px-4 sm:px-6 relative">
+        {/* Background glow */}
+        <div className="landing-glow" />
+
+        {/* Hero content */}
+        <div className="max-w-4xl mx-auto text-center space-y-6 pt-16 sm:pt-24 lg:pt-32 relative z-10">
+          {/* Badge */}
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-sm text-primary font-medium">
+              <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+              {t("hero.badge")}
+            </div>
+          </div>
+
           {/* Heading */}
-          <div className="space-y-4">
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight">
-              {t("hero.title")}
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              {t("hero.description")}
-            </p>
-          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+            {t("hero.title")}
+            <br />
+            <span className="font-display italic text-primary decoration-primary underline decoration-2 underline-offset-8">
+              {t("hero.titleHighlight")}
+            </span>
+          </h1>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
-            {features.map((feature, i) => {
-              const Icon = feature.icon;
-              return (
-                <div
-                  key={feature.title}
-                  className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border/40 bg-card/50 backdrop-blur supports-backdrop-filter:bg-card/25"
-                >
-                  <Icon className="size-8 text-primary" />
-                  <h3 className="font-semibold text-lg">
-                    {t(`features.${i}.title`)}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {t(`features.${i}.description`)}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {t("hero.description")}
+          </p>
 
-          {/* CTA Button */}
-          <div className="flex flex-col items-center justify-center gap-6 pt-6">
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link href="/viewer">
-              <Button size="lg" className="text-base px-8 h-12">
+              <Button size="lg" className="text-base px-8 h-12 font-semibold">
                 {t("cta.title")}
               </Button>
             </Link>
-            <p className="text-sm text-muted-foreground">
-              {t("cta.description")}
-            </p>
+            <Link
+              href="https://github.com/dan5py/mbox-viewer"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 h-12 font-semibold"
+              >
+                <Github className="size-4" />
+                {t("cta.github")}
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* App preview */}
+        <div className="relative mt-16 sm:mt-20 lg:mt-24 max-w-5xl mx-auto w-full pb-16">
+          <div className="preview-glow" />
+          <div className="relative rounded-xl border border-border/40 overflow-hidden shadow-2xl shadow-primary/5 ring-1 ring-white/5">
+            <LandingPreview />
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/40 bg-background/95">
+      <footer className="border-t border-border/40 bg-background/95 relative z-10">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
