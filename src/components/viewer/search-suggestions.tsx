@@ -463,6 +463,13 @@ export function SearchSuggestions({
     return filtered;
   }, [context, allLabels, searchQuery]);
 
+  const selectedSuggestionIndex = useMemo(() => {
+    if (suggestions.length === 0) {
+      return 0;
+    }
+    return selectedIndex >= suggestions.length ? 0 : selectedIndex;
+  }, [selectedIndex, suggestions.length]);
+
   // Close when no suggestions or query is empty
   useEffect(() => {
     if (suggestions.length === 0) {
@@ -470,19 +477,14 @@ export function SearchSuggestions({
     }
   }, [suggestions.length]);
 
-  // Reset selected index when suggestions change
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [suggestions]);
-
   // Scroll selected item into view
   useEffect(() => {
-    if (isOpen && itemRefs.current.has(selectedIndex)) {
-      itemRefs.current.get(selectedIndex)?.scrollIntoView({
+    if (isOpen && itemRefs.current.has(selectedSuggestionIndex)) {
+      itemRefs.current.get(selectedSuggestionIndex)?.scrollIntoView({
         block: "nearest",
       });
     }
-  }, [selectedIndex, isOpen]);
+  }, [selectedSuggestionIndex, isOpen]);
 
   const applySuggestion = useCallback(
     (suggestion: SuggestionItem) => {
@@ -526,21 +528,25 @@ export function SearchSuggestions({
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev < suggestions.length - 1 ? prev + 1 : 0
+          setSelectedIndex(
+            selectedSuggestionIndex < suggestions.length - 1
+              ? selectedSuggestionIndex + 1
+              : 0
           );
           break;
         case "ArrowUp":
           e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : suggestions.length - 1
+          setSelectedIndex(
+            selectedSuggestionIndex > 0
+              ? selectedSuggestionIndex - 1
+              : suggestions.length - 1
           );
           break;
         case "Tab":
         case "Enter":
           if (isOpen && suggestions.length > 0) {
             e.preventDefault();
-            applySuggestion(suggestions[selectedIndex]);
+            applySuggestion(suggestions[selectedSuggestionIndex]);
           }
           break;
         case "Escape":
@@ -549,7 +555,7 @@ export function SearchSuggestions({
           break;
       }
     },
-    [isOpen, suggestions, selectedIndex, applySuggestion]
+    [isOpen, suggestions, selectedSuggestionIndex, applySuggestion]
   );
 
   const handleInputFocus = useCallback(() => {
@@ -592,7 +598,7 @@ export function SearchSuggestions({
   return {
     isOpen: isOpen && suggestions.length > 0,
     suggestions,
-    selectedIndex,
+    selectedIndex: selectedSuggestionIndex,
     handleInputKeyDown,
     handleInputFocus,
     handleInputChange,

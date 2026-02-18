@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Download, FileText, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -26,6 +27,33 @@ export interface AttachmentPreviewDialogProps {
   attachment: EmailAttachment | null;
   previewObjectUrl: string | null;
   onClose: () => void;
+}
+
+function decodeTextAttachmentData(
+  attachment: EmailAttachment,
+  fallbackText: string
+): string {
+  if (attachment.encoding !== "base64") {
+    return attachment.data;
+  }
+
+  const normalized = attachment.data.replace(/\s/g, "");
+  const isValidBase64 =
+    normalized.length > 0 &&
+    normalized.length % 4 === 0 &&
+    /^[A-Za-z0-9+/]*={0,2}$/.test(normalized);
+
+  if (!isValidBase64) {
+    return fallbackText;
+  }
+
+  const binaryData = atob(normalized);
+  const bytes = new Uint8Array(binaryData.length);
+  for (let i = 0; i < binaryData.length; i++) {
+    bytes[i] = binaryData.charCodeAt(i);
+  }
+
+  return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
 }
 
 export default function AttachmentPreviewDialog({
@@ -78,12 +106,14 @@ export default function AttachmentPreviewDialog({
           {attachment && (
             <>
               {isImageType(attachment.mimeType) ? (
-                <div className="flex items-center justify-center w-full h-full min-h-[400px]">
+                <div className="relative flex items-center justify-center w-full h-full min-h-[400px]">
                   {previewObjectUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={previewObjectUrl}
                       alt={attachment.filename}
+                      fill
+                      unoptimized
+                      sizes="100vw"
                       className="max-w-full max-h-[calc(100dvh-10rem)] object-contain rounded-lg border border-border/40 bg-background"
                     />
                   ) : (
@@ -115,26 +145,10 @@ export default function AttachmentPreviewDialog({
               ) : isTextType(attachment.mimeType) ? (
                 <div className="bg-muted/30 rounded-lg p-4 border border-border/40">
                   <pre className="text-sm whitespace-pre-wrap font-mono text-foreground overflow-x-auto">
-                    {(() => {
-                      try {
-                        if (attachment.encoding === "base64") {
-                          const binaryData = atob(
-                            attachment.data.replace(/\s/g, "")
-                          );
-                          const bytes = new Uint8Array(binaryData.length);
-                          for (let i = 0; i < binaryData.length; i++) {
-                            bytes[i] = binaryData.charCodeAt(i);
-                          }
-                          return new TextDecoder("utf-8", {
-                            fatal: false,
-                          }).decode(bytes);
-                        }
-                        return attachment.data;
-                      } catch (err) {
-                        console.error("Failed to decode text:", err);
-                        return t("preview.attachmentPreviewError");
-                      }
-                    })()}
+                    {decodeTextAttachmentData(
+                      attachment,
+                      t("preview.attachmentPreviewError")
+                    )}
                   </pre>
                 </div>
               ) : (

@@ -213,9 +213,7 @@ export function FileUploadInput({
 
             // Create mail file object
             const mailFile: MailFile = {
-              id: `file-${Date.now()}-${Math.random()
-                .toString(36)
-                .substring(2, 9)}`,
+              id: `file-${crypto.randomUUID()}`,
               name: file.name,
               rawFilename: file.name,
               typeId: "mbox",
@@ -232,7 +230,6 @@ export function FileUploadInput({
             // Final progress
             const elapsed = (Date.now() - startTime) / 1000;
             const speed = Math.round(boundaries.length / elapsed);
-
             setProgress({
               fileName: file.name,
               progress: 100,
