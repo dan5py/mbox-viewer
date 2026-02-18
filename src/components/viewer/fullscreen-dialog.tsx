@@ -32,7 +32,7 @@ export default function FullscreenDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[calc(100dvh-1rem)] w-[calc(100dvw-1rem)] max-w-none max-h-none gap-0 p-0 sm:h-[calc(100dvh-4rem)] sm:w-[calc(100dvw-4rem)] sm:max-w-[calc(100dvw-4rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col">
+      <DialogContent className="h-[calc(100dvh-1rem)] w-[calc(100dvw-1rem)] max-w-none max-h-none gap-0 p-0 sm:h-[calc(100dvh-4rem)] sm:w-[calc(100dvw-4rem)] sm:max-w-[calc(100dvw-4rem)] sm:max-h-[calc(100dvh-4rem)] flex min-h-0 flex-col">
         <DialogHeader className="border-b px-4 pt-4 pb-3 shrink-0 sm:px-6 sm:pt-6 sm:pb-4">
           <DialogTitle className="flex min-h-10 flex-wrap items-start justify-between gap-2 pr-8">
             <span className="line-clamp-2 min-w-0 flex-1 text-left">
@@ -58,7 +58,7 @@ export default function FullscreenDialog({
             )}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
           {messageData?.htmlBody ? (
             bodyTab === "html" ? (
               <div className="bg-white rounded-lg p-3 sm:p-4 border border-border/40">
