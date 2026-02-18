@@ -96,7 +96,6 @@ export default function MobileFilesSheet({
                             onCancelRename();
                           }
                         }}
-                        autoFocus
                         className="h-8 text-sm"
                       />
                       <div className="flex items-center gap-2">

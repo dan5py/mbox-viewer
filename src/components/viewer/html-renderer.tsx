@@ -155,6 +155,7 @@ const HtmlRenderer: FC<HtmlRendererProps> = ({
   return (
     <iframe
       ref={iframeRef}
+      title="Email HTML content"
       srcDoc={sandboxedHtml}
       className={className}
       sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin"
