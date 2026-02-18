@@ -280,12 +280,7 @@ export function useViewer() {
     }
 
     return counts;
-  }, [
-    allLabels,
-    currentFile?.messageBoundaries,
-    labelMessageCounts,
-    searchResultSet,
-  ]);
+  }, [allLabels, currentFile, labelMessageCounts, searchResultSet]);
 
   const labelFiltersForLayout = useMemo(() => {
     if (!searchResultSet) {
@@ -925,7 +920,7 @@ export function useViewer() {
       }
     };
 
-    loadSelectedMessage();
+    void loadSelectedMessage();
 
     return () => {
       abortController.abort();

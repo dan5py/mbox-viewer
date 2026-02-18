@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { WifiOff } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Button } from "~/components/ui/button";
 import { Navbar } from "~/components/navbar";
+
+export const metadata: Metadata = {
+  title: "Offline | MBOX Viewer",
+  description:
+    "Reconnect to continue viewing and searching your mailbox files.",
+};
 
 export default async function OfflinePage() {
   const t = await getTranslations("Offline");

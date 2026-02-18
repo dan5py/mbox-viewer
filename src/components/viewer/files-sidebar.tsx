@@ -103,10 +103,7 @@ export function FilesSidebar({
                     />
                     <div className="flex-1 min-w-0">
                       {editingFileId === file.id ? (
-                        <div
-                          className="space-y-2"
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                        <div className="space-y-2">
                           <Input
                             value={editingFileName}
                             onChange={(e) => setEditingFileName(e.target.value)}
@@ -128,7 +125,6 @@ export function FilesSidebar({
                                 onCancelRename();
                               }
                             }}
-                            autoFocus
                             className="h-8 text-sm"
                           />
                           <div className="flex items-center gap-2">
