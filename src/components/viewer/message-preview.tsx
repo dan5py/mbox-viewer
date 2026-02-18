@@ -84,7 +84,7 @@ export function MessagePreview({
   return (
     <div
       className={cn(
-        "flex-1 flex flex-col bg-background overflow-hidden",
+        "flex-1 min-h-0 flex flex-col bg-background overflow-hidden",
         mobileActivePane !== "preview" && "hidden md:flex"
       )}
     >
@@ -345,7 +345,7 @@ export function MessagePreview({
           <Tabs
             value={effectiveTab}
             onValueChange={setTab}
-            className="flex-1 flex flex-col overflow-hidden"
+            className="flex-1 min-h-0 flex flex-col overflow-hidden"
           >
             <TabsList className="w-full rounded-none border-b shrink-0">
               {hasBody ? (
@@ -364,7 +364,7 @@ export function MessagePreview({
             {selectedMessageData.htmlBody || selectedMessageData.body ? (
               <TabsContent
                 value="body"
-                className="flex-1 flex flex-col overflow-hidden m-0 p-0 data-[state=active]:flex"
+                className="flex-1 min-h-0 flex flex-col overflow-hidden m-0 p-0 data-[state=active]:flex"
               >
                 {selectedMessageData.htmlBody ? (
                   <Tabs
@@ -395,7 +395,7 @@ export function MessagePreview({
                         <Maximize2 />
                       </Button>
                     </div>
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 min-h-0 overflow-y-auto">
                       <TabsContent value="html" className="p-6 pb-12">
                         <div className="bg-white rounded-lg p-4 border border-border/40">
                           <HtmlRenderer
@@ -415,7 +415,7 @@ export function MessagePreview({
                     </div>
                   </Tabs>
                 ) : (
-                  <div className="flex-1 flex flex-col overflow-hidden">
+                  <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                     <div className="shrink-0 flex items-center justify-end px-6 pt-2 pb-4 border-b">
                       <Button
                         variant="ghost"
