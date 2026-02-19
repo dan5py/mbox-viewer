@@ -12,6 +12,16 @@
       "titleHighlight": "with Ease",
       "description": "A modern, fast, and intuitive browser-based MBOX file viewer. Open, search, and explore your email archives in seconds."
     },
+    "error": {
+      "title": "Something Went Wrong",
+      "description": "An unexpected error occurred while loading this page. This could be due to a temporary glitch or a missing resource.",
+      "tryAgain": "Try Again"
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you're looking for doesn't exist or has been moved.",
+      "goHome": "Go Home"
+    },
     "viewer": {
       "open": "Open viewer"
     },
@@ -33,6 +43,15 @@
       "title": "Get Started",
       "github": "View on GitHub",
       "description": "No installation required. Works entirely in your browser."
+    },
+    "preview": {
+      "windowTitle": "MBOX_VIEWER.EXE"
+    },
+    "featureStrip": {
+      "privateByDesign": "Private by design",
+      "noServerUploads": "No server uploads",
+      "browserBased": "Browser based",
+      "openSource": "Open source"
     },
     "footer": {
       "description": "MBOX Viewer. Open source and free to use.",
