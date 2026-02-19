@@ -10,41 +10,53 @@ export default async function Home() {
   const t = await getTranslations("Home");
 
   return (
-    <div className="flex flex-col min-h-dvh relative overflow-hidden">
-      <Navbar showViewerButton showSettingsButton={false} borderless />
+    <div className="flex flex-col min-h-dvh bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground relative overflow-hidden">
+      {/* Background pattern */}
+      <div
+        className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      />
 
-      <main className="flex-1 flex flex-col items-center px-4 sm:px-6 relative">
-        {/* Background glow */}
-        <div className="landing-glow" />
+      <div className="relative z-10 border-b-4 border-foreground bg-background">
+        <Navbar showViewerButton showSettingsButton={false} borderless />
+      </div>
 
-        {/* Hero content */}
-        <div className="max-w-4xl mx-auto text-center space-y-6 pt-16 sm:pt-24 lg:pt-32 relative z-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-8 items-center lg:items-stretch">
+        {/* Left Column: Typography & CTAs */}
+        <div className="flex-1 flex flex-col justify-center space-y-8 w-full lg:max-w-2xl">
           {/* Badge */}
-          <div className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-sm text-primary font-medium">
-              <span className="size-1.5 rounded-full bg-primary animate-pulse" />
-              {t("hero.badge")}
-            </div>
+          <div className="inline-flex w-fit items-center gap-2 px-3 py-1.5 border-2 border-foreground bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs sm:text-sm shadow-[4px_4px_0_0_currentColor] -rotate-2">
+            <span className="size-2 bg-primary-foreground animate-pulse" />
+            {t("hero.badge")}
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black uppercase tracking-tighter leading-[0.85]">
             {t("hero.title")}
             <br />
-            <span className="font-display italic text-primary decoration-primary underline decoration-2 underline-offset-8">
+            <span className="inline-block mt-4 bg-foreground text-background px-4 py-2 rotate-1">
               {t("hero.titleHighlight")}
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {t("hero.description")}
-          </p>
+          <div className="border-l-4 border-primary pl-6 py-2 my-4">
+            <p className="text-lg sm:text-xl font-medium leading-relaxed">
+              {t("hero.description")}
+            </p>
+          </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link href="/viewer">
-              <Button size="lg" className="text-base px-8 h-12 font-semibold">
+          <div className="flex flex-col sm:flex-row gap-6 pt-6">
+            <Link href="/viewer" className="block w-full sm:w-auto group">
+              <Button
+                size="lg"
+                className="w-full text-base sm:text-lg h-14 sm:h-16 px-8 font-black uppercase tracking-widest rounded-none border-4 border-foreground bg-primary text-primary-foreground hover:bg-primary/90 shadow-[6px_6px_0_0_var(--color-foreground)] group-hover:translate-y-[2px] group-hover:translate-x-[2px] group-hover:shadow-[4px_4px_0_0_var(--color-foreground)] transition-all"
+              >
                 {t("cta.title")}
               </Button>
             </Link>
@@ -52,50 +64,53 @@ export default async function Home() {
               href="https://github.com/dan5py/mbox-viewer"
               target="_blank"
               rel="noopener noreferrer nofollow"
+              className="block w-full sm:w-auto group"
             >
               <Button
                 size="lg"
                 variant="outline"
-                className="text-base px-8 h-12 font-semibold"
+                className="w-full text-base sm:text-lg h-14 sm:h-16 px-8 font-black uppercase tracking-widest rounded-none border-4 border-foreground bg-background text-foreground hover:bg-muted shadow-[6px_6px_0_0_var(--color-foreground)] group-hover:translate-y-[2px] group-hover:translate-x-[2px] group-hover:shadow-[4px_4px_0_0_var(--color-foreground)] transition-all"
               >
-                <Github className="size-4" />
+                <Github className="size-5 mr-3" />
                 {t("cta.github")}
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* App preview */}
-        <div className="relative mt-16 sm:mt-20 lg:mt-24 max-w-5xl mx-auto w-full pb-16">
-          <div className="preview-glow" />
-          <div className="relative rounded-xl border border-border/40 overflow-hidden shadow-2xl shadow-primary/5 ring-1 ring-white/5">
-            <LandingPreview />
+        {/* Right Column: App preview in a brutalist window */}
+        <div className="flex-1 flex w-full items-center justify-center lg:justify-end mt-8 lg:mt-0">
+          <div className="relative w-full max-w-2xl border-4 border-foreground bg-background p-2 sm:p-3 shadow-[12px_12px_0_0_var(--color-foreground)] lg:shadow-[20px_20px_0_0_var(--color-foreground)] transform lg:rotate-1 transition-transform hover:rotate-0 duration-300">
+            {/* Window bar */}
+            <div className="flex items-center gap-2 sm:gap-3 border-b-4 border-foreground pb-2 sm:pb-3 mb-2 sm:mb-3">
+              <div className="size-4 sm:size-5 border-2 border-foreground bg-destructive rounded-none"></div>
+              <div className="size-4 sm:size-5 border-2 border-foreground bg-primary rounded-none"></div>
+              <div className="size-4 sm:size-5 border-2 border-foreground bg-foreground rounded-none"></div>
+              <div className="ml-auto font-black uppercase tracking-widest text-xs sm:text-sm pr-2">
+                {t("preview.windowTitle")}
+              </div>
+            </div>
+
+            {/* Preview Image */}
+            <div className="relative border-4 border-foreground overflow-hidden bg-muted aspect-video">
+              <LandingPreview />
+            </div>
           </div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/40 bg-background/95 relative z-10">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {t("footer.description")}
-            </p>
-            <div className="flex gap-4">
-              <Button variant="ghost" asChild>
-                <Link
-                  href="https://github.com/dan5py/mbox-viewer"
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
-                >
-                  <Github className="size-4" />
-                  {t("footer.github")}
-                </Link>
-              </Button>
-            </div>
-          </div>
+      {/* Feature separator */}
+      <div className="border-y-4 border-foreground bg-primary text-primary-foreground py-4 relative z-10 overflow-hidden my-12">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-between items-center gap-2 sm:gap-4 font-black uppercase tracking-widest text-xs sm:text-sm lg:text-base">
+          <span>{t("featureStrip.privateByDesign")}</span>
+          <span className="inline">•</span>
+          <span>{t("featureStrip.noServerUploads")}</span>
+          <span className="inline">•</span>
+          <span>{t("featureStrip.browserBased")}</span>
+          <span className="inline">•</span>
+          <span>{t("featureStrip.openSource")}</span>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

@@ -9,8 +9,18 @@
     "hero": {
       "badge": "Open source e gratuito",
       "title": "Visualizza i tuoi file MBOX",
-      "titleHighlight": "con facilità",
+      "titleHighlight": "facilmente",
       "description": "Un visualizzatore MBOX veloce e moderno per file email. Carica e visualizza archivi email in un attimo."
+    },
+    "error": {
+      "title": "Qualcosa È Andato Storto",
+      "description": "Si è verificato un errore imprevisto durante il caricamento di questa pagina. Potrebbe essere un problema temporaneo o una risorsa mancante.",
+      "tryAgain": "Riprova"
+    },
+    "notFound": {
+      "title": "Pagina Non Trovata",
+      "description": "La pagina che stai cercando non esiste o è stata spostata.",
+      "goHome": "Torna alla Home"
     },
     "viewer": {
       "open": "Apri visualizzatore"
@@ -33,6 +43,15 @@
       "title": "Inizia ora",
       "github": "Vedi su GitHub",
       "description": "Nessuna installazione richiesta. Funziona interamente nel tuo browser."
+    },
+    "preview": {
+      "windowTitle": "MBOX_VIEWER.EXE"
+    },
+    "featureStrip": {
+      "privateByDesign": "Privacy by design",
+      "noServerUploads": "Nessun caricamento su server",
+      "browserBased": "Browser based",
+      "openSource": "Open source"
     },
     "footer": {
       "description": "MBOX Viewer. Open source e gratuito.",
