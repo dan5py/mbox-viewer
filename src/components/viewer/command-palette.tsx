@@ -1,22 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowDown,
   ArrowUp,
-  FileText,
   FilterX,
-  Home,
   Keyboard,
+  Mail,
   MessageSquare,
   Paperclip,
   Search,
   Settings,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
+import { type MailFile } from "~/types/files";
+import { searchCommandPaletteEmails } from "~/lib/command-palette-email-search";
 import { type GroupingMode } from "~/hooks/use-viewer-searchparams";
 import {
   CommandDialog,
@@ -43,6 +44,8 @@ export interface CommandPaletteProps {
   onOpenShortcutsDialog: () => void;
   onOpenAttachmentsCenter: () => void;
   onFocusSearch: () => void;
+  currentFile?: MailFile;
+  onOpenMessageFromPalette: (index: number) => void;
 }
 
 export default function CommandPalette({
@@ -59,10 +62,35 @@ export default function CommandPalette({
   onOpenShortcutsDialog,
   onOpenAttachmentsCenter,
   onFocusSearch,
+  currentFile,
+  onOpenMessageFromPalette,
 }: CommandPaletteProps) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const commandListRef = useRef<HTMLDivElement | null>(null);
   const t = useTranslations("Viewer");
+  const locale = useLocale();
   const router = useRouter();
+  const hasPaletteQuery = query.trim().length > 0;
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+    [locale]
+  );
+  const emailResults = useMemo(() => {
+    if (!hasFiles || !currentFile?.messageBoundaries || !hasPaletteQuery) {
+      return [];
+    }
+
+    return searchCommandPaletteEmails({
+      messageBoundaries: currentFile.messageBoundaries,
+      query,
+    });
+  }, [currentFile, hasFiles, hasPaletteQuery, query]);
 
   // Cmd/Ctrl+K to open
   useEffect(() => {
@@ -77,22 +105,91 @@ export default function CommandPalette({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const handleOpenChange = useCallback((nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      setQuery("");
+    }
+  }, []);
+
   const runCommand = useCallback((fn: () => void) => {
     setOpen(false);
     // Delay to let the dialog close before executing
     requestAnimationFrame(fn);
   }, []);
 
+  useEffect(() => {
+    if (!open || !hasPaletteQuery) {
+      return;
+    }
+
+    const frameId = requestAnimationFrame(() => {
+      commandListRef.current?.scrollTo({
+        top: 0,
+        behavior: "auto",
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(frameId);
+    };
+  }, [open, hasPaletteQuery, query]);
+
   return (
     <CommandDialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
       title={t("commandPalette.title")}
       description={t("commandPalette.description")}
     >
-      <CommandInput placeholder={t("commandPalette.placeholder")} />
-      <CommandList>
+      <CommandInput
+        placeholder={t("commandPalette.placeholder")}
+        value={query}
+        onValueChange={setQuery}
+      />
+      <CommandList ref={commandListRef}>
         <CommandEmpty>{t("commandPalette.noResults")}</CommandEmpty>
+
+        {hasFiles && hasPaletteQuery && emailResults.length > 0 && (
+          <>
+            <CommandGroup heading={t("commandPalette.groups.messages")}>
+              {emailResults.map((emailResult) => {
+                const subject =
+                  emailResult.subject.trim().length > 0
+                    ? emailResult.subject
+                    : t("preview.noSubject");
+                const dateLabel =
+                  emailResult.timestamp !== null
+                    ? dateFormatter.format(new Date(emailResult.timestamp))
+                    : "";
+
+                return (
+                  <CommandItem
+                    key={`email-${emailResult.index}`}
+                    value={`${emailResult.searchValue} ${emailResult.index}`}
+                    onSelect={() =>
+                      runCommand(() =>
+                        onOpenMessageFromPalette(emailResult.index)
+                      )
+                    }
+                  >
+                    <Mail className="size-4" />
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate font-medium">{subject}</span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {emailResult.from}
+                      </span>
+                    </div>
+                    {dateLabel.length > 0 && (
+                      <CommandShortcut>{dateLabel}</CommandShortcut>
+                    )}
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+            <CommandSeparator />
+          </>
+        )}
 
         {/* Navigation */}
         <CommandGroup heading={t("commandPalette.groups.navigation")}>

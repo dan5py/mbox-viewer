@@ -1306,6 +1306,38 @@ export function useViewer() {
     searchInputRef.current?.focus();
   }, []);
 
+  const handleOpenMessageFromPalette = useCallback(
+    (index: number) => {
+      const targetPage = Math.floor(index / messagesPerPage) + 1;
+      const hasFilteringApplied =
+        selectedLabel !== null || searchQuery.trim().length > 0;
+
+      if (hasFilteringApplied) {
+        resetSearchState();
+        void setUrlState({
+          q: "",
+          label: null,
+          page: targetPage,
+        });
+      } else {
+        setCurrentPage(targetPage);
+      }
+
+      requestAnimationFrame(() => {
+        handleSelectMessage(index);
+      });
+    },
+    [
+      messagesPerPage,
+      selectedLabel,
+      searchQuery,
+      resetSearchState,
+      setUrlState,
+      setCurrentPage,
+      handleSelectMessage,
+    ]
+  );
+
   // Export
   const handleExportSelectedMessages = useCallback(async () => {
     if (!currentFile || selectedCount === 0) {
@@ -1689,6 +1721,7 @@ export function useViewer() {
     handleOpenShortcutsDialog,
     handleOpenAttachmentsCenter,
     handleFocusSearch,
+    handleOpenMessageFromPalette,
 
     // Attachments center
     isAttachmentsCenterOpen,

@@ -266,16 +266,18 @@
     "commandPalette": {
       "title": "Palette comandi",
       "description": "Cerca un comando da eseguire...",
-      "placeholder": "Digita un comando...",
-      "noResults": "Nessun risultato trovato.",
+      "placeholder": "Digita un comando o cerca email...",
+      "noResults": "Nessun comando o email trovati.",
       "groups": {
         "navigation": "Navigazione",
         "searchFilters": "Ricerca e filtri",
-        "tools": "Strumenti"
+        "tools": "Strumenti",
+        "messages": "Email"
       },
       "commands": {
         "goHome": "Vai alla pagina iniziale",
         "openSettings": "Apri impostazioni",
+        "openMessage": "Apri email",
         "nextPage": "Pagina successiva",
         "prevPage": "Pagina precedente",
         "focusSearch": "Vai alla ricerca",

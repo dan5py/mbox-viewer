@@ -266,16 +266,18 @@
     "commandPalette": {
       "title": "Command Palette",
       "description": "Search for a command to run...",
-      "placeholder": "Type a command...",
-      "noResults": "No results found.",
+      "placeholder": "Type a command or search emails...",
+      "noResults": "No commands or emails found.",
       "groups": {
         "navigation": "Navigation",
         "searchFilters": "Search & Filters",
-        "tools": "Tools"
+        "tools": "Tools",
+        "messages": "Emails"
       },
       "commands": {
         "goHome": "Go to home page",
         "openSettings": "Open settings",
+        "openMessage": "Open email",
         "nextPage": "Next page",
         "prevPage": "Previous page",
         "focusSearch": "Focus search",
