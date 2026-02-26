@@ -12,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { ScrollArea } from "~/components/ui/scroll-area";
 
 function Command({
   className,
@@ -84,17 +83,19 @@ function CommandInput({
 }
 
 const CommandList = React.forwardRef<
-  HTMLDivElement,
+  React.ComponentRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
 >(({ className, ...props }, ref) => {
   return (
-    <ScrollArea className="h-[320px]" viewportRef={ref}>
-      <CommandPrimitive.List
-        data-slot="command-list"
-        className={cn("scroll-py-1", className)}
-        {...props}
-      />
-    </ScrollArea>
+    <CommandPrimitive.List
+      ref={ref}
+      data-slot="command-list"
+      className={cn(
+        "h-[320px] scroll-py-1 overflow-x-hidden overflow-y-auto",
+        className
+      )}
+      {...props}
+    />
   );
 });
 CommandList.displayName = CommandPrimitive.List.displayName;
