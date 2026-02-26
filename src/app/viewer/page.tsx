@@ -164,6 +164,7 @@ export default function ViewerPage() {
     handleOpenShortcutsDialog,
     handleOpenAttachmentsCenter,
     handleFocusSearch,
+    handleOpenMessageFromPalette,
 
     // Attachments center
     isAttachmentsCenterOpen,
@@ -507,6 +508,8 @@ export default function ViewerPage() {
           onOpenShortcutsDialog={handleOpenShortcutsDialog}
           onOpenAttachmentsCenter={handleOpenAttachmentsCenter}
           onFocusSearch={handleFocusSearch}
+          currentFile={currentFile}
+          onOpenMessageFromPalette={handleOpenMessageFromPalette}
         />
       </Suspense>
     </div>
