@@ -125,7 +125,7 @@ export function FilesSidebar({
                                 onCancelRename();
                               }
                             }}
-                            className="h-8 text-sm"
+                            className="h-8 text-base md:text-sm"
                           />
                           <div className="flex items-center gap-2">
                             <Button

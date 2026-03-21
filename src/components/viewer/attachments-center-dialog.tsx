@@ -269,7 +269,7 @@ function AttachmentsCenterContent({
             placeholder={t("attachmentsCenter.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="text-sm pl-9 pr-9"
+            className="pl-9 pr-9"
             disabled={isIndexing}
           />
           {searchQuery && (

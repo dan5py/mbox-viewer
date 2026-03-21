@@ -298,7 +298,7 @@ export function MessageList({
               }
               onKeyDown={searchSuggestions.handleInputKeyDown}
               onFocus={searchSuggestions.handleInputFocus}
-              className="text-sm pl-9 pr-9"
+              className="pl-9 pr-9"
               role="combobox"
               aria-expanded={searchSuggestions.isOpen}
               aria-autocomplete="list"
