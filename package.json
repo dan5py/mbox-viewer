@@ -49,6 +49,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.4.17",
     "embla-carousel-react": "^8.6.0",
     "entities": "^7.0.1",
     "he": "^1.2.0",

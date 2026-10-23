@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import JSZip from "jszip";
 
 import { EmailAttachment, EmailMessage, MailFile } from "~/types/files";
@@ -42,6 +43,15 @@ const EXPORT_FILENAME_DATE_FORMATTER = new Intl.DateTimeFormat("sv-SE", {
 const TEXT_ENCODER = new TextEncoder();
 const UTF8_BOM = "\uFEFF";
 
+// Second layer of defense for exported HTML files: no scripts, and no remote
+// resources (tracking pixels), matching what the in-app viewer allows.
+const EXPORT_CONTENT_SECURITY_POLICY = [
+  "default-src 'none'",
+  "img-src data:",
+  "style-src 'unsafe-inline'",
+  "font-src data:",
+].join("; ");
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -51,55 +61,14 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
+// Exported HTML files are opened outside the app, so untrusted email markup
+// is cleaned with DOMPurify. Forms are dropped too: an export has no use for
+// them and they could be used for phishing.
 function sanitizeHtmlBodyForExport(html: string): string {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-
-  const blockedTags = doc.querySelectorAll(
-    "script, iframe, object, embed, base, meta[http-equiv='refresh'], link[rel='import']"
-  );
-  blockedTags.forEach((node) => node.remove());
-
-  const isUnsafeUrl = (url: string): boolean => {
-    const normalized = url
-      .replace(/[\u0000-\u001F\u007F\s]+/g, "")
-      .toLowerCase();
-
-    return (
-      normalized.startsWith("javascript:") ||
-      normalized.startsWith("vbscript:") ||
-      normalized.startsWith("data:text/html") ||
-      normalized.startsWith("data:text/javascript") ||
-      normalized.startsWith("data:application/javascript")
-    );
-  };
-
-  const allElements = doc.querySelectorAll("*");
-  for (const element of allElements) {
-    // Remove inline event handlers and javascript: URLs.
-    const attributes = Array.from(element.attributes);
-    for (const attribute of attributes) {
-      const attributeName = attribute.name.toLowerCase();
-      const attributeValue = attribute.value.trim().toLowerCase();
-
-      if (attributeName.startsWith("on")) {
-        element.removeAttribute(attribute.name);
-        continue;
-      }
-
-      const isUrlAttribute =
-        attributeName === "href" ||
-        attributeName === "src" ||
-        attributeName === "xlink:href" ||
-        attributeName === "formaction";
-
-      if (isUrlAttribute && isUnsafeUrl(attributeValue)) {
-        element.removeAttribute(attribute.name);
-      }
-    }
-  }
-
-  return doc.body?.innerHTML || "";
+  return DOMPurify.sanitize(html, {
+    FORBID_TAGS: ["form", "input", "button", "textarea", "select", "option"],
+    FORBID_ATTR: ["action", "formaction"],
+  });
 }
 
 function sanitizeFilenamePart(value: string): string {
@@ -224,6 +193,7 @@ function buildHtmlExport(
     <html lang="${localization.locale}">
       <head>
         <meta charset="utf-8" />
+        <meta http-equiv="Content-Security-Policy" content="${EXPORT_CONTENT_SECURITY_POLICY}" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>${escapeHtml(fallbackTitle)}</title>
       </head>
