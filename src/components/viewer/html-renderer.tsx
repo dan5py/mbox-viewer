@@ -4,6 +4,21 @@ import { FC, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 
 import { EmailAttachment } from "~/types/files";
 
+// Email HTML may only use inline styles and embedded (data:/blob:) resources.
+// Remote images, CSS and fonts are blocked so opening an email can't trigger
+// tracking pixels or leak the reader's IP.
+const EMAIL_CONTENT_SECURITY_POLICY = [
+  "default-src 'none'",
+  "img-src data: blob:",
+  "media-src data: blob:",
+  "style-src 'unsafe-inline'",
+  "font-src data:",
+].join("; ");
+
+// The MIME type comes from the email headers and ends up inside an HTML
+// attribute, so only allow plain "type/subtype" values.
+const SAFE_MIME_TYPE = /^[a-z0-9!#$&^_.+-]+\/[a-z0-9!#$&^_.+-]+$/i;
+
 interface HtmlRendererProps {
   html: string;
   className?: string;
@@ -39,7 +54,10 @@ const HtmlRenderer: FC<HtmlRendererProps> = ({
     return html.replace(/src="cid:([^"]+)"/g, (match, cid) => {
       const attachment = cidMap.get(cid);
       if (attachment) {
-        return `src="data:${attachment.mimeType};base64,${attachment.data}"`;
+        const mimeType = SAFE_MIME_TYPE.test(attachment.mimeType)
+          ? attachment.mimeType
+          : "application/octet-stream";
+        return `src="data:${mimeType};base64,${attachment.data}"`;
       }
       return match; // Keep original src if no matching attachment found
     });
@@ -197,8 +215,9 @@ const HtmlRenderer: FC<HtmlRendererProps> = ({
     };
   }, [scheduleResize]);
 
-  // Inject styles
+  // The CSP meta tag must come first so it applies before any email content
   const sandboxedHtml = `
+    <meta http-equiv="Content-Security-Policy" content="${EMAIL_CONTENT_SECURITY_POLICY}">
     <style>
       body { 
         margin: 0; 
